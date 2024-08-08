@@ -32,6 +32,7 @@ module.exports = {
 				bracketSpacing: true,
 				bracketSameLine: true,
 				arrowParens: 'avoid',
+				endOfLine: 'auto',
 			},
 		],
 	},
