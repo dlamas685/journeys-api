@@ -1,17 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
+import { corsConfig } from './config';
 
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
+
   const app = await NestFactory.create(AppModule);
+
   app.setGlobalPrefix('api');
+
+  app.enableCors(corsConfig);
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
   );
+
   const config = new DocumentBuilder()
     .setTitle('JOURNEYS API')
     .setDescription('Aplicación para la optimización de viajes y rutas')
@@ -19,7 +28,13 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+
   SwaggerModule.setup('api', app, document);
-  await app.listen(3000);
+
+  const port = app.get(ConfigService).get('PORT');
+
+  await app.listen(port);
+
+  logger.log(`Application is running on port ${port}`);
 }
 bootstrap();

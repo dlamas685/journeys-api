@@ -58,16 +58,25 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
+# VSCode
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+1.  Crear una carpeta .vscode y un archivo settings.json
+2.  Colocar lo siguiente:
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```json
+{
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.removeUnusedImports": "always",
+		"source.organizeImports": "always"
+	}
+}
+```
 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+```
+
+```
