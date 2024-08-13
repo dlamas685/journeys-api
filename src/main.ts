@@ -18,6 +18,7 @@ async function bootstrap() {
 		new ValidationPipe({
 			whitelist: true,
 			forbidNonWhitelisted: true,
+			transform: true,
 		})
 	)
 
@@ -25,6 +26,7 @@ async function bootstrap() {
 		.setTitle('JOURNEYS API')
 		.setDescription('Aplicación para la optimización de viajes y rutas')
 		.setVersion('1.0')
+		.addTag('Auth')
 		.build()
 
 	const document = SwaggerModule.createDocument(app, config)

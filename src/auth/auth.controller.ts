@@ -1,0 +1,37 @@
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
+import { User } from '@prisma/client'
+import { LoginDocs } from './decorators/login-docs.decorator'
+import { LoginDto } from './dto/login.dto'
+import { LocalAuthGuard } from './guards/local-auth.guard'
+import { AuthService } from './services/auth.service'
+
+@ApiTags('Auth')
+@Controller('auth')
+export class AuthController {
+	constructor(private authService: AuthService) {}
+
+	@LoginDocs()
+	@Post('login')
+	@UseGuards(LocalAuthGuard)
+	async login(@Request() req, @Body() loginDto: LoginDto) {
+		const user = req.user as User
+		const rememberMe = loginDto.rememberMe
+		return this.authService.login(user, rememberMe)
+	}
+
+	/*
+	  ? api/auth/login
+	  ? api/auth/google
+	  ? api/auth/signup
+	  ? api/auth/forgot-password
+	  ? api/auth/reset-password
+	  ? api/auth/verify-email
+	  ? api/auth/refresh-token 
+
+	  ! El usuario inicia sesion en la app en la laptop
+	  * 1. Revisa si existe el token en la base de datos (si no existe, se crea)
+	  * 2. Se envia el token al cliente
+	
+	*/
+}
