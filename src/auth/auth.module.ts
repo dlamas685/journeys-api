@@ -7,7 +7,6 @@ import { AuthController } from './auth.controller'
 import { AccountService } from './services/account.service'
 import { AuthService } from './services/auth.service'
 import { CleanupService } from './services/cleanup.service'
-import { SessionService } from './services/session.service'
 import { UsersService } from './services/users.service'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { LocalStrategy } from './strategies/local.strategy'
@@ -28,7 +27,6 @@ import { LocalStrategy } from './strategies/local.strategy'
 		LocalStrategy,
 		JwtStrategy,
 		PrismaService,
-		SessionService,
 		CleanupService,
 		UsersService,
 		AccountService,

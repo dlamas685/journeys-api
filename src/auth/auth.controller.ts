@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Post,
+	Request,
+	UseGuards,
+} from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
-import { User } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
 import { LoginDocs } from './decorators/login-docs.decorator'
 import { LoginDto } from './dto/login.dto'
@@ -14,9 +22,10 @@ export class AuthController {
 
 	@LoginDocs()
 	@Post('login')
+	@HttpCode(HttpStatus.OK)
 	@UseGuards(LocalAuthGuard)
 	async login(@Request() req, @Body() loginDto: LoginDto) {
-		const user = req.user as User
+		const user = req.user
 		const rememberMe = loginDto.rememberMe
 		return this.authService.login(user, rememberMe)
 	}
