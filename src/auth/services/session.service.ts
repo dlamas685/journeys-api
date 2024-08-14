@@ -32,10 +32,9 @@ export class SessionService {
 						id: true,
 						email: true,
 						imageUrl: true,
-					},
-					include: {
-						companyProfile: true,
+						userType: true,
 						personalProfile: true,
+						companyProfile: true,
 					},
 				},
 			},

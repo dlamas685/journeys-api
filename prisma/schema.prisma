@@ -49,18 +49,18 @@ model Session {
 }
 
 model User {
-  id              String            @id @default(uuid()) @db.Uuid
-  email           String            @unique
-  emailVerified   DateTime?         @map("email_verified") @db.Timestamptz(6)
+  id              String           @id @default(uuid()) @db.Uuid
+  email           String           @unique
+  emailVerified   DateTime?        @map("email_verified") @db.Timestamptz(6)
   password        String
-  imageUrl        String?           @map("image_url")
-  userType        UserType          @default(PERSONAL) @map("user_type")
-  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  imageUrl        String?          @map("image_url")
+  userType        UserType         @default(PERSONAL) @map("user_type")
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime?        @updatedAt @map("updated_at") @db.Timestamptz(6)
   accounts        Account[]
   sessions        Session[]
-  personalProfile PersonalProfile[]
-  companyProfile  CompanyProfile[]
+  personalProfile PersonalProfile?
+  companyProfile  CompanyProfile?
 
   @@map("users")
 }

@@ -1,6 +1,7 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { User } from '@prisma/client'
+import * as bcrypt from 'bcrypt'
 import { LoginDocs } from './decorators/login-docs.decorator'
 import { LoginDto } from './dto/login.dto'
 import { LocalAuthGuard } from './guards/local-auth.guard'
@@ -18,6 +19,17 @@ export class AuthController {
 		const user = req.user as User
 		const rememberMe = loginDto.rememberMe
 		return this.authService.login(user, rememberMe)
+	}
+
+	@Get('hash')
+	async findHash() {
+		const password = 'Hola1234?'
+
+		const salt = await bcrypt.genSalt(10)
+
+		const hash = await bcrypt.hash(password, salt)
+
+		return hash
 	}
 
 	/*

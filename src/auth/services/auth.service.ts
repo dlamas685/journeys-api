@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { User } from '@prisma/client'
-import bycript from 'bcrypt'
+import * as bcrypt from 'bcrypt'
 import { SessionService } from './session.service'
 import { UsersService } from './users.service'
 
@@ -13,7 +13,7 @@ export class AuthService {
 
 	async validateUser(email: string, password: string) {
 		const user = await this.usersService.findByEmail(email)
-		const match = await bycript.compare(password, user.password)
+		const match = bcrypt.compareSync(password, user.password)
 
 		if (user && match) {
 			delete user.password
