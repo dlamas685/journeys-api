@@ -11,6 +11,7 @@ import {
 import { ApiTags } from '@nestjs/swagger'
 import * as bcrypt from 'bcrypt'
 import { LoginDocs } from './decorators/login-docs.decorator'
+import { CreateUserDto } from './dto/create-user.dto'
 import { LoginDto } from './dto/login.dto'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './services/auth.service'
@@ -39,6 +40,11 @@ export class AuthController {
 		const hash = await bcrypt.hash(password, salt)
 
 		return hash
+	}
+
+	@Post('sign-up')
+	async signUp(@Body() newUser: CreateUserDto) {
+		return this.authService.userSignUp(newUser)
 	}
 
 	/*

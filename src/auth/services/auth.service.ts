@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { plainToClass } from 'class-transformer'
+import { CreateUserDto } from '../dto/create-user.dto'
 import { LoginResponseDto } from '../dto/login-response.dto'
 import { UserResponseDto } from '../dto/user-response.dto'
 import { TokenPayload } from '../models/token-payload.model'
@@ -47,5 +48,21 @@ export class AuthService {
 		})
 
 		return response
+	}
+
+	async userSignUp(newUser: CreateUserDto) {
+		newUser.password = await this.hashPassword(newUser.password)
+		const user = await this.usersService.createUser(newUser)
+
+		return {
+			message: 'email was send it',
+			user: user,
+		}
+		// throw new Error('Method not implemented.')
+	}
+
+	async hashPassword(password: string) {
+		const salt = await bcrypt.genSalt(10)
+		return await bcrypt.hash(password, salt)
 	}
 }
