@@ -5,6 +5,12 @@ const validationSchema = Joi.object({
 	PORT: Joi.number().port().default(3001),
 	DATABASE_URL: Joi.string().required(),
 	JWT_SECRET: Joi.string().required(),
+	FRONTEND_URL: Joi.string().required(),
+	MAIL_HOST: Joi.string().required(),
+	MAIL_PORT: Joi.number().port().required(),
+	MAIL_USER: Joi.string().required(),
+	MAIL_PASSWORD: Joi.string().required(),
+	MAIL_FROM: Joi.string().required(),
 })
 
 export const envConfig: ConfigModuleOptions = {
