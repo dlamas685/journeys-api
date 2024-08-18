@@ -1,18 +1,18 @@
-import {
-	Body,
-	Controller,
-	Get,
-	HttpCode,
-	HttpStatus,
-	Post,
-	Request,
-	UseGuards,
-} from '@nestjs/common'
+import { Body, Controller, Request } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
-import * as bcrypt from 'bcrypt'
-import { LoginDocs } from './decorators/login-docs.decorator'
-import { LoginDto } from './dto/login.dto'
-import { LocalAuthGuard } from './guards/local-auth.guard'
+import {
+	ForgotPassword,
+	Login,
+	ResetPassword,
+	ValidateToken,
+} from './decorators'
+import {
+	ForgotPasswordDto,
+	LoginDto,
+	ResetPasswordDto,
+	ValidateTokenDto,
+} from './dto'
+import { AuthEntity, SmtpEntity, UserEntity } from './entities'
 import { AuthService } from './services/auth.service'
 
 @ApiTags('Auth')
@@ -20,35 +20,42 @@ import { AuthService } from './services/auth.service'
 export class AuthController {
 	constructor(private authService: AuthService) {}
 
-	@LoginDocs()
-	@Post('login')
-	@HttpCode(HttpStatus.OK)
-	@UseGuards(LocalAuthGuard)
-	async login(@Request() req, @Body() loginDto: LoginDto) {
+	@Login()
+	async login(@Request() req, @Body() authDto: LoginDto): Promise<AuthEntity> {
 		const user = req.user
-		const rememberMe = loginDto.rememberMe
+		const rememberMe = authDto.rememberMe
 		return this.authService.login(user, rememberMe)
 	}
 
-	@Get('hash')
-	async findHash() {
-		const password = 'Hola1234?'
+	@ForgotPassword()
+	async forgotPassword(
+		@Body() forgotPasswordDto: ForgotPasswordDto
+	): Promise<SmtpEntity> {
+		return this.authService.forgotPassword(forgotPasswordDto)
+	}
 
-		const salt = await bcrypt.genSalt(10)
+	@ResetPassword()
+	async resetPassword(
+		@Body() resetPasswordDto: ResetPasswordDto
+	): Promise<UserEntity> {
+		return this.authService.resetPassword(resetPasswordDto)
+	}
 
-		const hash = await bcrypt.hash(password, salt)
-
-		return hash
+	@ValidateToken()
+	async validateToken(
+		@Body() validateTokenDto: ValidateTokenDto
+	): Promise<void> {
+		return this.authService.validateToken(validateTokenDto)
 	}
 
 	/*
-	  ? api/auth/login
-	  ? api/auth/google
+	  ? api/auth/login (*)
+	  ? api/auth/google 
 	  ? api/auth/signup
-	  ? api/auth/forgot-password
-	  ? api/auth/reset-password
+	  ? api/auth/forgot-password (*)
+	  ? api/auth/reset-password (*)
 	  ? api/auth/verify-email
-	  ? api/auth/refresh-token 
+	  ? api/auth/validate-token (*)
 
 	  ! El usuario inicia sesion en la app en la laptop
 	  * 1. Revisa si existe el token en la base de datos (si no existe, se crea)
