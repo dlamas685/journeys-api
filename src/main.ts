@@ -4,9 +4,10 @@ import {
 	ValidationPipe,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { NestFactory, Reflector } from '@nestjs/core'
+import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
+import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter'
 import { corsConfig } from './config'
 
 async function bootstrap() {
@@ -27,6 +28,9 @@ async function bootstrap() {
 	)
 
 	app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
+
+	const { httpAdapter } = app.get(HttpAdapterHost)
+	app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter))
 
 	const config = new DocumentBuilder()
 		.setTitle('JOURNEYS API')
