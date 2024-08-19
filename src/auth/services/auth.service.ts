@@ -1,53 +1,92 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
-import { plainToClass } from 'class-transformer'
-import { CreateUserDto } from '../dto/create-user.dto'
-import { LoginResponseDto } from '../dto/login-response.dto'
-import { UserResponseDto } from '../dto/user-response.dto'
-import { TokenPayload } from '../models/token-payload.model'
+import { MailsService } from 'src/common/modules/mails/mails.service'
+import { ForgotPasswordDto, ResetPasswordDto, ValidateTokenDto } from '../dto'
+import { AuthEntity, SmtpEntity, UserEntity } from '../entities'
+import { TokensService } from './tokens.service'
 import { UsersService } from './users.service'
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private jwtService: JwtService,
-		private usersService: UsersService
+		private usersService: UsersService,
+		private tokens: TokensService,
+		private mailsService: MailsService
 	) {}
 
-	async validateUser(
-		email: string,
-		password: string
-	): Promise<UserResponseDto> {
+	async validateUser(email: string, password: string): Promise<UserEntity> {
 		const user = await this.usersService.findByEmail(email)
 		const match = bcrypt.compareSync(password, user.password)
 
 		if (user && match) {
-			delete user.password
-			return plainToClass(UserResponseDto, user)
+			return new UserEntity(user)
 		}
 		return null
 	}
 
-	async login(
-		user: UserResponseDto,
-		rememberMe: boolean
-	): Promise<LoginResponseDto> {
-		const payload: TokenPayload = { email: user.email, sub: user.id }
+	async login(user: UserEntity, rememberMe: boolean): Promise<AuthEntity> {
+		const accessToken = await this.tokens.create(
+			user,
+			rememberMe ? '30d' : '1d'
+		)
 
-		const accessToken = this.jwtService.sign(payload, {
-			expiresIn: rememberMe ? '30d' : '1d',
-		})
+		const expires = this.jwtService.decode(accessToken).exp
 
-		const exp = this.jwtService.decode(accessToken).exp
-
-		const response = plainToClass(LoginResponseDto, {
+		return new AuthEntity({
 			accessToken,
-			exp,
+			expires,
 			user,
 		})
+	}
 
-		return response
+	async forgotPassword(
+		forgotPasswordDto: ForgotPasswordDto
+	): Promise<SmtpEntity> {
+		const { email } = forgotPasswordDto
+
+		const user = await this.usersService.findByEmail(email)
+
+		const token = await this.tokens.create(user, '1h')
+
+		const smtp = await this.mailsService.sendPasswordResetEmail(user, token)
+
+		return smtp
+	}
+
+	async resetPassword(resetPassword: ResetPasswordDto): Promise<UserEntity> {
+		const { password, token } = resetPassword
+
+		const payload = await this.tokens.validate(token)
+
+		const userId = payload.sub
+
+		const user = await this.usersService.update(userId, {
+			password: bcrypt.hashSync(password, 10),
+		})
+
+		return new UserEntity(user)
+	}
+
+	async validateToken(validateTokenDto: ValidateTokenDto): Promise<void> {
+		const payload = await this.tokens.validate(validateTokenDto.token)
+	}
+
+	async userSignUp(newUser: CreateUserDto) {
+		newUser.password = await this.hashPassword(newUser.password)
+		const user = await this.usersService.createUser(newUser)
+
+		return {
+			message: 'email was send it',
+			user: user,
+		}
+		// throw new Error('Method not implemented.')
+	}
+
+	async hashPassword(password: string) {
+		const salt = await bcrypt.genSalt(10)
+		return await bcrypt.hash(password, salt)
 	}
 
 	async userSignUp(newUser: CreateUserDto) {

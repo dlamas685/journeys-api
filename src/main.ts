@@ -1,6 +1,10 @@
-import { Logger, ValidationPipe } from '@nestjs/common'
+import {
+	ClassSerializerInterceptor,
+	Logger,
+	ValidationPipe,
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { NestFactory } from '@nestjs/core'
+import { NestFactory, Reflector } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
 import { corsConfig } from './config'
@@ -21,6 +25,8 @@ async function bootstrap() {
 			transform: true,
 		})
 	)
+
+	app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
 
 	const config = new DocumentBuilder()
 		.setTitle('JOURNEYS API')

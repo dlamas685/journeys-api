@@ -1,40 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Transform } from 'class-transformer'
 import {
 	IsBoolean,
 	IsEmail,
 	IsNotEmpty,
 	IsOptional,
 	IsString,
+	Matches,
 } from 'class-validator'
+import { PASSWORD_PATTERN } from 'src/common/constants'
 
 export class LoginDto {
-	@ApiProperty({
-		description: 'Correo electrónico del usuario',
-		example: 'example@example.com',
-		format: 'email',
-		nullable: false,
-	})
 	@IsString()
 	@IsEmail()
 	@IsNotEmpty()
+	@Transform(({ value }) => value.trim().toLowerCase())
+	@ApiProperty()
 	email: string
 
-	@ApiProperty({
-		description: 'Contraseña del usuario',
-		example: 'Hola1234?',
-		nullable: false,
-		pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})',
-	})
 	@IsString()
+	@Matches(PASSWORD_PATTERN)
 	@IsNotEmpty()
+	@ApiProperty()
 	password: string
 
-	@ApiProperty({
-		description: 'Recordar sesión del usuario',
-		example: false,
-		default: false,
-	})
 	@IsBoolean()
 	@IsOptional()
+	@ApiProperty({ required: false, default: false })
 	rememberMe?: boolean = false
 }

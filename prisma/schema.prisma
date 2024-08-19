@@ -75,12 +75,3 @@ model CompanyProfile {
 
   @@map("company_profiles")
 }
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime @db.Timestamptz(6)
-
-  @@unique([identifier, token])
-  @@map("verification_tokens")
-}

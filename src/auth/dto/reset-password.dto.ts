@@ -1,10 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString, Matches } from 'class-validator'
+import { IsNotEmpty, IsString, Matches } from 'class-validator'
 import { PASSWORD_PATTERN } from 'src/common/constants'
 
-export class CreateUserDto {
+export class ResetPasswordDto {
 	@IsString()
+	@IsNotEmpty()
+	token: string
+
 	@Matches(PASSWORD_PATTERN)
+	@IsString()
+	@IsNotEmpty()
 	@ApiProperty()
 	password: string
 }
