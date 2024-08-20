@@ -1,5 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { Prisma } from '@prisma/client'
+import { Injectable } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from 'src/common/services/prisma.service'
 import { CreateAccountDto, CreateUserDto, UpdateUserDto } from '../dto'
@@ -14,14 +13,12 @@ export class UsersService {
 	async create(createUserDto: CreateUserDto): Promise<UserEntity> {
 		const { password, ...restDto } = createUserDto
 
-		const newPassword = password
-			? await bcrypt.hash(password, this.salt)
-			: undefined
+		const hashedPassword = password && (await bcrypt.hash(password, this.salt))
 
 		const newUser = await this.prismaService.user.create({
 			data: {
 				...restDto,
-				password: newPassword,
+				password: hashedPassword,
 			},
 			include: {
 				companyProfile: true,
@@ -104,29 +101,5 @@ export class UsersService {
 		})
 
 		return user
-	}
-
-	async createUser(input: CreateUserDto) {
-		try {
-			const user: Prisma.UserCreateInput = {
-				email: input.email,
-				password: input.password,
-				userType: input.userType,
-			}
-
-			const createUser = await this.prismaService.user.create({
-				data: user,
-			})
-			return createUser
-		} catch (error) {
-			if (error instanceof Prisma.PrismaClientKnownRequestError) {
-				if (error.code === 'P2002') {
-					throw new BadRequestException(
-						'There is a unique constraint violation, a new user cannot be created with this email'
-					)
-				}
-			}
-			throw error
-		}
 	}
 }

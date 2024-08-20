@@ -145,35 +145,29 @@ export class AuthService {
 		const payload = await this.tokens.validate(validateTokenDto.token)
 	}
 
-	async userSignUp(newUser: CreateUserDto) {
-		newUser.password = await this.hashPassword(newUser.password)
-		const user = await this.usersService.createUser(newUser)
-
-		return {
-			message: 'email was send it',
-			user: user,
-		}
-		// throw new Error('Method not implemented.')
-	}
-
 	async hashPassword(password: string) {
 		const salt = await bcrypt.genSalt(10)
 		return await bcrypt.hash(password, salt)
 	}
 
-	async userSignUp(newUser: CreateUserDto) {
-		newUser.password = await this.hashPassword(newUser.password)
-		const user = await this.usersService.createUser(newUser)
+	async signUpUser(createUserDto: CreateUserDto) {
+		const user = await this.usersService.create(createUserDto)
+		const token = await this.tokens.create(user, '1h')
 
+		const smtpMessage = await this.mailsService.sendVerifyEmail(user, token)
 		return {
-			message: 'email was send it',
-			user: user,
+			message: smtpMessage,
 		}
-		// throw new Error('Method not implemented.')
 	}
 
-	async hashPassword(password: string) {
-		const salt = await bcrypt.genSalt(10)
-		return await bcrypt.hash(password, salt)
+	async verifyEmail(validateTokenDto: ValidateTokenDto): Promise<AuthEntity> {
+		const payload = await this.tokens.validate(validateTokenDto.token)
+		const userId = payload.sub
+
+		const user = await this.usersService.update(userId, {
+			emailVerified: new Date(),
+		})
+
+		return await this.login(user, false)
 	}
 }

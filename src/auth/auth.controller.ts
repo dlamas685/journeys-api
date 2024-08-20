@@ -6,9 +6,12 @@ import {
 	GoogleRedirect,
 	Login,
 	ResetPassword,
+	SignUp,
 	ValidateToken,
+	VerifyEmail,
 } from './decorators'
 import {
+	CreateUserDto,
 	ForgotPasswordDto,
 	LoginDto,
 	ResetPasswordDto,
@@ -59,9 +62,14 @@ export class AuthController {
 		return this.authService.login(req.user)
 	}
 
-	@Post('sign-up')
-	async signUp(@Body() newUser: CreateUserDto) {
-		return this.authService.userSignUp(newUser)
+	@SignUp()
+	async signUp(@Body() createUserDto: CreateUserDto) {
+		return this.authService.signUpUser(createUserDto)
+	}
+
+	@VerifyEmail()
+	async verifyEmail(@Body() validateTokenDto: ValidateTokenDto) {
+		return this.authService.verifyEmail(validateTokenDto)
 	}
 
 	/*
