@@ -11,6 +11,7 @@ import { AuthService } from './services/auth.service'
 import { CleanupService } from './services/cleanup.service'
 import { TokensService } from './services/tokens.service'
 import { UsersService } from './services/users.service'
+import { GoogleStrategy } from './strategies/google.strategy'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { LocalStrategy } from './strategies/local.strategy'
 
@@ -30,6 +31,7 @@ import { LocalStrategy } from './strategies/local.strategy'
 		AuthService,
 		LocalStrategy,
 		JwtStrategy,
+		GoogleStrategy,
 		PrismaService,
 		CleanupService,
 		UsersService,
