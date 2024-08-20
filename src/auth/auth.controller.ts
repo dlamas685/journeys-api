@@ -2,6 +2,8 @@ import { Body, Controller, Request } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import {
 	ForgotPassword,
+	GoogleLogin,
+	GoogleRedirect,
 	Login,
 	ResetPassword,
 	ValidateToken,
@@ -24,6 +26,7 @@ export class AuthController {
 	async login(@Request() req, @Body() authDto: LoginDto): Promise<AuthEntity> {
 		const user = req.user
 		const rememberMe = authDto.rememberMe
+
 		return this.authService.login(user, rememberMe)
 	}
 
@@ -48,6 +51,14 @@ export class AuthController {
 		return this.authService.validateToken(validateTokenDto)
 	}
 
+	@GoogleLogin()
+	async googleLogin() {}
+
+	@GoogleRedirect()
+	async googleRedirect(@Request() req) {
+		return this.authService.login(req.user)
+	}
+
 	@Post('sign-up')
 	async signUp(@Body() newUser: CreateUserDto) {
 		return this.authService.userSignUp(newUser)
@@ -55,7 +66,7 @@ export class AuthController {
 
 	/*
 	  ? api/auth/login (*)
-	  ? api/auth/google 
+	  ? api/auth/google (*)
 	  ? api/auth/signup
 	  ? api/auth/forgot-password (*)
 	  ? api/auth/reset-password (*)
