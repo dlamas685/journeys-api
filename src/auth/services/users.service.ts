@@ -13,14 +13,12 @@ export class UsersService {
 	async create(createUserDto: CreateUserDto): Promise<UserEntity> {
 		const { password, ...restDto } = createUserDto
 
-		const newPassword = password
-			? await bcrypt.hash(password, this.salt)
-			: undefined
+		const hashedPassword = password && (await bcrypt.hash(password, this.salt))
 
 		const newUser = await this.prismaService.user.create({
 			data: {
 				...restDto,
-				password: newPassword,
+				password: hashedPassword,
 			},
 			include: {
 				companyProfile: true,

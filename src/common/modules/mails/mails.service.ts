@@ -11,10 +11,18 @@ import { SmtpEntity, UserEntity } from 'src/auth/entities'
 
 @Injectable()
 export class MailsService {
+	app: string
+	year: number
+	frontend_url: string
+
 	constructor(
-		private mailerService: MailerService,
+		private readonly mailerService: MailerService,
 		private configService: ConfigService
-	) {}
+	) {
+		this.app = 'Journeys'
+		this.year = new Date().getFullYear()
+		this.frontend_url = this.configService.get<string>('FRONTEND_URL')
+	}
 
 	async sendPasswordResetEmail(
 		user: UserEntity,
@@ -51,6 +59,35 @@ export class MailsService {
 			})
 
 			return plainToClass(SmtpEntity, smtpResponse)
+		} catch (error) {
+			if (error instanceof BadRequestException) {
+				throw error
+			}
+			throw new InternalServerErrorException('Error al enviar el correo')
+		}
+	}
+
+	async sendVerificationEmail(
+		user: UserEntity,
+		token: string
+	): Promise<string> {
+		try {
+			const type = capitalCase(user.userType)
+			const url = `${this.frontend_url}/verify-email?token=${token}`
+
+			await this.mailerService.sendMail({
+				to: user.email,
+				subject: 'Valida Tu Correo',
+				template: 'verification-email',
+				context: {
+					url,
+					type,
+					app: this.app,
+					year: this.year,
+				},
+			})
+
+			return 'Correo enviado! Verfique su casilla'
 		} catch (error) {
 			if (error instanceof BadRequestException) {
 				throw error

@@ -1,14 +1,17 @@
 import { Body, Controller, Request } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import {
+	EmailVerification,
 	ForgotPassword,
 	GoogleLogin,
 	GoogleRedirect,
 	Login,
 	ResetPassword,
+	SignUp,
 	ValidateToken,
 } from './decorators'
 import {
+	CreateUserDto,
 	ForgotPasswordDto,
 	LoginDto,
 	ResetPasswordDto,
@@ -57,6 +60,16 @@ export class AuthController {
 	@GoogleRedirect()
 	async googleRedirect(@Request() req) {
 		return this.authService.login(req.user)
+	}
+
+	@SignUp()
+	async signUp(@Body() createUserDto: CreateUserDto) {
+		return this.authService.signUpUser(createUserDto)
+	}
+
+	@EmailVerification()
+	async emailVerification(@Body() validateTokenDto: ValidateTokenDto) {
+		return this.authService.emailVerification(validateTokenDto)
 	}
 
 	/*

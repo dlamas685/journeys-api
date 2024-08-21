@@ -144,4 +144,35 @@ export class AuthService {
 	async validateToken(validateTokenDto: ValidateTokenDto): Promise<void> {
 		const payload = await this.tokens.validate(validateTokenDto.token)
 	}
+
+	async hashPassword(password: string) {
+		const salt = await bcrypt.genSalt(10)
+		return await bcrypt.hash(password, salt)
+	}
+
+	async signUpUser(createUserDto: CreateUserDto) {
+		const user = await this.usersService.create(createUserDto)
+		const token = await this.tokens.create(user, '1h')
+
+		const smtpMessage = await this.mailsService.sendVerificationEmail(
+			user,
+			token
+		)
+		return {
+			message: smtpMessage,
+		}
+	}
+
+	async emailVerification(
+		validateTokenDto: ValidateTokenDto
+	): Promise<UserEntity> {
+		const payload = await this.tokens.validate(validateTokenDto.token)
+		const userId = payload.sub
+
+		const user = await this.usersService.update(userId, {
+			emailVerified: new Date(),
+		})
+
+		return user
+	}
 }

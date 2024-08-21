@@ -56,3 +56,16 @@ The app has a swagger documentation. To access the documentation, go to the foll
 
 > [!NOTE]
 > The port can be different. Check the **.env** file.
+
+## Prisma CLI
+
+After setup `.env` with database conections 
+
+* For update the types and reflect the schema changes
+  ```
+    npx prisma generate
+  ```
+* For sync all migrations run
+  ```
+    npx prisma migrate deploy
+  ```
