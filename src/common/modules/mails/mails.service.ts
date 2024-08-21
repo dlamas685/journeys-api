@@ -67,7 +67,10 @@ export class MailsService {
 		}
 	}
 
-	async sendVerifyEmail(user: UserEntity, token: string): Promise<string> {
+	async sendVerificationEmail(
+		user: UserEntity,
+		token: string
+	): Promise<string> {
 		try {
 			const type = capitalCase(user.userType)
 			const url = `${this.frontend_url}/verify-email?token=${token}`
@@ -75,7 +78,7 @@ export class MailsService {
 			await this.mailerService.sendMail({
 				to: user.email,
 				subject: 'Valida Tu Correo',
-				template: 'verify-email',
+				template: 'verification-email',
 				context: {
 					url,
 					type,

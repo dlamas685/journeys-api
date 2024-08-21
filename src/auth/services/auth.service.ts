@@ -154,13 +154,18 @@ export class AuthService {
 		const user = await this.usersService.create(createUserDto)
 		const token = await this.tokens.create(user, '1h')
 
-		const smtpMessage = await this.mailsService.sendVerifyEmail(user, token)
+		const smtpMessage = await this.mailsService.sendVerificationEmail(
+			user,
+			token
+		)
 		return {
 			message: smtpMessage,
 		}
 	}
 
-	async verifyEmail(validateTokenDto: ValidateTokenDto): Promise<AuthEntity> {
+	async emailVerification(
+		validateTokenDto: ValidateTokenDto
+	): Promise<UserEntity> {
 		const payload = await this.tokens.validate(validateTokenDto.token)
 		const userId = payload.sub
 
@@ -168,6 +173,6 @@ export class AuthService {
 			emailVerified: new Date(),
 		})
 
-		return await this.login(user, false)
+		return user
 	}
 }

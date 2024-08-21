@@ -6,12 +6,12 @@ import {
 	UseGuards,
 } from '@nestjs/common'
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger'
-import { AuthEntity } from '../entities'
+import { UserEntity } from '../entities'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
 
-export const VerifyEmail = () =>
+export const EmailVerification = () =>
 	applyDecorators(
-		Post('verify-email'),
+		Post('email-verification'),
 		HttpCode(HttpStatus.OK),
 		UseGuards(LocalAuthGuard),
 		ApiOperation({
@@ -19,5 +19,5 @@ export const VerifyEmail = () =>
 			description:
 				'Permite verificar el correo de un usuario. Una vez verificado retorna el jwt para loguearse',
 		}),
-		ApiOkResponse({ type: AuthEntity })
+		ApiOkResponse({ type: UserEntity })
 	)
