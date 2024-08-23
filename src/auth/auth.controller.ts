@@ -1,23 +1,24 @@
-import { Body, Controller, Request } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
 import {
-	EmailVerification,
-	ForgotPassword,
-	GoogleLogin,
-	GoogleRedirect,
-	Login,
-	ResetPassword,
-	SignUp,
-	ValidateToken,
-} from './decorators'
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Post,
+	Request,
+	UseGuards,
+} from '@nestjs/common'
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import {
 	CreateUserDto,
-	ForgotPasswordDto,
 	LoginDto,
+	RequestPasswordResetDto,
 	ResetPasswordDto,
 	ValidateTokenDto,
 } from './dto'
 import { AuthEntity, SmtpEntity, UserEntity } from './entities'
+import { GoogleAuthGuard } from './guards/google-auth.guard'
+import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './services/auth.service'
 
 @ApiTags('Auth')
@@ -25,49 +26,97 @@ import { AuthService } from './services/auth.service'
 export class AuthController {
 	constructor(private authService: AuthService) {}
 
-	@Login()
+	@Post('login')
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(LocalAuthGuard)
+	@ApiOperation({
+		summary: 'Iniciar sesión',
+		description: 'Permite al usuario ingresar a la aplicaión con credenciales',
+	})
+	@ApiOkResponse({ type: AuthEntity })
 	async login(@Request() req, @Body() authDto: LoginDto): Promise<AuthEntity> {
-		const user = req.user
-		const rememberMe = authDto.rememberMe
-
+		const { user } = req
+		const { rememberMe } = authDto
 		return this.authService.login(user, rememberMe)
 	}
 
-	@ForgotPassword()
-	async forgotPassword(
-		@Body() forgotPasswordDto: ForgotPasswordDto
+	@Post('password-reset-request')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Solicitud de cambio de contraseña',
+		description: 'Envia un correo electrónico para restablecer la contraseña',
+	})
+	@ApiOkResponse({ type: SmtpEntity })
+	async requestPasswordReset(
+		@Body() requestPasswordResetDto: RequestPasswordResetDto
 	): Promise<SmtpEntity> {
-		return this.authService.forgotPassword(forgotPasswordDto)
+		return this.authService.requestPasswordReset(requestPasswordResetDto)
 	}
 
-	@ResetPassword()
+	@Post('password-resets')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Restablecimiento de contraseña',
+		description: 'Permite el cambio de la contraseña del usuario',
+	})
+	@ApiOkResponse({ type: UserEntity })
 	async resetPassword(
 		@Body() resetPasswordDto: ResetPasswordDto
 	): Promise<UserEntity> {
 		return this.authService.resetPassword(resetPasswordDto)
 	}
 
-	@ValidateToken()
+	@Post('token-validation')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Validación de token',
+		description: 'Permite validar un token (mail, password, etc)',
+	})
+	@ApiOkResponse({ type: null })
 	async validateToken(
 		@Body() validateTokenDto: ValidateTokenDto
 	): Promise<void> {
 		return this.authService.validateToken(validateTokenDto)
 	}
 
-	@GoogleLogin()
+	@Get('google/login')
+	@UseGuards(GoogleAuthGuard)
+	@ApiOperation({
+		summary: 'Iniciar sesión con Google',
+		description: 'Mostrar la página de inicio de sesión de Google',
+	})
 	async googleLogin() {}
 
-	@GoogleRedirect()
+	@Get('google/redirect')
+	@UseGuards(GoogleAuthGuard)
+	@ApiOperation({
+		summary: 'Redirección de Google',
+		description: 'Permite ingresar a la aplicaión con Google',
+	})
+	@ApiOkResponse({ type: AuthEntity })
 	async googleRedirect(@Request() req) {
 		return this.authService.login(req.user)
 	}
 
-	@SignUp()
+	@Post('sign-up')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Registro de un nuevo usuario',
+		description: 'Permite registrar un nuevo usuario',
+	})
+	@ApiOkResponse({ type: SmtpEntity })
 	async signUp(@Body() createUserDto: CreateUserDto) {
-		return this.authService.signUpUser(createUserDto)
+		return this.authService.signUp(createUserDto)
 	}
 
-	@EmailVerification()
+	@Post('email-verification')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Verificación de correo electrónico',
+		description:
+			'Permite verificar el correo de un usuario. Una vez verificado retorna el jwt para loguearse',
+	})
+	@ApiOkResponse({ type: UserEntity })
 	async emailVerification(@Body() validateTokenDto: ValidateTokenDto) {
 		return this.authService.emailVerification(validateTokenDto)
 	}
