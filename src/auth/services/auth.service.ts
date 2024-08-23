@@ -7,7 +7,7 @@ import { PrismaService } from 'src/common/services/prisma.service'
 import {
 	CreateAccountDto,
 	CreateUserDto,
-	ForgotPasswordDto,
+	RequestPasswordResetDto,
 	ResetPasswordDto,
 	ValidateTokenDto,
 } from '../dto'
@@ -66,6 +66,7 @@ export class AuthService {
 		})
 
 		if (user) {
+			//TODO: Fixear esto
 			await this.prismaService.$transaction(async () => {
 				await this.accountsService.create({
 					...createAccountDto,
@@ -113,10 +114,10 @@ export class AuthService {
 		})
 	}
 
-	async forgotPassword(
-		forgotPasswordDto: ForgotPasswordDto
+	async requestPasswordReset(
+		requestPasswordResetDto: RequestPasswordResetDto
 	): Promise<SmtpEntity> {
-		const { email } = forgotPasswordDto
+		const { email } = requestPasswordResetDto
 
 		const user = await this.usersService.findByEmail(email)
 
@@ -142,7 +143,7 @@ export class AuthService {
 	}
 
 	async validateToken(validateTokenDto: ValidateTokenDto): Promise<void> {
-		const payload = await this.tokens.validate(validateTokenDto.token)
+		await this.tokens.validate(validateTokenDto.token)
 	}
 
 	async hashPassword(password: string) {
@@ -150,17 +151,14 @@ export class AuthService {
 		return await bcrypt.hash(password, salt)
 	}
 
-	async signUpUser(createUserDto: CreateUserDto) {
+	async signUp(createUserDto: CreateUserDto): Promise<SmtpEntity> {
 		const user = await this.usersService.create(createUserDto)
+
 		const token = await this.tokens.create(user, '1h')
 
-		const smtpMessage = await this.mailsService.sendVerificationEmail(
-			user,
-			token
-		)
-		return {
-			message: smtpMessage,
-		}
+		const smtp = await this.mailsService.sendVerificationEmail(user, token)
+
+		return smtp
 	}
 
 	async emailVerification(

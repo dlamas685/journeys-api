@@ -70,12 +70,12 @@ export class MailsService {
 	async sendVerificationEmail(
 		user: UserEntity,
 		token: string
-	): Promise<string> {
+	): Promise<SmtpEntity> {
 		try {
 			const type = capitalCase(user.userType)
 			const url = `${this.frontend_url}/verify-email?token=${token}`
 
-			await this.mailerService.sendMail({
+			const smtpResponse = await this.mailerService.sendMail({
 				to: user.email,
 				subject: 'Valida Tu Correo',
 				template: 'verification-email',
@@ -87,7 +87,7 @@ export class MailsService {
 				},
 			})
 
-			return 'Correo enviado! Verfique su casilla'
+			return plainToClass(SmtpEntity, smtpResponse)
 		} catch (error) {
 			if (error instanceof BadRequestException) {
 				throw error
