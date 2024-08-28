@@ -29,11 +29,13 @@ export class AuthService {
 
 	async validateUser(email: string, password: string): Promise<UserEntity> {
 		const user = await this.usersService.findByEmail(email)
-		const match = bcrypt.compareSync(password, user.password)
 
-		if (user && match) {
-			return new UserEntity(user)
+		if (user) {
+			const match = bcrypt.compareSync(password, user.password)
+
+			if (match) return new UserEntity(user)
 		}
+
 		return null
 	}
 
@@ -66,20 +68,31 @@ export class AuthService {
 		})
 
 		if (user) {
-			//TODO: Fixear esto
-			await this.prismaService.$transaction(async () => {
-				await this.accountsService.create({
-					...createAccountDto,
-					userId: user.id,
+			const udatedUser = await this.prismaService.$transaction(async prisma => {
+				prisma.account.create({
+					data: {
+						...createAccountDto,
+						userId: user.id,
+					},
 				})
 
-				await this.usersService.update(user.id, {
-					imageUrl: user.imageUrl ?? imageUrl,
-					emailVerified: new Date(),
+				return prisma.user.update({
+					where: {
+						id: user.id,
+					},
+					data: {
+						imageUrl: user.imageUrl ?? imageUrl,
+						emailVerified: new Date(),
+					},
+					include: {
+						companyProfile: true,
+						personalProfile: true,
+						accounts: true,
+					},
 				})
 			})
 
-			return new UserEntity(user)
+			return new UserEntity(udatedUser)
 		}
 
 		const createUserDto = plainToClass(CreateUserDto, {
@@ -142,8 +155,16 @@ export class AuthService {
 		return new UserEntity(user)
 	}
 
-	async validateToken(validateTokenDto: ValidateTokenDto): Promise<void> {
-		await this.tokens.validate(validateTokenDto.token)
+	async validateToken(validateTokenDto: ValidateTokenDto): Promise<AuthEntity> {
+		const payload = await this.tokens.validate(validateTokenDto.token)
+
+		const user = await this.usersService.findOne(payload.sub)
+
+		return new AuthEntity({
+			accessToken: validateTokenDto.token,
+			expires: payload.exp,
+			user,
+		})
 	}
 
 	async hashPassword(password: string) {
@@ -161,9 +182,7 @@ export class AuthService {
 		return smtp
 	}
 
-	async emailVerification(
-		validateTokenDto: ValidateTokenDto
-	): Promise<UserEntity> {
+	async verifyEmail(validateTokenDto: ValidateTokenDto): Promise<UserEntity> {
 		const payload = await this.tokens.validate(validateTokenDto.token)
 		const userId = payload.sub
 

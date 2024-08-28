@@ -5,10 +5,13 @@ import {
 	HttpCode,
 	HttpStatus,
 	Post,
-	Request,
+	Req,
+	Res,
 	UseGuards,
 } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Response } from 'express'
 import {
 	CreateUserDto,
 	LoginDto,
@@ -24,7 +27,10 @@ import { AuthService } from './services/auth.service'
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-	constructor(private authService: AuthService) {}
+	constructor(
+		private authService: AuthService,
+		private configService: ConfigService
+	) {}
 
 	@Post('login')
 	@HttpCode(HttpStatus.OK)
@@ -34,10 +40,11 @@ export class AuthController {
 		description: 'Permite al usuario ingresar a la aplicaión con credenciales',
 	})
 	@ApiOkResponse({ type: AuthEntity })
-	async login(@Request() req, @Body() authDto: LoginDto): Promise<AuthEntity> {
+	async login(@Req() req, @Body() authDto: LoginDto): Promise<AuthEntity> {
 		const { user } = req
 		const { rememberMe } = authDto
-		return this.authService.login(user, rememberMe)
+		const auth = await this.authService.login(user, rememberMe)
+		return auth
 	}
 
 	@Post('password-reset-request')
@@ -72,10 +79,10 @@ export class AuthController {
 		summary: 'Validación de token',
 		description: 'Permite validar un token (mail, password, etc)',
 	})
-	@ApiOkResponse({ type: null })
+	@ApiOkResponse({ type: AuthEntity })
 	async validateToken(
 		@Body() validateTokenDto: ValidateTokenDto
-	): Promise<void> {
+	): Promise<AuthEntity> {
 		return this.authService.validateToken(validateTokenDto)
 	}
 
@@ -94,8 +101,31 @@ export class AuthController {
 		description: 'Permite ingresar a la aplicaión con Google',
 	})
 	@ApiOkResponse({ type: AuthEntity })
-	async googleRedirect(@Request() req) {
-		return this.authService.login(req.user)
+	async googleRedirect(@Req() req, @Res({ passthrough: true }) res: Response) {
+		const error = req.query.error
+
+		if (error) {
+			return res.redirect(
+				`${this.configService.get('FRONTEND_URL')}/login?error=${error}`
+			)
+		}
+
+		const auth = await this.authService.login(req.user)
+
+		// const options: CookieOptions = {
+		// 	httpOnly: true,
+		// 	secure: process.env.NODE_ENV === 'production',
+		// 	sameSite: 'lax',
+		// 	expires: new Date(auth.expires * 1000),
+		// }
+
+		// res.cookie('session.user', JSON.stringify(auth.user), options)
+
+		// res.cookie('session.token', auth.accessToken, options)
+
+		return res.redirect(
+			`${this.configService.get('FRONTEND_URL')}/providers?token=${auth.accessToken}`
+		)
 	}
 
 	@Post('sign-up')
@@ -117,8 +147,8 @@ export class AuthController {
 			'Permite verificar el correo de un usuario. Una vez verificado retorna el jwt para loguearse',
 	})
 	@ApiOkResponse({ type: UserEntity })
-	async emailVerification(@Body() validateTokenDto: ValidateTokenDto) {
-		return this.authService.emailVerification(validateTokenDto)
+	async verifyEmail(@Body() validateTokenDto: ValidateTokenDto) {
+		return this.authService.verifyEmail(validateTokenDto)
 	}
 
 	/*

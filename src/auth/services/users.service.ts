@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from 'src/common/services/prisma.service'
 import { CreateAccountDto, CreateUserDto, UpdateUserDto } from '../dto'
@@ -64,6 +64,10 @@ export class UsersService {
 				personalProfile: true,
 			},
 		})
+
+		if (!user) {
+			throw new NotFoundException('Usuario no encontrado')
+		}
 
 		return new UserEntity(user)
 	}

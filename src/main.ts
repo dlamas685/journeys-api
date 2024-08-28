@@ -6,6 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import * as cookieParser from 'cookie-parser'
 import { AppModule } from './app.module'
 import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter'
 import { corsConfig } from './config'
@@ -14,6 +15,8 @@ async function bootstrap() {
 	const logger = new Logger('Bootstrap')
 
 	const app = await NestFactory.create(AppModule)
+
+	app.use(cookieParser())
 
 	app.setGlobalPrefix('api')
 

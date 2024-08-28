@@ -11,6 +11,9 @@ const validationSchema = Joi.object({
 	MAIL_USER: Joi.string().required(),
 	MAIL_PASSWORD: Joi.string().required(),
 	MAIL_FROM: Joi.string().required(),
+	GOOGLE_CLIENT_ID: Joi.string().required(),
+	GOOGLE_CLIENT_SECRET: Joi.string().required(),
+	GOOGLE_CALLBACK_URL: Joi.string().required(),
 })
 
 export const envConfig: ConfigModuleOptions = {
