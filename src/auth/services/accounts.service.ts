@@ -4,17 +4,17 @@ import { CreateAccountDto } from '../dto/create-account.dto'
 
 @Injectable()
 export class AccountsService {
-	constructor(private prismaService: PrismaService) {}
+	constructor(private prisma: PrismaService) {}
 
 	async create(createAccountDto: CreateAccountDto) {
-		const account = this.prismaService.account.create({
+		const account = this.prisma.account.create({
 			data: createAccountDto,
 		})
 		return account
 	}
 
 	async findOne(providerAccountId: string, provider: string) {
-		const account = this.prismaService.account.findFirst({
+		const account = this.prisma.account.findFirst({
 			where: {
 				provider,
 				providerAccountId,

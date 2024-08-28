@@ -8,14 +8,14 @@ import { UserEntity } from '../entities'
 export class UsersService {
 	private readonly salt: number = 10
 
-	constructor(private prismaService: PrismaService) {}
+	constructor(private prisma: PrismaService) {}
 
 	async create(createUserDto: CreateUserDto): Promise<UserEntity> {
 		const { password, ...restDto } = createUserDto
 
 		const hashedPassword = password && (await bcrypt.hash(password, this.salt))
 
-		const newUser = await this.prismaService.user.create({
+		const newUser = await this.prisma.user.create({
 			data: {
 				...restDto,
 				password: hashedPassword,
@@ -37,7 +37,7 @@ export class UsersService {
 			? await bcrypt.hash(password, this.salt)
 			: undefined
 
-		const user = await this.prismaService.user.update({
+		const user = await this.prisma.user.update({
 			where: {
 				id,
 			},
@@ -55,7 +55,7 @@ export class UsersService {
 	}
 
 	async findOne(id: string): Promise<UserEntity> {
-		const user = await this.prismaService.user.findUnique({
+		const user = await this.prisma.user.findUnique({
 			where: {
 				id,
 			},
@@ -73,7 +73,7 @@ export class UsersService {
 	}
 
 	async findByEmail(email: string): Promise<UserEntity> {
-		const user = await this.prismaService.user.findUnique({
+		const user = await this.prisma.user.findUnique({
 			where: {
 				email,
 			},
@@ -90,7 +90,7 @@ export class UsersService {
 		createUserDto: CreateUserDto,
 		account: CreateAccountDto
 	): Promise<UserEntity> {
-		const user = await this.prismaService.user.create({
+		const user = await this.prisma.user.create({
 			data: {
 				...createUserDto,
 				accounts: {

@@ -18,18 +18,18 @@ import {
 	RequestPasswordResetDto,
 	ResetPasswordDto,
 	ValidateTokenDto,
-} from './dto'
-import { AuthEntity, SmtpEntity, UserEntity } from './entities'
-import { GoogleAuthGuard } from './guards/google-auth.guard'
-import { LocalAuthGuard } from './guards/local-auth.guard'
-import { AuthService } from './services/auth.service'
+} from '../dto'
+import { AuthEntity, SmtpEntity, UserEntity } from '../entities'
+import { GoogleAuthGuard } from '../guards/google-auth.guard'
+import { LocalAuthGuard } from '../guards/local-auth.guard'
+import { AuthService } from '../services/auth.service'
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
 	constructor(
-		private authService: AuthService,
-		private configService: ConfigService
+		private auth: AuthService,
+		private config: ConfigService
 	) {}
 
 	@Post('login')
@@ -43,7 +43,7 @@ export class AuthController {
 	async login(@Req() req, @Body() authDto: LoginDto): Promise<AuthEntity> {
 		const { user } = req
 		const { rememberMe } = authDto
-		const auth = await this.authService.login(user, rememberMe)
+		const auth = await this.auth.login(user, rememberMe)
 		return auth
 	}
 
@@ -57,7 +57,7 @@ export class AuthController {
 	async requestPasswordReset(
 		@Body() requestPasswordResetDto: RequestPasswordResetDto
 	): Promise<SmtpEntity> {
-		return this.authService.requestPasswordReset(requestPasswordResetDto)
+		return this.auth.requestPasswordReset(requestPasswordResetDto)
 	}
 
 	@Post('password-resets')
@@ -70,7 +70,7 @@ export class AuthController {
 	async resetPassword(
 		@Body() resetPasswordDto: ResetPasswordDto
 	): Promise<UserEntity> {
-		return this.authService.resetPassword(resetPasswordDto)
+		return this.auth.resetPassword(resetPasswordDto)
 	}
 
 	@Post('token-validation')
@@ -83,7 +83,7 @@ export class AuthController {
 	async validateToken(
 		@Body() validateTokenDto: ValidateTokenDto
 	): Promise<AuthEntity> {
-		return this.authService.validateToken(validateTokenDto)
+		return this.auth.validateToken(validateTokenDto)
 	}
 
 	@Get('google/login')
@@ -106,25 +106,14 @@ export class AuthController {
 
 		if (error) {
 			return res.redirect(
-				`${this.configService.get('FRONTEND_URL')}/login?error=${error}`
+				`${this.config.get('FRONTEND_URL')}/login?error=${error}`
 			)
 		}
 
-		const auth = await this.authService.login(req.user)
-
-		// const options: CookieOptions = {
-		// 	httpOnly: true,
-		// 	secure: process.env.NODE_ENV === 'production',
-		// 	sameSite: 'lax',
-		// 	expires: new Date(auth.expires * 1000),
-		// }
-
-		// res.cookie('session.user', JSON.stringify(auth.user), options)
-
-		// res.cookie('session.token', auth.accessToken, options)
+		const auth = await this.auth.login(req.user)
 
 		return res.redirect(
-			`${this.configService.get('FRONTEND_URL')}/providers?token=${auth.accessToken}`
+			`${this.config.get('FRONTEND_URL')}/providers?token=${auth.accessToken}`
 		)
 	}
 
@@ -136,7 +125,7 @@ export class AuthController {
 	})
 	@ApiOkResponse({ type: SmtpEntity })
 	async signUp(@Body() createUserDto: CreateUserDto) {
-		return this.authService.signUp(createUserDto)
+		return this.auth.signUp(createUserDto)
 	}
 
 	@Post('email-verification')
@@ -148,7 +137,7 @@ export class AuthController {
 	})
 	@ApiOkResponse({ type: UserEntity })
 	async verifyEmail(@Body() validateTokenDto: ValidateTokenDto) {
-		return this.authService.verifyEmail(validateTokenDto)
+		return this.auth.verifyEmail(validateTokenDto)
 	}
 
 	/*

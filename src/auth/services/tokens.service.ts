@@ -5,7 +5,7 @@ import { TokenPayload } from '../types/token-payload.type'
 
 @Injectable()
 export class TokensService {
-	constructor(private jwtService: JwtService) {}
+	constructor(private jwt: JwtService) {}
 
 	async create(user: UserEntity, expiresIn: string | number): Promise<string> {
 		const payload: TokenPayload = {
@@ -13,7 +13,7 @@ export class TokensService {
 			sub: user.id,
 		}
 
-		const token = this.jwtService.sign(payload, {
+		const token = this.jwt.sign(payload, {
 			expiresIn,
 		})
 
@@ -22,7 +22,7 @@ export class TokensService {
 
 	async validate(token: string): Promise<TokenPayload> {
 		try {
-			const payload = this.jwtService.verify<TokenPayload>(token)
+			const payload = this.jwt.verify<TokenPayload>(token)
 
 			return payload
 		} catch (error) {

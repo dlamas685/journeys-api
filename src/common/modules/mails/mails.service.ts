@@ -43,7 +43,7 @@ export class MailsService {
 
 			const frontend_url = this.configService.get<string>('FRONTEND_URL')
 
-			const url = `${frontend_url}/reset-password?token=${token}`
+			const url = `${frontend_url}/reset-password?token=${token}&email=${user.email}`
 
 			const smtpResponse = await this.mailerService.sendMail({
 				to: user.email,

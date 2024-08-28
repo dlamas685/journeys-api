@@ -40,6 +40,7 @@ async function bootstrap() {
 		.setDescription('Aplicación para la optimización de viajes y rutas')
 		.setVersion('1.0')
 		.addTag('Auth')
+		.addTag('Verification Tokens')
 		.build()
 
 	const document = SwaggerModule.createDocument(app, config)
