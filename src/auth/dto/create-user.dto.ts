@@ -17,20 +17,21 @@ export class CreateUserDto {
 	@IsUUID()
 	userId: string
 
+	@IsOptional()
 	@IsString()
 	@Matches(PASSWORD_PATTERN)
-	@IsOptional()
 	@ApiProperty()
 	password?: string
 
-	@IsEmail()
 	@IsNotEmpty()
+	@IsEmail()
 	@ApiProperty()
 	email: string
 
+	@IsOptional()
 	@IsEnum(UserType)
-	@ApiProperty({ enum: UserType, default: UserType.PERSONAL })
-	userType: UserType = UserType.PERSONAL
+	@ApiProperty({ enum: UserType })
+	userType?: UserType
 
 	@IsOptional()
 	@IsDate()
