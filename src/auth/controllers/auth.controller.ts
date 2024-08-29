@@ -13,12 +13,12 @@ import { ConfigService } from '@nestjs/config'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import {
-	CreateUserDto,
 	LoginDto,
 	RequestPasswordResetDto,
 	ResetPasswordDto,
 	ValidateTokenDto,
 } from '../dto'
+import { SignUpDto } from '../dto/sign-up.dto'
 import { AuthEntity, SmtpEntity, UserEntity } from '../entities'
 import { GoogleAuthGuard } from '../guards/google-auth.guard'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
@@ -124,8 +124,8 @@ export class AuthController {
 		description: 'Permite registrar un nuevo usuario',
 	})
 	@ApiOkResponse({ type: SmtpEntity })
-	async signUp(@Body() createUserDto: CreateUserDto) {
-		return this.auth.signUp(createUserDto)
+	async signUp(@Body() signUpDto: SignUpDto) {
+		return this.auth.signUp(signUpDto)
 	}
 
 	@Post('email-verification')

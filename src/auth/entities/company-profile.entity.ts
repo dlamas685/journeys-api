@@ -10,4 +10,7 @@ export class CompanyProfileEntity implements CompanyProfile {
 
 	@ApiProperty()
 	cuit: string
+
+	@ApiProperty()
+	entityType: string
 }

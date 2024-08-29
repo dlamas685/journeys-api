@@ -12,6 +12,7 @@ import {
 	ResetPasswordDto,
 	ValidateTokenDto,
 } from '../dto'
+import { SignUpDto } from '../dto/sign-up.dto'
 import { AuthEntity, GoogleEntity, SmtpEntity, UserEntity } from '../entities'
 import { AccountsService } from './accounts.service'
 import { TokensService } from './tokens.service'
@@ -20,6 +21,8 @@ import { VerificationTokensService } from './verification-tokens.service'
 
 @Injectable()
 export class AuthService {
+	private readonly salt: number = 10
+
 	constructor(
 		private jwt: JwtService,
 		private users: UsersService,
@@ -207,11 +210,36 @@ export class AuthService {
 		return await bcrypt.hash(password, salt)
 	}
 
-	async signUp(createUserDto: CreateUserDto): Promise<SmtpEntity> {
-		const user = await this.users.create(createUserDto)
+	async signUp(signUpDto: SignUpDto): Promise<SmtpEntity> {
+		const { userDto, companyProfileDto, personalProfileDto } = signUpDto
+
+		const hashedPassword =
+			userDto.password && (await bcrypt.hash(userDto.password, this.salt))
+
+		const companyProfile = companyProfileDto
+			? { create: companyProfileDto }
+			: {}
+
+		const personalProfile = personalProfileDto
+			? { create: personalProfileDto }
+			: {}
+		// const companyProfile = createUserDto.licenseId ? { connect: { id: createUserDto.licenseId }} : {}
+
+		const user = await this.prisma.user.create({
+			data: {
+				...userDto,
+				password: hashedPassword,
+				personalProfile: personalProfile,
+				companyProfile: companyProfile,
+			},
+			include: {
+				companyProfile: true,
+				personalProfile: true,
+				accounts: true,
+			},
+		})
 
 		const token = await this.tokens.create(user, '1h')
-
 		const smtp = await this.mails.sendVerificationEmail(user, token)
 
 		return smtp
