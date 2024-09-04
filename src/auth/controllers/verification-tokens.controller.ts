@@ -1,6 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
+import {
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	ParseUUIDPipe,
+	Query,
+} from '@nestjs/common'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { ValidateLinkDto } from '../dto'
 import { VerificationTokenEntity } from '../entities'
 import { VerificationTokensService } from '../services/verification-tokens.service'
 
@@ -9,20 +15,18 @@ import { VerificationTokensService } from '../services/verification-tokens.servi
 export class VerificationTokensController {
 	constructor(private verificationTokens: VerificationTokensService) {}
 
-	@Post('link-validation')
+	@Get('link-validation')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
-		summary: 'Validación de enlace',
+		summary: 'Verifica la existencia de un token',
 		description:
-			'Valida un enlace de verificación de correo electrónico o restablecimiento de contraseña',
+			'Permite verificar si un token de verificación existe en la base de datos',
 	})
 	@ApiOkResponse({ type: VerificationTokenEntity })
 	async validateLink(
-		@Body() validateLinkDto: ValidateLinkDto
+		@Query('token', ParseUUIDPipe) token: string,
+		@Query('email') email: string
 	): Promise<VerificationTokenEntity> {
-		return this.verificationTokens.findOne(
-			validateLinkDto.token,
-			validateLinkDto.email
-		)
+		return this.verificationTokens.findOne(token, email)
 	}
 }

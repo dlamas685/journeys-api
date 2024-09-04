@@ -9,17 +9,17 @@ export class SignUpDto {
 	@ApiProperty()
 	@ValidateNested()
 	@Type(() => CreateUserDto)
-	userDto: CreateUserDto
+	user: CreateUserDto
 
 	@ApiProperty()
 	@IsOptional()
 	@ValidateNested()
 	@Type(() => CreatePersonalProfileDto)
-	personalProfileDto?: CreatePersonalProfileDto
+	personalProfile?: CreatePersonalProfileDto | null
 
 	@ApiProperty()
 	@IsOptional()
 	@ValidateNested()
 	@Type(() => CreateCompanyProfileDto)
-	companyProfileDto?: CreateCompanyProfileDto
+	companyProfile?: CreateCompanyProfileDto | null
 }

@@ -7,15 +7,15 @@ import {
 	IsNotEmpty,
 	IsOptional,
 	IsString,
-	IsUUID,
 	Matches,
 } from 'class-validator'
 import { PASSWORD_PATTERN } from 'src/common/constants'
 
 export class CreateUserDto {
-	@IsOptional()
-	@IsUUID()
-	userId: string
+	@IsNotEmpty()
+	@IsEmail()
+	@ApiProperty()
+	email: string
 
 	@IsOptional()
 	@IsString()
@@ -23,10 +23,10 @@ export class CreateUserDto {
 	@ApiProperty()
 	password?: string
 
-	@IsNotEmpty()
-	@IsEmail()
-	@ApiProperty()
-	email: string
+	@IsOptional()
+	@IsDate()
+	@ApiProperty({ type: Date })
+	emailVerified?: Date
 
 	@IsOptional()
 	@IsEnum(UserType)
@@ -34,12 +34,7 @@ export class CreateUserDto {
 	userType?: UserType
 
 	@IsOptional()
-	@IsDate()
-	@ApiProperty({ type: Date })
-	emailVerified: Date
-
-	@IsOptional()
 	@IsString()
 	@ApiProperty()
-	imageUrl: string
+	imageUrl?: string
 }

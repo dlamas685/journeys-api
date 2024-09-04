@@ -6,38 +6,43 @@ import { Response } from 'express'
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 	catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
-		console.error(exception.message)
 		const ctx = host.switchToHttp()
 		const response = ctx.getResponse<Response>()
-		const message = exception.message.replace(/\n/g, '')
+		const message = this.getErrorMessage(exception)
 
+		const status = this.getHttpStatus(exception.code)
+		response.status(status).json({
+			statusCode: status,
+			message: message,
+			error: exception.code,
+		})
+	}
+
+	private getErrorMessage(
+		exception: Prisma.PrismaClientKnownRequestError
+	): string {
 		switch (exception.code) {
-			case 'P2002': {
-				const status = HttpStatus.CONFLICT
-				response.status(status).json({
-					statusCode: status,
-					message: message,
-				})
-				break
-			}
-			case 'P2000': {
-				const status = HttpStatus.BAD_REQUEST
-				response.status(status).json({
-					statusCode: status,
-					message: message,
-				})
-			}
-			case 'P2025': {
-				const status = HttpStatus.NOT_FOUND
-				response.status(status).json({
-					statusCode: status,
-					message: message,
-				})
-			}
+			case 'P2002':
+				return `Ya existe un registro con el mismo valor para el campo único '${exception.meta?.target}'.`
+			case 'P2000':
+				return `El valor proporcionado para uno de los campos es demasiado largo.`
+			case 'P2025':
+				return `El registro que intenta actualizar/eliminar no existe.`
 			default:
-				// default 500 error code
-				super.catch(exception, host)
-				break
+				return 'Ocurrió un error inesperado.'
+		}
+	}
+
+	private getHttpStatus(code: string): HttpStatus {
+		switch (code) {
+			case 'P2002':
+				return HttpStatus.CONFLICT
+			case 'P2000':
+				return HttpStatus.BAD_REQUEST
+			case 'P2025':
+				return HttpStatus.NOT_FOUND
+			default:
+				return HttpStatus.INTERNAL_SERVER_ERROR
 		}
 	}
 }

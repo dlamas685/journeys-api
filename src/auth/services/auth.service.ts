@@ -10,7 +10,8 @@ import {
 	CreateUserDto,
 	RequestPasswordResetDto,
 	ResetPasswordDto,
-	ValidateTokenDto,
+	ValidateAccessTokenDto,
+	VerifyEmailDto,
 } from '../dto'
 import { SignUpDto } from '../dto/sign-up.dto'
 import { AuthEntity, GoogleEntity, SmtpEntity, UserEntity } from '../entities'
@@ -184,6 +185,7 @@ export class AuthService {
 			await prisma.verificationToken.deleteMany({
 				where: {
 					identifier,
+					token,
 				},
 			})
 
@@ -193,44 +195,38 @@ export class AuthService {
 		return new UserEntity(updatedUser)
 	}
 
-	async validateToken(validateTokenDto: ValidateTokenDto): Promise<AuthEntity> {
-		const payload = await this.tokens.validate(validateTokenDto.token)
+	async validateAccessToken(
+		validateAccessTokenDto: ValidateAccessTokenDto
+	): Promise<AuthEntity> {
+		const payload = await this.tokens.validate(validateAccessTokenDto.token)
 
 		const user = await this.users.findOne(payload.sub)
 
 		return new AuthEntity({
-			accessToken: validateTokenDto.token,
+			accessToken: validateAccessTokenDto.token,
 			expires: payload.exp,
 			user,
 		})
 	}
 
-	async hashPassword(password: string) {
-		const salt = await bcrypt.genSalt(10)
-		return await bcrypt.hash(password, salt)
-	}
-
-	async signUp(signUpDto: SignUpDto): Promise<SmtpEntity> {
-		const { userDto, companyProfileDto, personalProfileDto } = signUpDto
+	async signUp(signUpDto: SignUpDto): Promise<AuthEntity> {
+		const { user, companyProfile, personalProfile } = signUpDto
 
 		const hashedPassword =
-			userDto.password && (await bcrypt.hash(userDto.password, this.salt))
+			user.password && (await bcrypt.hash(user.password, this.salt))
 
-		const companyProfile = companyProfileDto
-			? { create: companyProfileDto }
-			: {}
+		const token = uuid()
 
-		const personalProfile = personalProfileDto
-			? { create: personalProfileDto }
-			: {}
-		// const companyProfile = createUserDto.licenseId ? { connect: { id: createUserDto.licenseId }} : {}
-
-		const user = await this.prisma.user.create({
+		const createdUser = await this.prisma.user.create({
 			data: {
-				...userDto,
+				...user,
 				password: hashedPassword,
-				personalProfile: personalProfile,
-				companyProfile: companyProfile,
+				personalProfile: {
+					create: personalProfile,
+				},
+				companyProfile: {
+					create: companyProfile,
+				},
 			},
 			include: {
 				companyProfile: true,
@@ -239,20 +235,70 @@ export class AuthService {
 			},
 		})
 
-		const token = await this.tokens.create(user, '1h')
-		const smtp = await this.mails.sendVerificationEmail(user, token)
+		await this.prisma.$transaction(async prisma => {
+			const createdVerificationToken = await prisma.verificationToken.create({
+				data: {
+					token,
+					identifier: createdUser.email,
+					expires: new Date(Date.now() + 10 * 60 * 1000),
+				},
+			})
 
-		return smtp
-	}
-
-	async verifyEmail(validateTokenDto: ValidateTokenDto): Promise<UserEntity> {
-		const payload = await this.tokens.validate(validateTokenDto.token)
-		const userId = payload.sub
-
-		const user = await this.users.update(userId, {
-			emailVerified: new Date(),
+			await this.mails.sendVerificationEmail(
+				createdUser,
+				createdVerificationToken.token
+			)
 		})
 
-		return user
+		const accessToken = await this.tokens.create(createdUser, '1h')
+
+		return new AuthEntity({
+			accessToken,
+			expires: this.jwt.decode(accessToken).exp,
+			user: new UserEntity(createdUser),
+		})
+	}
+
+	async verifyEmail(verifyEmailDto: VerifyEmailDto): Promise<UserEntity> {
+		const { token, email } = verifyEmailDto
+
+		const { identifier } = await this.verificationTokens.findOne(token, email)
+
+		const user = await this.users.findByEmail(identifier)
+
+		if (!user) throw new NotFoundException('Usuario no encontrado')
+
+		const { id } = user
+
+		const updatedUser = await this.prisma.$transaction(async prisma => {
+			const user = await prisma.user.update({
+				data: {
+					emailVerified: new Date(),
+				},
+				where: {
+					id,
+				},
+				include: {
+					companyProfile: true,
+					personalProfile: true,
+				},
+			})
+
+			await prisma.verificationToken.deleteMany({
+				where: {
+					identifier,
+					token,
+				},
+			})
+
+			return user
+		})
+
+		return new UserEntity(updatedUser)
+	}
+
+	async hashPassword(password: string) {
+		const salt = await bcrypt.genSalt(10)
+		return await bcrypt.hash(password, salt)
 	}
 }

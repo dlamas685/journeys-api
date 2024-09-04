@@ -16,7 +16,8 @@ import {
 	LoginDto,
 	RequestPasswordResetDto,
 	ResetPasswordDto,
-	ValidateTokenDto,
+	ValidateAccessTokenDto,
+	VerifyEmailDto,
 } from '../dto'
 import { SignUpDto } from '../dto/sign-up.dto'
 import { AuthEntity, SmtpEntity, UserEntity } from '../entities'
@@ -73,17 +74,17 @@ export class AuthController {
 		return this.auth.resetPassword(resetPasswordDto)
 	}
 
-	@Post('token-validation')
+	@Post('access-token-validation')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
-		summary: 'Validación de token',
-		description: 'Permite validar un token (mail, password, etc)',
+		summary: 'Validación de token de acceso',
+		description: 'Permite validar un token de autenticación',
 	})
 	@ApiOkResponse({ type: AuthEntity })
-	async validateToken(
-		@Body() validateTokenDto: ValidateTokenDto
+	async validateAccessToken(
+		@Body() validateAccesTokenDto: ValidateAccessTokenDto
 	): Promise<AuthEntity> {
-		return this.auth.validateToken(validateTokenDto)
+		return this.auth.validateAccessToken(validateAccesTokenDto)
 	}
 
 	@Get('google/login')
@@ -111,7 +112,6 @@ export class AuthController {
 		}
 
 		const auth = await this.auth.login(req.user)
-
 		return res.redirect(
 			`${this.config.get('FRONTEND_URL')}/providers?token=${auth.accessToken}`
 		)
@@ -123,7 +123,7 @@ export class AuthController {
 		summary: 'Registro de un nuevo usuario',
 		description: 'Permite registrar un nuevo usuario',
 	})
-	@ApiOkResponse({ type: SmtpEntity })
+	@ApiOkResponse({ type: AuthEntity })
 	async signUp(@Body() signUpDto: SignUpDto) {
 		return this.auth.signUp(signUpDto)
 	}
@@ -132,26 +132,10 @@ export class AuthController {
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: 'Verificación de correo electrónico',
-		description:
-			'Permite verificar el correo de un usuario. Una vez verificado retorna el jwt para loguearse',
+		description: 'Permite verificar el correo de un usuario.',
 	})
 	@ApiOkResponse({ type: UserEntity })
-	async verifyEmail(@Body() validateTokenDto: ValidateTokenDto) {
-		return this.auth.verifyEmail(validateTokenDto)
+	async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
+		return this.auth.verifyEmail(verifyEmailDto)
 	}
-
-	/*
-	  ? api/auth/login (*)
-	  ? api/auth/google (*)
-	  ? api/auth/signup
-	  ? api/auth/forgot-password (*)
-	  ? api/auth/reset-password (*)
-	  ? api/auth/verify-email
-	  ? api/auth/validate-token (*)
-
-	  ! El usuario inicia sesion en la app en la laptop
-	  * 1. Revisa si existe el token en la base de datos (si no existe, se crea)
-	  * 2. Se envia el token al cliente
-	
-	*/
 }

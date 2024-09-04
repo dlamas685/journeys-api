@@ -43,7 +43,7 @@ export class MailsService {
 
 			const frontend_url = this.configService.get<string>('FRONTEND_URL')
 
-			const url = `${frontend_url}/reset-password?token=${token}&email=${user.email}`
+			const url = `${frontend_url}/password-resets?token=${token}&email=${user.email}`
 
 			const smtpResponse = await this.mailerService.sendMail({
 				to: user.email,
@@ -73,7 +73,7 @@ export class MailsService {
 	): Promise<SmtpEntity> {
 		try {
 			const type = capitalCase(user.userType)
-			const url = `${this.frontend_url}/verify-email?token=${token}`
+			const url = `${this.frontend_url}/email-verification?token=${token}&email=${user.email}`
 
 			const smtpResponse = await this.mailerService.sendMail({
 				to: user.email,
