@@ -217,25 +217,25 @@ export class AuthService {
 
 		const token = uuid()
 
-		const createdUser = await this.prisma.user.create({
-			data: {
-				...user,
-				password: hashedPassword,
-				personalProfile: {
-					create: personalProfile,
+		const createdUser = await this.prisma.$transaction(async prisma => {
+			const createdUser = await prisma.user.create({
+				data: {
+					...user,
+					password: hashedPassword,
+					personalProfile: {
+						create: personalProfile,
+					},
+					companyProfile: {
+						create: companyProfile,
+					},
 				},
-				companyProfile: {
-					create: companyProfile,
+				include: {
+					companyProfile: true,
+					personalProfile: true,
+					accounts: true,
 				},
-			},
-			include: {
-				companyProfile: true,
-				personalProfile: true,
-				accounts: true,
-			},
-		})
+			})
 
-		await this.prisma.$transaction(async prisma => {
 			const createdVerificationToken = await prisma.verificationToken.create({
 				data: {
 					token,
@@ -248,6 +248,8 @@ export class AuthService {
 				createdUser,
 				createdVerificationToken.token
 			)
+
+			return createdUser
 		})
 
 		const accessToken = await this.tokens.create(createdUser, '1h')
