@@ -1,8 +1,9 @@
 import { MailerModule } from '@nestjs-modules/mailer'
-import { Module } from '@nestjs/common'
+import { Global, Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { MailsService } from './mails.service'
+import { EmailsService } from './mails.service'
 
+@Global()
 @Module({
 	imports: [
 		MailerModule.forRootAsync({
@@ -26,7 +27,7 @@ import { MailsService } from './mails.service'
 			}),
 		}),
 	],
-	providers: [MailsService],
-	exports: [MailsService],
+	providers: [EmailsService],
+	exports: [EmailsService],
 })
-export class MailsModule {}
+export class EmailsModule {}

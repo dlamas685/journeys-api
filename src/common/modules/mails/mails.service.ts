@@ -19,7 +19,7 @@ import {
 } from './constants'
 
 @Injectable()
-export class MailsService {
+export class EmailsService {
 	app: string
 	year: number
 	frontend_url: string

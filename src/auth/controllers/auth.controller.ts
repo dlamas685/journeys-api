@@ -128,6 +128,18 @@ export class AuthController {
 		return this.auth.signUp(signUpDto)
 	}
 
+	/* @Patch('sign-up/last-step')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Ultimo paso para registrarse',
+		description:
+			'Permite finalizar el registro de un nuevo usuario mediante proveedores',
+	})
+	@ApiOkResponse({ type: AuthEntity })
+	async signUpFinish(@Body() SignUpLastStepDto: SignUpLastStepDto) {
+		return this.auth.signUpLastSteap(SignUpLastStepDto)
+	} */
+
 	@Post('email-verification')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
