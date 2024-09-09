@@ -7,6 +7,8 @@ import {
 	UpdateUserDto,
 	UpdateUserWithProfileDto,
 } from './dto'
+import { CompanyProfileEntity } from './entities/company-profile.entity'
+import { PersonalProfileEntity } from './entities/personal-profile.entity'
 import { UserEntity } from './entities/user.entity'
 
 @Injectable()
@@ -139,6 +141,12 @@ export class UsersService {
 		const user = await this.prisma.user.create({
 			data: {
 				...createUserDto,
+				personalProfile: {
+					create: {} as PersonalProfileEntity,
+				},
+				companyProfile: {
+					create: {} as CompanyProfileEntity,
+				},
 				accounts: {
 					create: account,
 				},
