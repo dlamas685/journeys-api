@@ -6,16 +6,17 @@ export class CreateCompanyProfileDto {
 	@IsUUID()
 	userId: string
 
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	@ApiProperty()
 	name: string
 
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	@ApiProperty()
 	cuit: string
 
+	@ApiProperty()
 	@IsOptional()
 	@IsString()
 	@IsNotEmpty()

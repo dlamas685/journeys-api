@@ -13,24 +13,27 @@ export class CreatePersonalProfileDto {
 	@IsUUID()
 	userId: string
 
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	@ApiProperty()
 	firstName: string
 
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	@ApiProperty()
 	lastName: string
 
+	@ApiProperty()
 	@IsOptional()
 	@IsDate()
 	birthDate?: Date
 
+	@ApiProperty()
 	@IsOptional()
 	@IsPhoneNumber()
 	phone?: string
 
+	@ApiProperty()
 	@IsString()
 	@IsOptional()
 	address?: string

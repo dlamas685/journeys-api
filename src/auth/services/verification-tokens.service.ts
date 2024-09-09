@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
-import { PrismaService } from 'src/common/services/prisma.service'
+import { PrismaService } from 'src/common/modules/prisma/prisma.service'
 import { VerificationTokenEntity } from '../entities'
 
 @Injectable()

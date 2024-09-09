@@ -23,8 +23,8 @@ model Account {
   userId            String  @map("user_id") @db.Uuid
   provider          String
   providerAccountId String  @map("provider_account_id")
-  refreshToken      String? @db.Text
-  accessToken       String? @db.Text
+  refreshToken      String?
+  accessToken       String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -51,8 +51,8 @@ model User {
 model PersonalProfile {
   userId    String    @id @map("user_id") @db.Uuid
   dni       String?   @unique
-  firstName String    @map("first_name")
-  lastName  String    @map("last_name")
+  firstName String?   @map("first_name")
+  lastName  String?   @map("last_name")
   phone     String?
   address   String?
   birthDate DateTime? @map("birth_date") @db.Timestamptz(6)
@@ -63,8 +63,8 @@ model PersonalProfile {
 
 model CompanyProfile {
   userId     String  @id @map("user_id") @db.Uuid
-  name       String
-  cuit       String  @unique
+  name       String?
+  cuit       String? @unique
   entityType String? @map("entity_type")
   user       User    @relation(fields: [userId], references: [id])
 

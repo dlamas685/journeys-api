@@ -2,12 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { plainToClass } from 'class-transformer'
-import { MailsService } from 'src/common/modules/mails/mails.service'
-import { PrismaService } from 'src/common/services/prisma.service'
+import { EmailsService } from 'src/common/modules/mails/mails.service'
+import { PrismaService } from 'src/common/modules/prisma/prisma.service'
 import { v4 as uuid } from 'uuid'
+import { CreateAccountDto, CreateUserDto } from '../../users/dto'
+import { AccountsService } from '../../users/services/accounts.service'
+import { UsersService } from '../../users/users.service'
 import {
-	CreateAccountDto,
-	CreateUserDto,
 	RequestPasswordResetDto,
 	ResetPasswordDto,
 	ValidateAccessTokenDto,
@@ -15,9 +16,7 @@ import {
 } from '../dto'
 import { SignUpDto } from '../dto/sign-up.dto'
 import { AuthEntity, GoogleEntity, SmtpEntity, UserEntity } from '../entities'
-import { AccountsService } from './accounts.service'
 import { TokensService } from './tokens.service'
-import { UsersService } from './users.service'
 import { VerificationTokensService } from './verification-tokens.service'
 
 @Injectable()
@@ -26,12 +25,12 @@ export class AuthService {
 
 	constructor(
 		private jwt: JwtService,
+		private prisma: PrismaService,
+		private tokens: TokensService,
+		private verificationTokens: VerificationTokensService,
 		private users: UsersService,
 		private accounts: AccountsService,
-		private tokens: TokensService,
-		private mails: MailsService,
-		private prisma: PrismaService,
-		private verificationTokens: VerificationTokensService
+		private mails: EmailsService
 	) {}
 
 	async validateUser(email: string, password: string): Promise<UserEntity> {
@@ -260,6 +259,39 @@ export class AuthService {
 			user: new UserEntity(createdUser),
 		})
 	}
+
+	/* 	async signUpLastSteap(
+		signUpLastStepDto: SignUpLastStepDto
+	): Promise<UserEntity> {
+		const { userType, companyProfile, personalProfile } = signUpLastStepDto
+
+		const updatedUser = await this.prisma.user.update({
+			data: {
+				userType,
+				companyProfile: {
+					update: companyProfile,
+				},
+				personalProfile: {
+					update: personalProfile,
+				},
+			},
+			where: {
+				id,
+			},
+			include: {
+				companyProfile: true,
+				personalProfile: true,
+			},
+		})
+
+		// await this.prisma.$transaction(async tx => {
+		// 	const updatedUser = tx.user.update
+
+		// 	return new UserEntity(updatedUser)
+		// })
+
+		return new UserEntity(updatedUser)
+	} */
 
 	async verifyEmail(verifyEmailDto: VerifyEmailDto): Promise<UserEntity> {
 		const { token, email } = verifyEmailDto
