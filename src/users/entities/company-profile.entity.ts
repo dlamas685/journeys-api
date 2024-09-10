@@ -12,5 +12,17 @@ export class CompanyProfileEntity implements CompanyProfile {
 	cuit: string
 
 	@ApiProperty()
-	entityType: string
+	phone: string
+
+	@ApiProperty()
+	taxAddress: string
+
+	@ApiProperty()
+	manager: string
+
+	@ApiProperty()
+	managerEmail: string
+
+	@ApiProperty()
+	managerPhone: string
 }

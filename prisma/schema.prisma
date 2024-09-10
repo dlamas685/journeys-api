@@ -62,11 +62,15 @@ model PersonalProfile {
 }
 
 model CompanyProfile {
-  userId     String  @id @map("user_id") @db.Uuid
-  name       String?
-  cuit       String? @unique
-  entityType String? @map("entity_type")
-  user       User    @relation(fields: [userId], references: [id])
+  userId       String  @id @map("user_id") @db.Uuid
+  name         String?
+  cuit         String? @unique
+  phone        String?
+  taxAddress   String? @map("tax_address")
+  manager      String?
+  managerEmail String? @map("manager_email")
+  managerPhone String? @map("manager_phone")
+  user         User    @relation(fields: [userId], references: [id])
 
   @@map("company_profiles")
 }

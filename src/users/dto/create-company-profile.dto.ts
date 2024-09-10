@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator'
+import {
+	IsEmail,
+	IsNotEmpty,
+	IsOptional,
+	IsPhoneNumber,
+	IsString,
+	IsUUID,
+} from 'class-validator'
 
 export class CreateCompanyProfileDto {
 	@IsOptional()
@@ -17,8 +24,24 @@ export class CreateCompanyProfileDto {
 	cuit: string
 
 	@ApiProperty()
-	@IsOptional()
+	@IsPhoneNumber()
+	phone: string
+
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	entityType?: string
+	taxAddress: string
+
+	@ApiProperty()
+	@IsString()
+	@IsNotEmpty()
+	manager: string
+
+	@ApiProperty()
+	@IsEmail()
+	managerEmail: string
+
+	@ApiProperty()
+	@IsPhoneNumber()
+	managerPhone: string
 }
