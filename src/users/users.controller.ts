@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateUserDto, UpdateUserDto, UpdateUserWithProfileDto } from './dto'
+import { CreateUserDto, UpdateUserDto } from './dto'
 import { UserEntity } from './entities/user.entity'
 import { UsersService } from './users.service'
 
@@ -38,23 +38,18 @@ export class UsersController {
 	}
 
 	@Patch(':id')
-	update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-		return this.usersService.update(id, updateUserDto)
-	}
-
-	@Patch(':id/profiles')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
-		summary: 'Ultimo paso para registrarse',
+		summary: 'Actualizar usuario',
 		description:
-			'Permite finalizar el registro de un nuevo usuario mediante provedores como google',
+			'Permite actualizar los datos de un usuario y su perfil personal o de empresa',
 	})
 	@ApiOkResponse({ type: UserEntity })
 	updateWithProfile(
 		@Param('id') id: string,
-		@Body() updateUserWithProfileDto: UpdateUserWithProfileDto
+		@Body() updateUserDto: UpdateUserDto
 	) {
-		return this.usersService.updateWithProfile(id, updateUserWithProfileDto)
+		return this.usersService.update(id, updateUserDto)
 	}
 
 	@Delete(':id')

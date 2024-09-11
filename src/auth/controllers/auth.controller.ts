@@ -12,6 +12,7 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
+import { CreateUserDto } from 'src/users/dto'
 import {
 	LoginDto,
 	RequestPasswordResetDto,
@@ -19,7 +20,6 @@ import {
 	ValidateAccessTokenDto,
 	VerifyEmailDto,
 } from '../dto'
-import { SignUpDto } from '../dto/sign-up.dto'
 import { AuthEntity, SmtpEntity, UserEntity } from '../entities'
 import { GoogleAuthGuard } from '../guards/google-auth.guard'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
@@ -124,21 +124,9 @@ export class AuthController {
 		description: 'Permite registrar un nuevo usuario',
 	})
 	@ApiOkResponse({ type: AuthEntity })
-	async signUp(@Body() signUpDto: SignUpDto) {
-		return this.auth.signUp(signUpDto)
+	async signUp(@Body() createUserDto: CreateUserDto) {
+		return this.auth.signUp(createUserDto)
 	}
-
-	/* @Patch('sign-up/last-step')
-	@HttpCode(HttpStatus.OK)
-	@ApiOperation({
-		summary: 'Ultimo paso para registrarse',
-		description:
-			'Permite finalizar el registro de un nuevo usuario mediante proveedores',
-	})
-	@ApiOkResponse({ type: AuthEntity })
-	async signUpFinish(@Body() SignUpLastStepDto: SignUpLastStepDto) {
-		return this.auth.signUpLastSteap(SignUpLastStepDto)
-	} */
 
 	@Post('email-verification')
 	@HttpCode(HttpStatus.OK)

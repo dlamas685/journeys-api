@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
 import {
 	IsDate,
 	IsNotEmpty,
@@ -9,6 +10,7 @@ import {
 } from 'class-validator'
 
 export class CreatePersonalProfileDto {
+	@ApiProperty()
 	@IsOptional()
 	@IsUUID()
 	userId: string
@@ -24,8 +26,14 @@ export class CreatePersonalProfileDto {
 	lastName: string
 
 	@ApiProperty()
+	@IsString()
+	@IsOptional()
+	dni?: string
+
+	@ApiProperty()
 	@IsOptional()
 	@IsDate()
+	@Type(() => Date)
 	birthDate?: Date
 
 	@ApiProperty()
