@@ -14,7 +14,6 @@ import {
 	ValidateAccessTokenDto,
 	VerifyEmailDto,
 } from '../dto'
-import { SignUpDto } from '../dto/sign-up.dto'
 import { AuthEntity, GoogleEntity, SmtpEntity, UserEntity } from '../entities'
 import { TokensService } from './tokens.service'
 import { VerificationTokensService } from './verification-tokens.service'
@@ -208,33 +207,12 @@ export class AuthService {
 		})
 	}
 
-	async signUp(signUpDto: SignUpDto): Promise<AuthEntity> {
-		const { user, companyProfile, personalProfile } = signUpDto
-
-		const hashedPassword =
-			user.password && (await bcrypt.hash(user.password, this.salt))
+	async signUp(createUserDto: CreateUserDto): Promise<AuthEntity> {
+		const createdUser = await this.users.create(createUserDto)
 
 		const token = uuid()
 
-		const createdUser = await this.prisma.$transaction(async prisma => {
-			const createdUser = await prisma.user.create({
-				data: {
-					...user,
-					password: hashedPassword,
-					personalProfile: {
-						create: personalProfile,
-					},
-					companyProfile: {
-						create: companyProfile,
-					},
-				},
-				include: {
-					companyProfile: true,
-					personalProfile: true,
-					accounts: true,
-				},
-			})
-
+		await this.prisma.$transaction(async prisma => {
 			const createdVerificationToken = await prisma.verificationToken.create({
 				data: {
 					token,

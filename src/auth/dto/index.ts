@@ -1,6 +1,5 @@
 export * from './login.dto'
 export * from './request-password-reset.dto'
 export * from './reset-password.dto'
-export * from './sign-up.dto'
 export * from './validate-access-token.dto'
 export * from './verify-email.dto'

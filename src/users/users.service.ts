@@ -1,12 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from '../common/modules/prisma/prisma.service'
-import {
-	CreateAccountDto,
-	CreateUserDto,
-	UpdateUserDto,
-	UpdateUserWithProfileDto,
-} from './dto'
+import { CreateAccountDto, CreateUserDto, UpdateUserDto } from './dto'
 import { CompanyProfileEntity } from './entities/company-profile.entity'
 import { PersonalProfileEntity } from './entities/personal-profile.entity'
 import { UserEntity } from './entities/user.entity'
@@ -19,14 +14,20 @@ export class UsersService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async create(createUserDto: CreateUserDto): Promise<UserEntity> {
-		const { password, ...restDto } = createUserDto
+		const { password, companyProfile, personalProfile, ...data } = createUserDto
 
 		const hashedPassword = password && (await bcrypt.hash(password, this.salt))
 
 		const newUser = await this.prisma.user.create({
 			data: {
-				...restDto,
+				...data,
 				password: hashedPassword,
+				companyProfile: {
+					create: companyProfile,
+				},
+				personalProfile: {
+					create: personalProfile,
+				},
 			},
 			include: {
 				companyProfile: true,
@@ -75,7 +76,7 @@ export class UsersService {
 	}
 
 	async update(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
-		const { password, ...data } = updateUserDto
+		const { password, companyProfile, personalProfile, ...data } = updateUserDto
 
 		const newPassword = password
 			? await bcrypt.hash(password, this.salt)
@@ -88,6 +89,12 @@ export class UsersService {
 			data: {
 				...data,
 				password: newPassword,
+				companyProfile: {
+					update: companyProfile,
+				},
+				personalProfile: {
+					update: personalProfile,
+				},
 			},
 			include: {
 				companyProfile: true,
@@ -96,34 +103,6 @@ export class UsersService {
 		})
 
 		return new UserEntity(user)
-	}
-
-	async updateWithProfile(
-		id: string,
-		updateUserDto: UpdateUserWithProfileDto
-	): Promise<UserEntity> {
-		const { companyProfile, personalProfile, ...user } = updateUserDto
-
-		const updatedUser = await this.prisma.user.update({
-			data: {
-				...user,
-				companyProfile: {
-					update: companyProfile,
-				},
-				personalProfile: {
-					update: personalProfile,
-				},
-			},
-			where: {
-				id,
-			},
-			include: {
-				companyProfile: true,
-				personalProfile: true,
-			},
-		})
-
-		return new UserEntity(updatedUser)
 	}
 
 	async remove(id: string) {

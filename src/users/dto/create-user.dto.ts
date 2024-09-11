@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger'
 import { UserType } from '@prisma/client'
 import { Type } from 'class-transformer'
 import {
@@ -41,20 +41,16 @@ export class CreateUserDto {
 	@IsString()
 	@ApiProperty()
 	imageUrl?: string
-}
 
-export class CreateUserWithProfileDto extends OmitType(CreateUserDto, [
-	'password',
-] as const) {
-	@ApiProperty()
 	@IsOptional()
 	@ValidateNested()
 	@Type(() => CreatePersonalProfileDto)
-	personalProfile?: CreatePersonalProfileDto | null
-
 	@ApiProperty()
+	personalProfile?: CreatePersonalProfileDto
+
 	@IsOptional()
 	@ValidateNested()
 	@Type(() => CreateCompanyProfileDto)
-	companyProfile?: CreateCompanyProfileDto | null
+	@ApiProperty()
+	companyProfile?: CreateCompanyProfileDto
 }
