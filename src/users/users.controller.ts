@@ -6,34 +6,58 @@ import {
 	HttpCode,
 	HttpStatus,
 	Param,
+	ParseUUIDPipe,
 	Patch,
 	Post,
 	UseGuards,
 } from '@nestjs/common'
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
+import {
+	ApiBearerAuth,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+} from '@nestjs/swagger'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { CreateUserDto, UpdateUserDto } from './dto'
 import { UserEntity } from './entities/user.entity'
 import { UsersService } from './users.service'
 
 @ApiTags('Users')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JWT-auth')
 @Controller('users')
 export class UsersController {
 	constructor(private readonly usersService: UsersService) {}
 
 	@Post()
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear usuario',
+		description:
+			'Permite crear un nuevo usuario con su perfil personal o de empresa',
+	})
 	create(@Body() createUserDto: CreateUserDto) {
 		return this.usersService.create(createUserDto)
 	}
 
 	@Get()
+	@ApiOperation({
+		summary: 'Listar usuarios',
+		description: 'Permite listar todos los usuarios',
+	})
+	@ApiOkResponse({ type: [UserEntity] })
 	findAll() {
 		return this.usersService.findAll()
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: string) {
+	@ApiOperation({
+		summary: 'Buscar usuario',
+		description: 'Permite buscar un usuario por su ID',
+	})
+	@ApiOkResponse({ type: UserEntity })
+	findOne(@Param('id', ParseUUIDPipe) id: string) {
 		return this.usersService.findOne(id)
 	}
 
@@ -45,15 +69,17 @@ export class UsersController {
 			'Permite actualizar los datos de un usuario y su perfil personal o de empresa',
 	})
 	@ApiOkResponse({ type: UserEntity })
-	updateWithProfile(
-		@Param('id') id: string,
-		@Body() updateUserDto: UpdateUserDto
-	) {
+	update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
 		return this.usersService.update(id, updateUserDto)
 	}
 
 	@Delete(':id')
-	remove(@Param('id') id: string) {
+	@ApiOperation({
+		summary: 'Eliminar usuario',
+		description: 'Permite eliminar un usuario por su ID',
+	})
+	@ApiOkResponse({ type: UserEntity })
+	remove(@Param('id', ParseUUIDPipe) id: string) {
 		return this.usersService.remove(id)
 	}
 }
