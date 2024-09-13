@@ -91,13 +91,14 @@ const WelcomeUser = ({
 					fontStyle='normal'
 				/>
 			</Head>
+
 			<Preview>Bienvenido a Journeys</Preview>
 			<Body>
 				<Tailwind config={tailwindConfig}>
 					<Container className='bg-offwhite mx-auto my-0 w-[680px] p-4 max-w-full'>
 						<Section className='rounded-md'>
 							<Img
-								src='/static/imagotype-v1.png'
+								src='https://journeys-api.onrender.com/static/imagotype-v1.png'
 								alt='Journeys'
 								className='object-cover w-56 mx-auto'
 							/>
@@ -116,19 +117,13 @@ const WelcomeUser = ({
 
 							{steps?.map((step, index) => (
 								<Section key={step.id} className='mb-5'>
-									<Row cellSpacing={10}>
-										<Column className='align-baseline'>
-											<table className='text-center'>
-												<td
-													align='center'
-													className='h-10 w-10 rounded-full bg-orange-100 p-0'>
-													<Text className='m-0 font-semibold text-orange-600'>
-														{index + 1}
-													</Text>
-												</td>
-											</table>
+									<Row>
+										<Column className='pr-4 align-top pt-1'>
+											<Text className='h-10 w-10 m-0 p-0 rounded-full bg-orange-100 font-semibold text-orange-600 leading-10 text-center'>
+												{index + 1}
+											</Text>
 										</Column>
-										<Column className='w-[90%]'>
+										<Column>
 											<Text className='m-0 text-base font-semibold leading-[28px] text-gray-900'>
 												{step.title}
 											</Text>
