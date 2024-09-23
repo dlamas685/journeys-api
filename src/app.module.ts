@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module'
 import { EmailsModule } from './common/modules/mails/emails.module'
 import { PrismaModule } from './common/modules/prisma/prisma.module'
 import { envConfig } from './config'
+import { FavoriteAddressesModule } from './favorite-addresses/favorite-addresses.module'
 import { UsersModule } from './users/users.module'
 
 @Module({
@@ -21,6 +22,7 @@ import { UsersModule } from './users/users.module'
 		EmailsModule,
 		AuthModule,
 		UsersModule,
+		FavoriteAddressesModule,
 	],
 	controllers: [],
 	providers: [],
