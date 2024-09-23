@@ -30,7 +30,7 @@ export class FavoriteAddressesController {
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
-	@ApiOkResponse({ type: [FavoriteAddressEntity] })
+	@ApiOkResponse({ type: FavoriteAddressEntity })
 	create(
 		@GetCurrentUserById() userId: string,
 		@Body() createFavoriteAddressDto: CreateFavoriteAddressDto
@@ -52,6 +52,8 @@ export class FavoriteAddressesController {
 	}
 
 	@Patch(':id')
+	@HttpCode(HttpStatus.OK)
+	@ApiOkResponse({ type: FavoriteAddressEntity })
 	update(
 		@GetCurrentUserById() userId: string,
 		@Param('id', ParseUUIDPipe) id: string,

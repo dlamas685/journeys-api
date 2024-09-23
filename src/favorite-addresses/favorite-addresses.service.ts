@@ -30,12 +30,22 @@ export class FavoriteAddressesService {
 		return `This action returns a #${id} favoriteAddress`
 	}
 
-	update(
+	async update(
 		userId: string,
 		id: string,
 		updateFavoriteAddressDto: UpdateFavoriteAddressDto
-	) {
-		return `This action updates a #${id} favoriteAddress`
+	): Promise<FavoriteAddressEntity> {
+		const updatedFavoriteAddress = await this.prisma.favoriteAddress.update({
+			where: {
+				id,
+				userId,
+			},
+			data: {
+				...updateFavoriteAddressDto,
+			},
+		})
+
+		return new FavoriteAddressEntity(updatedFavoriteAddress)
 	}
 
 	remove(userId, id: string) {
