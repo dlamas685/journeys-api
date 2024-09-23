@@ -48,7 +48,11 @@ export class FavoriteAddressesService {
 		return new FavoriteAddressEntity(updatedFavoriteAddress)
 	}
 
-	remove(userId, id: string) {
-		return `This action removes a #${id} favoriteAddress`
+	async remove(userId, id: string) {
+		await this.prisma.favoriteAddress.delete({
+			where: { id, userId },
+		})
+
+		return `Eliminacion Completa!`
 	}
 }
