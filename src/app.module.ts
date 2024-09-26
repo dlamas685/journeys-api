@@ -4,18 +4,19 @@ import { ScheduleModule } from '@nestjs/schedule'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
 import { AuthModule } from './auth/auth.module'
+import { CloudinaryModule } from './cloudinary/cloudinary.module'
 import { EmailsModule } from './common/modules/mails/emails.module'
 import { PrismaModule } from './common/modules/prisma/prisma.module'
 import { envConfig } from './config'
 import { FavoriteAddressesModule } from './favorite-addresses/favorite-addresses.module'
+import { FilesModule } from './files/files.module'
 import { UsersModule } from './users/users.module'
 
 @Module({
 	imports: [
 		ConfigModule.forRoot(envConfig),
 		ServeStaticModule.forRoot({
-			rootPath: join(__dirname, '..', 'emails/static'),
-			serveRoot: '/static',
+			rootPath: join(__dirname, '..', 'public'),
 		}),
 		ScheduleModule.forRoot(),
 		PrismaModule,
@@ -23,6 +24,8 @@ import { UsersModule } from './users/users.module'
 		AuthModule,
 		UsersModule,
 		FavoriteAddressesModule,
+		CloudinaryModule,
+		FilesModule,
 	],
 	controllers: [],
 	providers: [],
