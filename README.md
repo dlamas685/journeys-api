@@ -52,20 +52,20 @@ This project defines the RESTful API of a trip and route optimization system. Th
 
 ## Swagger
 
-The app has a swagger documentation. To access the documentation, go to the following URL: http://localhost:3001/api
+The app has a swagger documentation. To access the documentation, go to the following URL: http://localhost:3001/docs
 
 > [!NOTE]
 > The port can be different. Check the **.env** file.
 
 ## Prisma CLI
 
-After setup `.env` with database conections 
+After setup `.env` with database connections
 
-* For update the types and reflect the schema changes
+- For update the types and reflect the schema changes
   ```
     npx prisma generate
   ```
-* For sync all migrations run
+- For sync all migrations run
   ```
     npx prisma migrate deploy
   ```
