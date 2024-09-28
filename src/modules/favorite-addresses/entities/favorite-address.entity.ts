@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { FavoriteAddress } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import { Type } from 'class-transformer'
+
+export class DecimalNumber extends Decimal {
+	constructor(value?: any) {
+		super(value || 0)
+	}
+}
 
 export class FavoriteAddressEntity implements FavoriteAddress {
 	@ApiProperty()
@@ -19,10 +26,12 @@ export class FavoriteAddressEntity implements FavoriteAddress {
 	placeId: string | null
 
 	@ApiProperty()
-	latitude: Decimal | null
+	@Type(() => DecimalNumber)
+	latitude: DecimalNumber | null
 
 	@ApiProperty()
-	longitude: Decimal | null
+	@Type(() => DecimalNumber)
+	longitude: DecimalNumber | null
 
 	createdAt: Date
 	updatedAt: Date | null

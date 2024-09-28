@@ -11,9 +11,26 @@ import {
 	Post,
 	UseGuards,
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger'
-import { UserId } from 'src/common/decorators'
-import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard'
+import {
+	ApiBearerAuth,
+	ApiOkResponse,
+	ApiQuery,
+	ApiTags,
+} from '@nestjs/swagger'
+import { UserId } from '../../common/decorators'
+import {
+	Filtering,
+	FilteringParams,
+} from '../../common/decorators/filtering-params.decorator'
+import {
+	Pagination,
+	PaginationParams,
+} from '../../common/decorators/pagination-params.decorator'
+import {
+	Sorting,
+	SortingParams,
+} from '../../common/decorators/sorting-params.decorator'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { CreateFavoriteAddressDto } from './dto/create-favorite-address.dto'
 import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'
 import { FavoriteAddressEntity } from './entities/favorite-address.entity'
@@ -42,12 +59,27 @@ export class FavoriteAddressesController {
 	}
 
 	@Get()
-	findAll(@UserId() userId: string) {
-		return this.favoriteAddressesService.findAll(userId)
+	@HttpCode(HttpStatus.OK)
+	@ApiQuery({ name: 'sort', isArray: true, example: 'address:asc' })
+	@ApiQuery({ name: 'filter', isArray: true, example: 'address:like:Av' })
+	findAllTest(
+		@UserId() userId: string,
+		@PaginationParams() paginationParams: Pagination,
+		@SortingParams(['address', 'alias']) sort?: Sorting[],
+		@FilteringParams(['address', 'alias']) filter?: Filtering[]
+	) {
+		return this.favoriteAddressesService.findAll(
+			userId,
+			paginationParams,
+			sort,
+			filter
+		)
 	}
 
 	@Get(':id')
-	findOne(@UserId() userId: string, @Param('id') id: string) {
+	@HttpCode(HttpStatus.OK)
+	@ApiOkResponse({ type: FavoriteAddressEntity })
+	findOne(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.favoriteAddressesService.findOne(userId, id)
 	}
 

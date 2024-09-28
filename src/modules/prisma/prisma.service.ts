@@ -12,6 +12,8 @@ export class PrismaService
 				timeout: 10000,
 				maxWait: 5000,
 			},
+			/* enable logs only for testing propouse */
+			//log: ['query', 'info', 'warn', 'error'],
 		})
 	}
 

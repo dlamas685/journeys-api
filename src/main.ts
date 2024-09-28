@@ -59,6 +59,6 @@ async function bootstrap() {
 
 	await app.listen(port)
 
-	logger.log(`Application is running on port ${port}`)
+	logger.log(`Application is running on port ${port} 🚀`)
 }
 bootstrap()

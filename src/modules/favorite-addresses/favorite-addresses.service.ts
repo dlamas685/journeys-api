@@ -1,5 +1,14 @@
 import { Injectable } from '@nestjs/common'
-import { PrismaService } from 'src/modules/prisma/prisma.service'
+import { Prisma } from '@prisma/client'
+import { plainToInstance } from 'class-transformer'
+import { Filtering } from 'src/common/decorators/filtering-params.decorator'
+import { Pagination } from 'src/common/decorators/pagination-params.decorator'
+import {
+	getOrder,
+	getWhere,
+} from 'src/common/decorators/prisma-pagination-helper'
+import { Sorting } from 'src/common/decorators/sorting-params.decorator'
+import { PrismaService } from '../../modules/prisma/prisma.service'
 import { CreateFavoriteAddressDto } from './dto/create-favorite-address.dto'
 import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'
 import { FavoriteAddressEntity } from './entities/favorite-address.entity'
@@ -22,12 +31,48 @@ export class FavoriteAddressesService {
 		return new FavoriteAddressEntity(newFavoriteAddress)
 	}
 
-	findAll(userId) {
-		return `This action returns all favoriteAddresses`
+	async findAll(
+		userId: string,
+		paginationParams: Pagination,
+		sort: Sorting[],
+		filter: Filtering[]
+	) {
+		const whereFilters = getWhere(filter)
+		const order = getOrder(sort)
+
+		const query: Prisma.FavoriteAddressFindManyArgs = {
+			skip: (paginationParams.page - 1) * paginationParams.limit,
+			take: paginationParams.limit,
+			where: {
+				userId: userId,
+				...whereFilters,
+			},
+			orderBy: order,
+		}
+
+		const [records, totalPages] = await this.prisma.$transaction([
+			this.prisma.favoriteAddress.findMany(query),
+			this.prisma.favoriteAddress.count({ where: query.where }),
+		])
+
+		return {
+			data: plainToInstance(FavoriteAddressEntity, records),
+			meta: {
+				total: totalPages,
+				page: paginationParams.page,
+			},
+		}
 	}
 
-	findOne(userId: string, id: string) {
-		return `This action returns a #${id} favoriteAddress`
+	async findOne(userId: string, id: string) {
+		const foundAddress = await this.prisma.favoriteAddress.findFirst({
+			where: {
+				id,
+				userId,
+			},
+		})
+
+		return new FavoriteAddressEntity(foundAddress)
 	}
 
 	async update(
