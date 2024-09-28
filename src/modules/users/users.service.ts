@@ -1,7 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateAccountDto, CreateUserDto, UpdateUserDto } from './dto'
+import {
+	ChangePasswordDto,
+	CreateAccountDto,
+	CreateUserDto,
+	UpdateUserDto,
+} from './dto'
 import { CompanyProfileEntity } from './entities/company-profile.entity'
 import { PersonalProfileEntity } from './entities/personal-profile.entity'
 import { UserEntity } from './entities/user.entity'
@@ -138,5 +143,38 @@ export class UsersService {
 		})
 
 		return user
+	}
+
+	async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
+		const { password, newPassword } = changePasswordDto
+
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+		})
+
+		if (!user) {
+			throw new NotFoundException('Usuario no encontrado')
+		}
+
+		const isValidPassword = await bcrypt.compare(password, user.password)
+
+		if (!isValidPassword) {
+			throw new NotFoundException('Contraseña incorrecta')
+		}
+
+		const hashedPassword = await bcrypt.hash(newPassword, this.salt)
+
+		const updatedUser = await this.prisma.user.update({
+			where: {
+				id: userId,
+			},
+			data: {
+				password: hashedPassword,
+			},
+		})
+
+		return new UserEntity(updatedUser)
 	}
 }

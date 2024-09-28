@@ -17,8 +17,9 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger'
+import { UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateUserDto, UpdateUserDto } from './dto'
+import { ChangePasswordDto, CreateUserDto, UpdateUserDto } from './dto'
 import { UserEntity } from './entities/user.entity'
 import { UsersService } from './users.service'
 
@@ -27,7 +28,7 @@ import { UsersService } from './users.service'
 @ApiBearerAuth('JWT-auth')
 @Controller('users')
 export class UsersController {
-	constructor(private readonly usersService: UsersService) {}
+	constructor(private readonly users: UsersService) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -37,7 +38,7 @@ export class UsersController {
 			'Permite crear un nuevo usuario con su perfil personal o de empresa',
 	})
 	create(@Body() createUserDto: CreateUserDto) {
-		return this.usersService.create(createUserDto)
+		return this.users.create(createUserDto)
 	}
 
 	@Get()
@@ -47,7 +48,7 @@ export class UsersController {
 	})
 	@ApiOkResponse({ type: [UserEntity] })
 	findAll() {
-		return this.usersService.findAll()
+		return this.users.findAll()
 	}
 
 	@Get(':id')
@@ -57,7 +58,7 @@ export class UsersController {
 	})
 	@ApiOkResponse({ type: UserEntity })
 	findOne(@Param('id', ParseUUIDPipe) id: string) {
-		return this.usersService.findOne(id)
+		return this.users.findOne(id)
 	}
 
 	@Patch(':id')
@@ -69,7 +70,7 @@ export class UsersController {
 	})
 	@ApiOkResponse({ type: UserEntity })
 	update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-		return this.usersService.update(id, updateUserDto)
+		return this.users.update(id, updateUserDto)
 	}
 
 	@Delete(':id')
@@ -79,6 +80,18 @@ export class UsersController {
 	})
 	@ApiOkResponse({ type: UserEntity })
 	remove(@Param('id', ParseUUIDPipe) id: string) {
-		return this.usersService.remove(id)
+		return this.users.remove(id)
+	}
+
+	@Post('password-change')
+	@ApiOperation({
+		summary: 'Cambio de contraseña',
+		description: 'Permite cambiar la contraseña de un usuario',
+	})
+	changePassword(
+		@UserId() userId,
+		@Body() changePasswordDto: ChangePasswordDto
+	) {
+		return this.users.changePassword(userId, changePasswordDto)
 	}
 }
