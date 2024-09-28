@@ -70,7 +70,7 @@ export class AuthService {
 		})
 
 		if (user) {
-			const udatedUser = await this.prisma.$transaction(async prisma => {
+			const updatedUser = await this.prisma.$transaction(async prisma => {
 				prisma.account.create({
 					data: {
 						...createAccountDto,
@@ -94,7 +94,7 @@ export class AuthService {
 				})
 			})
 
-			return new UserEntity(udatedUser)
+			return new UserEntity(updatedUser)
 		}
 
 		const createUserDto = plainToClass(CreateUserDto, {
@@ -238,39 +238,6 @@ export class AuthService {
 		})
 	}
 
-	/* 	async signUpLastSteap(
-		signUpLastStepDto: SignUpLastStepDto
-	): Promise<UserEntity> {
-		const { userType, companyProfile, personalProfile } = signUpLastStepDto
-
-		const updatedUser = await this.prisma.user.update({
-			data: {
-				userType,
-				companyProfile: {
-					update: companyProfile,
-				},
-				personalProfile: {
-					update: personalProfile,
-				},
-			},
-			where: {
-				id,
-			},
-			include: {
-				companyProfile: true,
-				personalProfile: true,
-			},
-		})
-
-		// await this.prisma.$transaction(async tx => {
-		// 	const updatedUser = tx.user.update
-
-		// 	return new UserEntity(updatedUser)
-		// })
-
-		return new UserEntity(updatedUser)
-	} */
-
 	async verifyEmail(verifyEmailDto: VerifyEmailDto): Promise<UserEntity> {
 		const { token, email } = verifyEmailDto
 
@@ -309,7 +276,7 @@ export class AuthService {
 		return new UserEntity(updatedUser)
 	}
 
-	async hashPassword(password: string) {
+	private async hashPassword(password: string) {
 		const salt = await bcrypt.genSalt(10)
 		return await bcrypt.hash(password, salt)
 	}

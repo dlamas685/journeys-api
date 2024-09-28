@@ -52,7 +52,7 @@ export class AuthController {
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: 'Solicitud de cambio de contraseña',
-		description: 'Envia un correo electrónico para restablecer la contraseña',
+		description: 'Envía un correo electrónico para restablecer la contraseña',
 	})
 	@ApiOkResponse({ type: SmtpEntity })
 	async requestPasswordReset(

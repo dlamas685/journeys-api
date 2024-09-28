@@ -1,3 +1,4 @@
+export * from './change-password.dto'
 export * from './create-account.dto'
 export * from './create-company-profile.dto'
 export * from './create-personal-profile.dto'
