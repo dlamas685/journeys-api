@@ -12,7 +12,7 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
-import { CreateUserDto } from 'src/users/dto'
+import { CreateUserDto } from 'src/modules/users/dto'
 import {
 	LoginDto,
 	RequestPasswordResetDto,
@@ -38,7 +38,7 @@ export class AuthController {
 	@UseGuards(LocalAuthGuard)
 	@ApiOperation({
 		summary: 'Iniciar sesión',
-		description: 'Permite al usuario ingresar a la aplicaión con credenciales',
+		description: 'Permite al usuario ingresar a la aplicación con credenciales',
 	})
 	@ApiOkResponse({ type: AuthEntity })
 	async login(@Req() req, @Body() authDto: LoginDto): Promise<AuthEntity> {
@@ -82,9 +82,9 @@ export class AuthController {
 	})
 	@ApiOkResponse({ type: AuthEntity })
 	async validateAccessToken(
-		@Body() validateAccesTokenDto: ValidateAccessTokenDto
+		@Body() validateAccessTokenDto: ValidateAccessTokenDto
 	): Promise<AuthEntity> {
-		return this.auth.validateAccessToken(validateAccesTokenDto)
+		return this.auth.validateAccessToken(validateAccessTokenDto)
 	}
 
 	@Get('google/login')
@@ -99,7 +99,7 @@ export class AuthController {
 	@UseGuards(GoogleAuthGuard)
 	@ApiOperation({
 		summary: 'Redirección de Google',
-		description: 'Permite ingresar a la aplicaión con Google',
+		description: 'Permite ingresar a la aplicación con Google',
 	})
 	@ApiOkResponse({ type: AuthEntity })
 	async googleRedirect(@Req() req, @Res({ passthrough: true }) res: Response) {
@@ -113,7 +113,7 @@ export class AuthController {
 
 		const auth = await this.auth.login(req.user)
 		return res.redirect(
-			`${this.config.get('FRONTEND_URL')}/providers?token=${auth.accessToken}`
+			`${this.config.get<string>('FRONTEND_URL')}/providers?token=${auth.accessToken}`
 		)
 	}
 

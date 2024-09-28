@@ -12,8 +12,8 @@ import {
 	UseGuards,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { GetCurrentUserById } from './../common/decorators'
+import { UserId } from 'src/common/decorators'
+import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard'
 import { CreateFavoriteAddressDto } from './dto/create-favorite-address.dto'
 import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'
 import { FavoriteAddressEntity } from './entities/favorite-address.entity'
@@ -21,7 +21,7 @@ import { FavoriteAddressesService } from './favorite-addresses.service'
 
 @Controller('me/favorite-addresses')
 @UseGuards(JwtAuthGuard)
-@ApiTags('Favourite Addresses')
+@ApiTags('Favorite Addresses')
 @ApiBearerAuth('JWT-auth')
 export class FavoriteAddressesController {
 	constructor(
@@ -32,7 +32,7 @@ export class FavoriteAddressesController {
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOkResponse({ type: FavoriteAddressEntity })
 	create(
-		@GetCurrentUserById() userId: string,
+		@UserId() userId: string,
 		@Body() createFavoriteAddressDto: CreateFavoriteAddressDto
 	) {
 		return this.favoriteAddressesService.create(
@@ -42,12 +42,12 @@ export class FavoriteAddressesController {
 	}
 
 	@Get()
-	findAll(@GetCurrentUserById() userId: string) {
+	findAll(@UserId() userId: string) {
 		return this.favoriteAddressesService.findAll(userId)
 	}
 
 	@Get(':id')
-	findOne(@GetCurrentUserById() userId: string, @Param('id') id: string) {
+	findOne(@UserId() userId: string, @Param('id') id: string) {
 		return this.favoriteAddressesService.findOne(userId, id)
 	}
 
@@ -55,7 +55,7 @@ export class FavoriteAddressesController {
 	@HttpCode(HttpStatus.OK)
 	@ApiOkResponse({ type: FavoriteAddressEntity })
 	update(
-		@GetCurrentUserById() userId: string,
+		@UserId() userId: string,
 		@Param('id', ParseUUIDPipe) id: string,
 		@Body() updateFavoriteAddressDto: UpdateFavoriteAddressDto
 	) {
@@ -67,10 +67,7 @@ export class FavoriteAddressesController {
 	}
 
 	@Delete(':id')
-	remove(
-		@GetCurrentUserById() userId: string,
-		@Param('id', ParseUUIDPipe) id: string
-	) {
+	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.favoriteAddressesService.remove(userId, id)
 	}
 }

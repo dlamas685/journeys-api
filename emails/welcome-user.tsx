@@ -15,8 +15,8 @@ import {
 	Text,
 } from '@react-email/components'
 import * as React from 'react'
-import tailwindConfig from 'src/common/modules/mails/config/tailwind.config'
-import { WelcomeStep } from 'src/common/modules/mails/interfaces'
+import tailwindConfig from 'src/modules/mails/config/tailwind.config'
+import { WelcomeStep } from 'src/modules/mails/interfaces'
 
 type Props = {
 	steps: WelcomeStep[]

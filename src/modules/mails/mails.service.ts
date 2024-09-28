@@ -10,7 +10,7 @@ import { capitalCase } from 'change-case'
 import { plainToClass } from 'class-transformer'
 import PasswordReset from 'emails/password-reset'
 import WelcomeUser from 'emails/welcome-user'
-import { SmtpEntity, UserEntity } from 'src/auth/entities'
+import { SmtpEntity, UserEntity } from 'src/modules/auth/entities'
 import {
 	COMPANY_USER_MESSAGE,
 	COMPANY_USER_STEPS,

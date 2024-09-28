@@ -1,0 +1,130 @@
+import {
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Post,
+	Res,
+	UploadedFile,
+	UseGuards,
+	UseInterceptors,
+} from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
+import {
+	ApiBearerAuth,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+} from '@nestjs/swagger'
+import { Response } from 'express'
+import { Public, UserId } from 'src/common/decorators'
+import { UserEntity } from '../auth/entities'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { CloudinaryService } from '../cloudinary/cloudinary.service'
+import { UsersService } from '../users/users.service'
+import { FilesService } from './files.service'
+import { imageFilter } from './helpers/image-filter.helper'
+
+@ApiTags('Files')
+@UseGuards(JwtAuthGuard)
+@Controller('files')
+export class FilesController {
+	constructor(
+		private readonly files: FilesService,
+		private readonly cloudinary: CloudinaryService,
+		private readonly users: UsersService
+	) {}
+
+	@Public()
+	@Get(':folder/:name')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Consultar imagen estática',
+		description: 'Obtiene una imagen estática',
+	})
+	@ApiOkResponse({
+		content: {
+			'application/octet-stream': {
+				schema: {
+					type: 'string',
+					format: 'binary',
+				},
+			},
+		},
+	})
+	findImage(
+		@Res() res: Response,
+		@Param('name') name: string,
+		@Param('folder') folder: string
+	) {
+		const path = this.files.getStaticImage(name, folder)
+		res.sendFile(path)
+	}
+
+	@Post('user')
+	@UseInterceptors(
+		FileInterceptor('file', {
+			fileFilter: imageFilter,
+		})
+	)
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Subir imagen de usuario',
+		description: 'Sube una imagen de usuario',
+	})
+	@ApiBearerAuth('JWT-auth')
+	@ApiOkResponse({ type: UserEntity })
+	async uploadUserImage(
+		@UserId() userId,
+		@UploadedFile() file: Express.Multer.File
+	) {
+		const user = await this.users.findOne(userId)
+
+		if (user.imageUrl && !this.isGoogleImage(user.imageUrl)) {
+			const publicId = this.getPublicIdFromUrl(user.imageUrl)
+			await this.cloudinary.deleteFile(publicId)
+		}
+
+		const cloud = await this.cloudinary.uploadFile(file)
+
+		const updatedUser = await this.users.update(userId, {
+			imageUrl: cloud.secure_url,
+		})
+
+		return updatedUser
+	}
+
+	@Delete('user')
+	@ApiOperation({
+		summary: 'Eliminar imagen de usuario',
+		description: 'Elimina la imagen actual del perfil del usuario',
+	})
+	@ApiBearerAuth('JWT-auth')
+	@ApiOkResponse({ type: UserEntity })
+	async deleteUserImage(@UserId() userId) {
+		const user = await this.users.findOne(userId)
+
+		if (user.imageUrl) {
+			const publicId = this.getPublicIdFromUrl(user.imageUrl)
+			await this.cloudinary.deleteFile(publicId)
+
+			const updatedUser = await this.users.update(userId, { imageUrl: null })
+
+			return updatedUser
+		}
+
+		return user
+	}
+
+	private getPublicIdFromUrl(url: string): string {
+		const parts = url.split('/')
+		const lastPart = parts[parts.length - 1]
+		return lastPart.split('.')[0]
+	}
+
+	private isGoogleImage(imageUrl: string): boolean {
+		return imageUrl.includes('googleusercontent.com')
+	}
+}

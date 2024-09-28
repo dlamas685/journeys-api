@@ -15,7 +15,7 @@ import {
 	Text,
 } from '@react-email/components'
 import * as React from 'react'
-import tailwindConfig from 'src/common/modules/mails/config/tailwind.config'
+import tailwindConfig from 'src/modules/mails/config/tailwind.config'
 
 type Props = {
 	name: string

@@ -23,7 +23,6 @@ import { UserEntity } from './entities/user.entity'
 import { UsersService } from './users.service'
 
 @ApiTags('Users')
-@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JWT-auth')
 @Controller('users')
