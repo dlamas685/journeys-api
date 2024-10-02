@@ -17,9 +17,8 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger'
-import { UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { ChangePasswordDto, CreateUserDto, UpdateUserDto } from './dto'
+import { CreateUserDto, UpdateUserDto } from './dto'
 import { UserEntity } from './entities/user.entity'
 import { UsersService } from './users.service'
 
@@ -81,17 +80,5 @@ export class UsersController {
 	@ApiOkResponse({ type: UserEntity })
 	remove(@Param('id', ParseUUIDPipe) id: string) {
 		return this.users.remove(id)
-	}
-
-	@Post('password-change')
-	@ApiOperation({
-		summary: 'Cambio de contraseña',
-		description: 'Permite cambiar la contraseña de un usuario',
-	})
-	changePassword(
-		@UserId() userId,
-		@Body() changePasswordDto: ChangePasswordDto
-	) {
-		return this.users.changePassword(userId, changePasswordDto)
 	}
 }

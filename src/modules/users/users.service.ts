@@ -1,27 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from '../prisma/prisma.service'
-import {
-	ChangePasswordDto,
-	CreateAccountDto,
-	CreateUserDto,
-	UpdateUserDto,
-} from './dto'
+import { CreateAccountDto, CreateUserDto, UpdateUserDto } from './dto'
 import { CompanyProfileEntity } from './entities/company-profile.entity'
 import { PersonalProfileEntity } from './entities/personal-profile.entity'
 import { UserEntity } from './entities/user.entity'
 
 @Injectable()
 export class UsersService {
-	// TODO: move salt into env variables
-	private readonly salt: number = 10
+	private readonly salts: number
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly config: ConfigService
+	) {
+		this.salts = this.config.get<number>('SALTS')
+	}
 
 	async create(createUserDto: CreateUserDto): Promise<UserEntity> {
 		const { password, companyProfile, personalProfile, ...data } = createUserDto
 
-		const hashedPassword = password && (await bcrypt.hash(password, this.salt))
+		const hashedPassword = password && (await bcrypt.hash(password, this.salts))
 
 		const newUser = await this.prisma.user.create({
 			data: {
@@ -84,7 +84,7 @@ export class UsersService {
 		const { password, companyProfile, personalProfile, ...data } = updateUserDto
 
 		const newPassword = password
-			? await bcrypt.hash(password, this.salt)
+			? await bcrypt.hash(password, this.salts)
 			: undefined
 
 		const user = await this.prisma.user.update({
@@ -143,38 +143,5 @@ export class UsersService {
 		})
 
 		return user
-	}
-
-	async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
-		const { password, newPassword } = changePasswordDto
-
-		const user = await this.prisma.user.findUnique({
-			where: {
-				id: userId,
-			},
-		})
-
-		if (!user) {
-			throw new NotFoundException('Usuario no encontrado')
-		}
-
-		const isValidPassword = await bcrypt.compare(password, user.password)
-
-		if (!isValidPassword) {
-			throw new NotFoundException('Contraseña incorrecta')
-		}
-
-		const hashedPassword = await bcrypt.hash(newPassword, this.salt)
-
-		const updatedUser = await this.prisma.user.update({
-			where: {
-				id: userId,
-			},
-			data: {
-				password: hashedPassword,
-			},
-		})
-
-		return new UserEntity(updatedUser)
 	}
 }

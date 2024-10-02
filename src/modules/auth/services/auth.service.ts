@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { plainToClass } from 'class-transformer'
@@ -20,17 +21,20 @@ import { VerificationTokensService } from './verification-tokens.service'
 
 @Injectable()
 export class AuthService {
-	private readonly salt: number = 10
+	private readonly salts: number
 
 	constructor(
-		private jwt: JwtService,
-		private prisma: PrismaService,
-		private tokens: TokensService,
-		private verificationTokens: VerificationTokensService,
-		private users: UsersService,
-		private accounts: AccountsService,
-		private mails: EmailsService
-	) {}
+		private readonly jwt: JwtService,
+		private readonly prisma: PrismaService,
+		private readonly tokens: TokensService,
+		private readonly verificationTokens: VerificationTokensService,
+		private readonly users: UsersService,
+		private readonly accounts: AccountsService,
+		private readonly mails: EmailsService,
+		private readonly config: ConfigService
+	) {
+		this.salts = this.config.get<number>('SALTS')
+	}
 
 	async validateUser(email: string, password: string): Promise<UserEntity> {
 		const user = await this.users.findByEmail(email)
@@ -172,7 +176,7 @@ export class AuthService {
 					id,
 				},
 				data: {
-					password: bcrypt.hashSync(password, 10),
+					password: bcrypt.hashSync(password, this.salts),
 				},
 				include: {
 					companyProfile: true,
@@ -274,10 +278,5 @@ export class AuthService {
 		})
 
 		return new UserEntity(updatedUser)
-	}
-
-	private async hashPassword(password: string) {
-		const salt = await bcrypt.genSalt(10)
-		return await bcrypt.hash(password, salt)
 	}
 }

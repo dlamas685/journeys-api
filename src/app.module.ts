@@ -9,6 +9,7 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module'
 import { FavoriteAddressesModule } from './modules/favorite-addresses/favorite-addresses.module'
 import { FilesModule } from './modules/files/files.module'
 import { EmailsModule } from './modules/mails/emails.module'
+import { OptionsModule } from './modules/options/options.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { UsersModule } from './modules/users/users.module'
 
@@ -26,6 +27,7 @@ import { UsersModule } from './modules/users/users.module'
 		FavoriteAddressesModule,
 		CloudinaryModule,
 		FilesModule,
+		OptionsModule,
 	],
 	controllers: [],
 	providers: [],

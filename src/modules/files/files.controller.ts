@@ -63,7 +63,7 @@ export class FilesController {
 		res.sendFile(path)
 	}
 
-	@Post('user')
+	@Post('profile')
 	@UseInterceptors(
 		FileInterceptor('file', {
 			fileFilter: imageFilter,
@@ -71,8 +71,8 @@ export class FilesController {
 	)
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
-		summary: 'Subir imagen de usuario',
-		description: 'Sube una imagen de usuario',
+		summary: 'Subir imagen a mi perfil',
+		description: 'Sube una imagen al perfil del usuario autenticado',
 	})
 	@ApiBearerAuth('JWT-auth')
 	@ApiOkResponse({ type: UserEntity })
@@ -96,10 +96,10 @@ export class FilesController {
 		return updatedUser
 	}
 
-	@Delete('user')
+	@Delete('profile')
 	@ApiOperation({
-		summary: 'Eliminar imagen de usuario',
-		description: 'Elimina la imagen actual del perfil del usuario',
+		summary: 'Eliminar imagen de mi perfil',
+		description: 'Elimina la imagen actual del perfil del usuario autenticado',
 	})
 	@ApiBearerAuth('JWT-auth')
 	@ApiOkResponse({ type: UserEntity })
