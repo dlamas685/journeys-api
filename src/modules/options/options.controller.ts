@@ -6,7 +6,6 @@ import {
 	HttpCode,
 	HttpStatus,
 	Patch,
-	Post,
 	UseGuards,
 } from '@nestjs/common'
 import {
@@ -65,7 +64,7 @@ export class OptionsController {
 		return this.users.remove(id)
 	}
 
-	@Post('security')
+	@Patch('security')
 	@ApiOperation({
 		summary: 'Cambiar mi contraseña',
 		description: 'Permite cambiar la contraseña del usuario autenticado',
