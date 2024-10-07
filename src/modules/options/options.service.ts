@@ -48,4 +48,18 @@ export class OptionsService {
 
 		return new UserEntity(updatedUser)
 	}
+
+	async hasPassword(userId: string): Promise<boolean> {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+		})
+
+		if (!user) {
+			throw new NotFoundException('Usuario no encontrado')
+		}
+
+		return !!user.password
+	}
 }

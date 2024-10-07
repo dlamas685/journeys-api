@@ -75,4 +75,14 @@ export class OptionsController {
 	) {
 		return this.options.changePassword(userId, changePasswordDto)
 	}
+
+	@Get('security/password-exists')
+	@ApiOperation({
+		summary: 'Verificar si tengo contraseña',
+		description: 'Permite verificar si el usuario autenticado tiene contraseña',
+	})
+	@ApiOkResponse({ type: Boolean })
+	hasPassword(@UserId() userId) {
+		return this.options.hasPassword(userId)
+	}
 }
