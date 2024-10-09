@@ -1,7 +1,7 @@
 import { Prisma, User, UserType, type PrismaClient } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
 
-const intialUsers: Prisma.UserCreateInput[] = [
+const initialUsers: Prisma.UserCreateInput[] = [
 	{
 		email: 'messi@test.com',
 		emailVerified: new Date(),
@@ -37,6 +37,7 @@ const intialUsers: Prisma.UserCreateInput[] = [
 
 const seedUsers = async (prisma: PrismaClient): Promise<User[]> => {
 	const start = Date.now()
+
 	console.log('Seeding users...')
 
 	// clean up before the seeding (optional)
@@ -56,7 +57,7 @@ const seedUsers = async (prisma: PrismaClient): Promise<User[]> => {
 	])
 
 	const records: User[] = []
-	for (const user of intialUsers) {
+	for (const user of initialUsers) {
 		const newUser = await prisma.user.create({
 			data: user,
 		})
@@ -65,7 +66,6 @@ const seedUsers = async (prisma: PrismaClient): Promise<User[]> => {
 
 	const end = Date.now()
 	console.log(`Seeding users completed in ${end - start}ms`)
-	console.log({ records })
 
 	return records
 }
