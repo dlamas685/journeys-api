@@ -69,3 +69,11 @@ After setup `.env` with database connections
   ```
     npx prisma migrate deploy
   ```
+- For seed database
+  ```
+    npx prisma db seed
+  ```
+- Update schema and create migration
+  ```
+    npx prisma migrate dev --name example_name
+  ```
