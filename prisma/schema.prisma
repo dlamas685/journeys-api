@@ -45,6 +45,7 @@ model User {
   personalProfile PersonalProfile?
   companyProfile  CompanyProfile?
   FavoriteAddress FavoriteAddress[]
+  FavoritePlace   FavoritePlace[]
 
   @@map("users")
 }
@@ -90,7 +91,7 @@ model FavoriteAddress {
   userId    String    @map("user_id") @db.Uuid
   address   String
   alias     String?
-  placeId   String?
+  placeId   String?   @map("place_id")
   latitude  Decimal?
   longitude Decimal?
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -99,4 +100,20 @@ model FavoriteAddress {
 
   @@unique([userId, alias])
   @@map("favorite_address")
+}
+
+model FavoritePlace {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  name      String
+  placeId   String?   @map("place_id")
+  placeType String?   @map("place_type")
+  latitude  Decimal?
+  longitude Decimal?
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, placeId])
+  @@map("favorite_place")
 }

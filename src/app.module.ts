@@ -12,6 +12,7 @@ import { EmailsModule } from './modules/mails/emails.module'
 import { OptionsModule } from './modules/options/options.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { UsersModule } from './modules/users/users.module'
+import { FavoritePlacesModule } from './modules/favorite-places/favorite-places.module';
 
 @Module({
 	imports: [
@@ -28,6 +29,7 @@ import { UsersModule } from './modules/users/users.module'
 		CloudinaryModule,
 		FilesModule,
 		OptionsModule,
+		FavoritePlacesModule,
 	],
 	controllers: [],
 	providers: [],
