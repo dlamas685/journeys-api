@@ -6,19 +6,37 @@ import {
 	HttpCode,
 	HttpStatus,
 	Param,
+	ParseUUIDPipe,
 	Patch,
 	Post,
 	UseGuards,
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import {
+	ApiBearerAuth,
+	ApiOkResponse,
+	ApiQuery,
+	ApiTags,
+} from '@nestjs/swagger'
 import { UserId } from '../../common/decorators'
+import {
+	Filtering,
+	FilteringParams,
+} from '../../common/decorators/filtering-params.decorator'
+import {
+	Pagination,
+	PaginationParams,
+} from '../../common/decorators/pagination-params.decorator'
+import {
+	Sorting,
+	SortingParams,
+} from '../../common/decorators/sorting-params.decorator'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { CreateFavoritePlaceDto } from './dto/create-favorite-place.dto'
 import { UpdateFavoritePlaceDto } from './dto/update-favorite-place.dto'
 import { FavoritePlaceEntity } from './entities/favorite-place.entity'
 import { FavoritePlacesService } from './favorite-places.service'
 
-@Controller('me/favorite-places')
+@Controller('favorite-places')
 @UseGuards(JwtAuthGuard)
 @ApiTags('Favorite Places')
 @ApiBearerAuth('JWT-auth')
@@ -36,25 +54,43 @@ export class FavoritePlacesController {
 	}
 
 	@Get()
-	findAll() {
-		return this.favoritePlacesService.findAll()
+	@HttpCode(HttpStatus.OK)
+	@ApiQuery({ name: 'sort', isArray: true, example: 'name:asc' })
+	@ApiQuery({ name: 'filter', isArray: true, example: 'name:like:Av' })
+	findAllTest(
+		@UserId() userId: string,
+		@PaginationParams() paginationParams: Pagination,
+		@SortingParams(['name']) sort?: Sorting[],
+		@FilteringParams(['name', 'placeType']) filter?: Filtering[]
+	) {
+		return this.favoritePlacesService.findAll(
+			userId,
+			paginationParams,
+			sort,
+			filter
+		)
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: string) {
-		return this.favoritePlacesService.findOne(+id)
+	@HttpCode(HttpStatus.OK)
+	@ApiOkResponse({ type: FavoritePlaceEntity })
+	findOne(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
+		return this.favoritePlacesService.findOne(userId, id)
 	}
 
 	@Patch(':id')
+	@HttpCode(HttpStatus.OK)
+	@ApiOkResponse({ type: FavoritePlaceEntity })
 	update(
-		@Param('id') id: string,
+		@UserId() userId: string,
+		@Param('id', ParseUUIDPipe) id: string,
 		@Body() updateFavoritePlaceDto: UpdateFavoritePlaceDto
 	) {
-		return this.favoritePlacesService.update(+id, updateFavoritePlaceDto)
+		return this.favoritePlacesService.update(userId, id, updateFavoritePlaceDto)
 	}
 
 	@Delete(':id')
-	remove(@Param('id') id: string) {
-		return this.favoritePlacesService.remove(+id)
+	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
+		return this.favoritePlacesService.remove(userId, id)
 	}
 }

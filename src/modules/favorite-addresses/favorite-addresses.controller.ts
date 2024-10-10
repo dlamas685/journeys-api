@@ -36,7 +36,7 @@ import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'
 import { FavoriteAddressEntity } from './entities/favorite-address.entity'
 import { FavoriteAddressesService } from './favorite-addresses.service'
 
-@Controller('me/favorite-addresses')
+@Controller('favorite-addresses')
 @UseGuards(JwtAuthGuard)
 @ApiTags('Favorite Addresses')
 @ApiBearerAuth('JWT-auth')
