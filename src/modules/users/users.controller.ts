@@ -9,7 +9,7 @@ import {
 	ParseUUIDPipe,
 	Patch,
 	Post,
-	UseGuards,
+	Query,
 } from '@nestjs/common'
 import {
 	ApiBearerAuth,
@@ -17,13 +17,12 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateUserDto, UpdateUserDto } from './dto'
+import { CreateUserDto, UpdateUserDto, UsersQueryParamsDto } from './dto'
 import { UserEntity } from './entities/user.entity'
 import { UsersService } from './users.service'
 
 @ApiTags('Users')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JWT-auth')
 @Controller('users')
 export class UsersController {
@@ -46,8 +45,9 @@ export class UsersController {
 		description: 'Permite listar todos los usuarios',
 	})
 	@ApiOkResponse({ type: [UserEntity] })
-	findAll() {
-		return this.users.findAll()
+	findAll(@Query() queryParamsDto: UsersQueryParamsDto) {
+		console.log(queryParamsDto)
+		return this.users.findAll(queryParamsDto)
 	}
 
 	@Get(':id')

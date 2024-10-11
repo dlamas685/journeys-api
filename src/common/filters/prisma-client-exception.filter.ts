@@ -22,12 +22,13 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 		exception: Prisma.PrismaClientKnownRequestError
 	): string {
 		switch (exception.code) {
-			case 'P2002':
-				return `Ya existe un registro con el mismo valor para el campo único '${exception.meta?.target}'.`
+			case 'P2023':
+				return `El valor proporcionado para uno de los campos no es válido.`
 			case 'P2000':
 				return `El valor proporcionado para uno de los campos es demasiado largo.`
 			case 'P2025':
 				return `El registro que intenta actualizar/eliminar no existe.`
+
 			default:
 				return 'Ocurrió un error inesperado.'
 		}

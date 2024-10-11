@@ -1,6 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcrypt'
+import { QueryParamsDto } from 'src/common/dto'
+import {
+	fromFiltersToWhere,
+	fromLogicalFiltersToWhere,
+	fromSortsToOrderby,
+} from 'src/common/helpers'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateAccountDto, CreateUserDto, UpdateUserDto } from './dto'
 import { CompanyProfileEntity } from './entities/company-profile.entity'
@@ -44,8 +50,28 @@ export class UsersService {
 		return new UserEntity(newUser)
 	}
 
-	async findAll() {
-		return await this.prisma.user.findMany()
+	async findAll(queryParamsDto: QueryParamsDto) {
+		const { page, limit, filters, sorts, logicalFilters } = queryParamsDto
+
+		const parseFilters = filters ? fromFiltersToWhere(filters) : {}
+
+		const parseLogical = logicalFilters
+			? fromLogicalFiltersToWhere(logicalFilters)
+			: {}
+
+		const parseSorts = sorts ? fromSortsToOrderby(sorts) : {}
+
+		return await this.prisma.user.findMany({
+			where: {
+				...parseFilters,
+				...parseLogical,
+			},
+			orderBy: {
+				...parseSorts,
+			},
+			skip: (page - 1) * limit,
+			take: limit,
+		})
 	}
 
 	async findOne(id: string) {

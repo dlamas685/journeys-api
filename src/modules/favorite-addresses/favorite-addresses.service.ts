@@ -3,11 +3,8 @@ import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 import { Filtering } from 'src/common/decorators/filtering-params.decorator'
 import { Pagination } from 'src/common/decorators/pagination-params.decorator'
-import {
-	getOrder,
-	getWhere,
-} from 'src/common/decorators/prisma-pagination-helper'
 import { Sorting } from 'src/common/decorators/sorting-params.decorator'
+import { getOrder, getWhere } from 'src/common/helpers/prisma-pagination-helper'
 import { PrismaService } from '../../modules/prisma/prisma.service'
 import { CreateFavoriteAddressDto } from './dto/create-favorite-address.dto'
 import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'

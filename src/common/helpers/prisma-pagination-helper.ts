@@ -1,5 +1,5 @@
-import { Filtering, FilterRule } from './filtering-params.decorator'
-import { Sorting } from './sorting-params.decorator'
+import { Filtering, FilterRule } from '../decorators/filtering-params.decorator'
+import { Sorting } from '../decorators/sorting-params.decorator'
 
 export const getOrder = (sort: Sorting[]) => {
 	const sortQuery = sort.map(element => ({
