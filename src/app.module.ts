@@ -13,6 +13,7 @@ import { EmailsModule } from './modules/mails/emails.module'
 import { OptionsModule } from './modules/options/options.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { UsersModule } from './modules/users/users.module'
+import { ActivityTemplatesModule } from './modules/activity-templates/activity-templates.module';
 
 @Module({
 	imports: [
@@ -30,6 +31,7 @@ import { UsersModule } from './modules/users/users.module'
 		FilesModule,
 		OptionsModule,
 		FavoritePlacesModule,
+		ActivityTemplatesModule,
 	],
 	controllers: [],
 	providers: [],

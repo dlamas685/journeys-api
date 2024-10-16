@@ -7,7 +7,7 @@ import { Pagination } from '../../common/decorators/pagination-params.decorator'
 import {
 	getOrder,
 	getWhere,
-} from '../../common/decorators/prisma-pagination-helper'
+} from '../../common/helpers/prisma-pagination-helper'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateFavoritePlaceDto } from './dto/create-favorite-place.dto'
 import { UpdateFavoritePlaceDto } from './dto/update-favorite-place.dto'
