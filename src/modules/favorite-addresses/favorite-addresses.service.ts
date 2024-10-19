@@ -8,7 +8,7 @@ import {
 } from 'src/common/helpers'
 import { fromFiltersToWhere } from '../../common/helpers/fromFiltersToWhere.helper'
 import { PrismaService } from '../../modules/prisma/prisma.service'
-import { FavoriteAddressesQueryParamsDto } from './dto'
+import { FavoriteAddressQueryParamsDto } from './dto'
 import { CreateFavoriteAddressDto } from './dto/create-favorite-address.dto'
 import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'
 import { FavoriteAddressPaginatedResponseEntity } from './entities/favorite-address-paginated-response.entity'
@@ -32,10 +32,7 @@ export class FavoriteAddressesService {
 		return new FavoriteAddressEntity(newFavoriteAddress)
 	}
 
-	async findAll(
-		userId: string,
-		queryParamsDto: FavoriteAddressesQueryParamsDto
-	) {
+	async findAll(userId: string, queryParamsDto: FavoriteAddressQueryParamsDto) {
 		const { filters, sorts, logicalFilters, limit, page } = queryParamsDto
 
 		const parseFilters = fromFiltersToWhere(filters)

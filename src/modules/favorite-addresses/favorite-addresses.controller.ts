@@ -17,7 +17,7 @@ import { UserId } from '../../common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import {
 	CreateFavoriteAddressDto,
-	FavoriteAddressesQueryParamsDto,
+	FavoriteAddressQueryParamsDto,
 	UpdateFavoriteAddressDto,
 } from './dto'
 import {
@@ -53,7 +53,7 @@ export class FavoriteAddressesController {
 	@ApiOkResponse({ type: FavoriteAddressPaginatedResponseEntity })
 	findAllTest(
 		@UserId() userId: string,
-		@Query() queryParamsDto: FavoriteAddressesQueryParamsDto
+		@Query() queryParamsDto: FavoriteAddressQueryParamsDto
 	) {
 		return this.favoriteAddressesService.findAll(userId, queryParamsDto)
 	}
