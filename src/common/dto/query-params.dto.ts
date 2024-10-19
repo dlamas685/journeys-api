@@ -41,7 +41,7 @@ export class QueryParamsDto {
 	@ApiPropertyOptional({
 		type: String,
 		isArray: true,
-		example: 'Item Value => property:rule:type:value',
+		example: 'Item Value => field:rule:type:value',
 	})
 	filters?: FilterFieldDto[]
 
@@ -56,7 +56,7 @@ export class QueryParamsDto {
 	@ApiPropertyOptional({
 		type: String,
 		isArray: true,
-		example: 'Item Value => property:asc',
+		example: 'Item Value => field:asc',
 	})
 	sorts?: SortFieldDto[]
 
@@ -71,7 +71,7 @@ export class QueryParamsDto {
 	@ApiPropertyOptional({
 		type: String,
 		isArray: true,
-		example: 'Item Value => operator:property:rule:type:value',
+		example: 'Item Value => operator:field:rule:type:value',
 	})
 	logicalFilters?: LogicalFilterDto[]
 }

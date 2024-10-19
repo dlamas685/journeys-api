@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToClass } from 'class-transformer'
-import {
-	PaginatedResponseEntity,
-	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+import { PaginationMetadataEntity } from 'src/common/entities/paginated-response.entity'
 import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
@@ -14,6 +11,7 @@ import { PrismaService } from '../../modules/prisma/prisma.service'
 import { FavoriteAddressesQueryParamsDto } from './dto'
 import { CreateFavoriteAddressDto } from './dto/create-favorite-address.dto'
 import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'
+import { FavoriteAddressPaginatedResponseEntity } from './entities/favorite-address-paginated-response.entity'
 import { FavoriteAddressEntity } from './entities/favorite-address.entity'
 
 @Injectable()
@@ -70,7 +68,7 @@ export class FavoriteAddressesService {
 			lastPage: Math.ceil(totalPages / limit),
 		})
 
-		return new PaginatedResponseEntity<FavoriteAddressEntity>(records, metadata)
+		return new FavoriteAddressPaginatedResponseEntity(records, metadata)
 	}
 
 	async findOne(userId: string, id: string) {

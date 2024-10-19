@@ -12,17 +12,7 @@ import {
 	Query,
 	UseGuards,
 } from '@nestjs/common'
-import {
-	ApiBearerAuth,
-	ApiExtraModels,
-	ApiOkResponse,
-	ApiTags,
-	getSchemaPath,
-} from '@nestjs/swagger'
-import {
-	PaginatedResponseEntity,
-	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { UserId } from '../../common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import {
@@ -30,7 +20,10 @@ import {
 	FavoriteAddressesQueryParamsDto,
 	UpdateFavoriteAddressDto,
 } from './dto'
-import { FavoriteAddressEntity } from './entities/favorite-address.entity'
+import {
+	FavoriteAddressEntity,
+	FavoriteAddressPaginatedResponseEntity,
+} from './entities'
 import { FavoriteAddressesService } from './favorite-addresses.service'
 
 @Controller('favorite-addresses')
@@ -57,29 +50,7 @@ export class FavoriteAddressesController {
 
 	@Get()
 	@HttpCode(HttpStatus.OK)
-	@ApiExtraModels(
-		PaginatedResponseEntity,
-		PaginationMetadataEntity,
-		FavoriteAddressEntity
-	)
-	@ApiOkResponse({
-		schema: {
-			allOf: [
-				{ $ref: getSchemaPath(PaginatedResponseEntity) },
-				{
-					properties: {
-						data: {
-							type: 'array',
-							items: { $ref: getSchemaPath(FavoriteAddressEntity) },
-						},
-						meta: {
-							$ref: getSchemaPath(PaginationMetadataEntity),
-						},
-					},
-				},
-			],
-		},
-	})
+	@ApiOkResponse({ type: FavoriteAddressPaginatedResponseEntity })
 	findAllTest(
 		@UserId() userId: string,
 		@Query() queryParamsDto: FavoriteAddressesQueryParamsDto
