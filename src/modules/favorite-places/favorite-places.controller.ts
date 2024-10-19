@@ -21,15 +21,15 @@ import { UserId } from '../../common/decorators'
 import {
 	Filtering,
 	FilteringParams,
-} from '../../common/decorators/filtering-params.decorator'
+} from '../../deprecated/decorator/filtering-params.decorator'
 import {
 	Pagination,
 	PaginationParams,
-} from '../../common/decorators/pagination-params.decorator'
+} from '../../deprecated/decorator/pagination-params.decorator'
 import {
 	Sorting,
 	SortingParams,
-} from '../../common/decorators/sorting-params.decorator'
+} from '../../deprecated/decorator/sorting-params.decorator'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { CreateFavoritePlaceDto } from './dto/create-favorite-place.dto'
 import { UpdateFavoritePlaceDto } from './dto/update-favorite-place.dto'

@@ -37,10 +37,11 @@ export class QueryParamsDto {
 	@Transform(transformToFilterFieldArray, { toClassOnly: true })
 	@ValidateNested({ each: true })
 	@Type(() => FilterFieldDto)
+	// @Transform(transformToWhere, { toPlainOnly: true })
 	@ApiPropertyOptional({
 		type: String,
 		isArray: true,
-		example: 'Item Value => property:rule:value:mode',
+		example: 'Item Value => property:rule:type:value',
 	})
 	filters?: FilterFieldDto[]
 
@@ -51,6 +52,7 @@ export class QueryParamsDto {
 	@Transform(transformToSortFieldArray, { toClassOnly: true })
 	@ValidateNested({ each: true })
 	@Type(() => SortFieldDto)
+	// @Transform(transformToOrderby, { toClassOnly: true })
 	@ApiPropertyOptional({
 		type: String,
 		isArray: true,
@@ -65,10 +67,11 @@ export class QueryParamsDto {
 	@Transform(transformToLogicalFilterArray, { toClassOnly: true })
 	@ValidateNested({ each: true })
 	@Type(() => LogicalFilterDto)
+	// @Transform(transformToWhere, { toPlainOnly: true })
 	@ApiPropertyOptional({
 		type: String,
 		isArray: true,
-		example: 'Item Value => operator:property:rule:value:mode',
+		example: 'Item Value => operator:property:rule:type:value',
 	})
 	logicalFilters?: LogicalFilterDto[]
 }

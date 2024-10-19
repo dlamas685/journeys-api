@@ -7,9 +7,7 @@ import {
 	ValidateIf,
 } from 'class-validator'
 import { RuleMatchesValueType } from '../decorators'
-import { FilterRule } from '../decorators/filtering-params.decorator'
-import { FilterRules } from '../enums'
-import { FilterModes } from '../enums/filter-modes.enum'
+import { FilterRules, FilterTypes } from '../enums'
 import { transformToValueType } from '../helpers'
 
 export class FilterFieldDto {
@@ -18,18 +16,20 @@ export class FilterFieldDto {
 
 	@IsOptional()
 	@IsBoolean()
-	isNot?: boolean
+	isNot?: boolean = false
+
+	@IsOptional()
+	@IsBoolean()
+	isInsensitive?: boolean = true
 
 	@IsNotEmpty()
-	@ValidateIf(
-		o => o.rule !== FilterRule.IS_NULL && o.rule !== FilterRule.IS_NOT_NULL
-	)
+	@ValidateIf(o => o.value)
 	@RuleMatchesValueType()
 	rule: FilterRules
 
 	@IsOptional()
-	@IsEnum(FilterModes)
-	mode?: FilterModes
+	@IsEnum(FilterTypes)
+	type?: FilterTypes
 
 	@IsOptional()
 	@Transform(transformToValueType)

@@ -9,30 +9,27 @@ import {
 	ParseUUIDPipe,
 	Patch,
 	Post,
+	Query,
 	UseGuards,
 } from '@nestjs/common'
 import {
 	ApiBearerAuth,
+	ApiExtraModels,
 	ApiOkResponse,
-	ApiQuery,
 	ApiTags,
+	getSchemaPath,
 } from '@nestjs/swagger'
+import {
+	PaginatedResponseEntity,
+	PaginationMetadataEntity,
+} from 'src/common/entities/paginated-response.entity'
 import { UserId } from '../../common/decorators'
-import {
-	Filtering,
-	FilteringParams,
-} from '../../common/decorators/filtering-params.decorator'
-import {
-	Pagination,
-	PaginationParams,
-} from '../../common/decorators/pagination-params.decorator'
-import {
-	Sorting,
-	SortingParams,
-} from '../../common/decorators/sorting-params.decorator'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateFavoriteAddressDto } from './dto/create-favorite-address.dto'
-import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'
+import {
+	CreateFavoriteAddressDto,
+	FavoriteAddressesQueryParamsDto,
+	UpdateFavoriteAddressDto,
+} from './dto'
 import { FavoriteAddressEntity } from './entities/favorite-address.entity'
 import { FavoriteAddressesService } from './favorite-addresses.service'
 
@@ -60,20 +57,34 @@ export class FavoriteAddressesController {
 
 	@Get()
 	@HttpCode(HttpStatus.OK)
-	@ApiQuery({ name: 'sort', isArray: true, example: 'address:asc' })
-	@ApiQuery({ name: 'filter', isArray: true, example: 'address:like:Av' })
+	@ApiExtraModels(
+		PaginatedResponseEntity,
+		PaginationMetadataEntity,
+		FavoriteAddressEntity
+	)
+	@ApiOkResponse({
+		schema: {
+			allOf: [
+				{ $ref: getSchemaPath(PaginatedResponseEntity) },
+				{
+					properties: {
+						data: {
+							type: 'array',
+							items: { $ref: getSchemaPath(FavoriteAddressEntity) },
+						},
+						meta: {
+							$ref: getSchemaPath(PaginationMetadataEntity),
+						},
+					},
+				},
+			],
+		},
+	})
 	findAllTest(
 		@UserId() userId: string,
-		@PaginationParams() paginationParams: Pagination,
-		@SortingParams(['address', 'alias']) sort?: Sorting[],
-		@FilteringParams(['address', 'alias']) filter?: Filtering[]
+		@Query() queryParamsDto: FavoriteAddressesQueryParamsDto
 	) {
-		return this.favoriteAddressesService.findAll(
-			userId,
-			paginationParams,
-			sort,
-			filter
-		)
+		return this.favoriteAddressesService.findAll(userId, queryParamsDto)
 	}
 
 	@Get(':id')

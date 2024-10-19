@@ -6,7 +6,7 @@ export const fromLogicalFiltersToWhere = <T extends object>(
 ) => {
 	const where: Record<string, any> = {}
 
-	logicalFilters.forEach(logicalFilter => {
+	logicalFilters?.forEach(logicalFilter => {
 		where[logicalFilter.operator] = logicalFilter.conditions.map(condition =>
 			fromFiltersToWhere([condition])
 		)

@@ -20,6 +20,12 @@ export class RuleMatchesValueTypeConstraint
 	validate(rule: FilterRules, args: ValidationArguments) {
 		const value = (args.object as any).value
 
+		console.log(rule)
+
+		if (typeof value === 'string' && VALID_STRING_RULES.includes(rule)) {
+			return true
+		}
+
 		if (value instanceof Date && VALID_DATE_RULES.includes(rule)) {
 			return true
 		}
@@ -33,11 +39,6 @@ export class RuleMatchesValueTypeConstraint
 		}
 
 		if (typeof value === 'boolean' && rule === FilterRules.EQUALS) {
-			return true
-		}
-
-		if (typeof value === 'string' && VALID_STRING_RULES.includes(rule)) {
-			console.log('string')
 			return true
 		}
 
