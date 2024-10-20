@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { User, UserType } from '@prisma/client'
 import { Exclude } from 'class-transformer'
-import { AccountEntity } from './account.entity'
+import { AccountEntity } from '../../auth/entities/account.entity'
 import { CompanyProfileEntity } from './company-profile.entity'
 import { PersonalProfileEntity } from './personal-profile.entity'
 

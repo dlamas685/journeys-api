@@ -5,17 +5,19 @@ import * as bcrypt from 'bcrypt'
 import { plainToClass } from 'class-transformer'
 import { EmailsService } from 'src/modules/mails/mails.service'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
+import { UserEntity } from 'src/modules/users/entities'
 import { v4 as uuid } from 'uuid'
-import { CreateAccountDto, CreateUserDto } from '../../users/dto'
-import { AccountsService } from '../../users/services/accounts.service'
+import { CreateUserDto } from '../../users/dto'
 import { UsersService } from '../../users/users.service'
 import {
+	CreateAccountDto,
 	RequestPasswordResetDto,
 	ResetPasswordDto,
 	ValidateAccessTokenDto,
 	VerifyEmailDto,
 } from '../dto'
-import { AuthEntity, GoogleEntity, SmtpEntity, UserEntity } from '../entities'
+import { AuthEntity, GoogleEntity, SmtpEntity } from '../entities'
+import { AccountsService } from './accounts.service'
 import { TokensService } from './tokens.service'
 import { VerificationTokensService } from './verification-tokens.service'
 

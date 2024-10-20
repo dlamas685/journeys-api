@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { CreateUserDto } from 'src/modules/users/dto'
+import { UserEntity } from 'src/modules/users/entities'
 import {
 	LoginDto,
 	RequestPasswordResetDto,
@@ -20,7 +21,7 @@ import {
 	ValidateAccessTokenDto,
 	VerifyEmailDto,
 } from '../dto'
-import { AuthEntity, SmtpEntity, UserEntity } from '../entities'
+import { AuthEntity, SmtpEntity } from '../entities'
 import { GoogleAuthGuard } from '../guards/google-auth.guard'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
 import { AuthService } from '../services/auth.service'
