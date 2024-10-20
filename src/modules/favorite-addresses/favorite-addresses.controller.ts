@@ -13,17 +13,14 @@ import {
 	UseGuards,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger'
-import { UserId } from '../../common/decorators'
+import { ApiOkResponsePaginated, UserId } from '../../common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import {
 	CreateFavoriteAddressDto,
 	FavoriteAddressQueryParamsDto,
 	UpdateFavoriteAddressDto,
 } from './dto'
-import {
-	FavoriteAddressEntity,
-	FavoriteAddressPaginatedResponseEntity,
-} from './entities'
+import { FavoriteAddressEntity } from './entities/favorite-address.entity'
 import { FavoriteAddressesService } from './favorite-addresses.service'
 
 @Controller('favorite-addresses')
@@ -50,8 +47,8 @@ export class FavoriteAddressesController {
 
 	@Get()
 	@HttpCode(HttpStatus.OK)
-	@ApiOkResponse({ type: FavoriteAddressPaginatedResponseEntity })
-	findAllTest(
+	@ApiOkResponsePaginated(FavoriteAddressEntity)
+	findAll(
 		@UserId() userId: string,
 		@Query() queryParamsDto: FavoriteAddressQueryParamsDto
 	) {

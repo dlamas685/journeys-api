@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime/library'
 import { plainToClass } from 'class-transformer'
-import { PaginationMetadataEntity } from 'src/common/entities/paginated-response.entity'
+import {
+	PaginatedResponseEntity,
+	PaginationMetadataEntity,
+} from 'src/common/entities/paginated-response.entity'
 import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
@@ -11,7 +15,6 @@ import { PrismaService } from '../../modules/prisma/prisma.service'
 import { FavoriteAddressQueryParamsDto } from './dto'
 import { CreateFavoriteAddressDto } from './dto/create-favorite-address.dto'
 import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'
-import { FavoriteAddressPaginatedResponseEntity } from './entities/favorite-address-paginated-response.entity'
 import { FavoriteAddressEntity } from './entities/favorite-address.entity'
 
 @Injectable()
@@ -26,6 +29,8 @@ export class FavoriteAddressesService {
 			data: {
 				userId,
 				...createFavoriteAddressDto,
+				latitude: new Decimal(createFavoriteAddressDto.latitude),
+				longitude: new Decimal(createFavoriteAddressDto.longitude),
 			},
 		})
 
@@ -33,24 +38,24 @@ export class FavoriteAddressesService {
 	}
 
 	async findAll(userId: string, queryParamsDto: FavoriteAddressQueryParamsDto) {
-		const { filters, sorts, logicalFilters, limit, page } = queryParamsDto
+		const parsedFilters = fromFiltersToWhere(queryParamsDto.filters)
 
-		const parseFilters = fromFiltersToWhere(filters)
+		const parsedLogicalFilters = fromLogicalFiltersToWhere(
+			queryParamsDto.logicalFilters
+		)
 
-		const parseLogicalFilters = fromLogicalFiltersToWhere(logicalFilters)
-
-		const parseSorts = fromSortsToOrderby(sorts)
+		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
 
 		const query: Prisma.FavoriteAddressFindManyArgs = {
-			skip: (page - 1) * limit,
-			take: limit,
+			skip: (queryParamsDto.page - 1) * queryParamsDto.limit,
+			take: queryParamsDto.limit,
 			where: {
 				userId,
-				...parseFilters,
-				...parseLogicalFilters,
+				...parsedFilters,
+				...parsedLogicalFilters,
 			},
 			orderBy: {
-				...parseSorts,
+				...parsedSorts,
 			},
 		}
 
@@ -59,13 +64,20 @@ export class FavoriteAddressesService {
 			this.prisma.favoriteAddress.count({ where: query.where }),
 		])
 
+		const favoriteAddresses = records.map(
+			record => new FavoriteAddressEntity(record)
+		)
+
 		const metadata = plainToClass(PaginationMetadataEntity, {
 			total: totalPages,
-			page,
-			lastPage: Math.ceil(totalPages / limit),
+			page: queryParamsDto.page,
+			lastPage: Math.ceil(totalPages / queryParamsDto.limit),
 		})
 
-		return new FavoriteAddressPaginatedResponseEntity(records, metadata)
+		return new PaginatedResponseEntity<FavoriteAddressEntity>(
+			favoriteAddresses,
+			metadata
+		)
 	}
 
 	async findOne(userId: string, id: string) {
@@ -91,6 +103,12 @@ export class FavoriteAddressesService {
 			},
 			data: {
 				...updateFavoriteAddressDto,
+				latitude: updateFavoriteAddressDto.latitude
+					? new Decimal(updateFavoriteAddressDto.latitude)
+					: undefined,
+				longitude: updateFavoriteAddressDto.longitude
+					? new Decimal(updateFavoriteAddressDto.longitude)
+					: undefined,
 			},
 		})
 

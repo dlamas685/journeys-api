@@ -11,11 +11,14 @@ export class PaginationMetadataEntity {
 	lastPage: number
 }
 
-export class PaginatedResponseEntity {
+export class PaginatedResponseEntity<T = any> {
 	@ApiProperty()
 	meta: PaginationMetadataEntity
 
-	constructor(meta: PaginationMetadataEntity) {
+	data: T[]
+
+	constructor(data: T[], meta: PaginationMetadataEntity) {
 		this.meta = meta
+		this.data = data
 	}
 }
