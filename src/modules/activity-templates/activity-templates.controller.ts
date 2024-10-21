@@ -18,7 +18,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger'
-import { UserId } from '../../common/decorators'
+import { ApiOkResponsePaginated, UserId } from '../../common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ActivityTemplatesService } from './activity-templates.service'
 import { ActivityTemplateQueryParamsDto } from './dto/activity-template-params.dto'
@@ -50,13 +50,14 @@ export class ActivityTemplatesController {
 
 	@Get()
 	@ApiOperation({
-		summary: 'Listar usuarios',
-		description: 'Permite listar todos los usuarios',
+		summary: 'Listar plantillas de actividades del usuario',
 	})
-	@ApiOkResponse({ type: [ActivityTemplateEntity] })
-	findAll(@Query() queryParamsDto: ActivityTemplateQueryParamsDto) {
-		console.log(queryParamsDto)
-		return this.activityTemplatesService.findAll(queryParamsDto)
+	@ApiOkResponsePaginated(ActivityTemplateEntity)
+	findAll(
+		@UserId() userId: string,
+		@Query() queryParamsDto: ActivityTemplateQueryParamsDto
+	) {
+		return this.activityTemplatesService.findAll(userId, queryParamsDto)
 	}
 
 	@Get(':id')

@@ -1,4 +1,10 @@
 import { Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
+import { plainToInstance } from 'class-transformer'
+import {
+	PaginatedResponseEntity,
+	PaginationMetadataEntity,
+} from 'src/common/entities/paginated-response.entity'
 import { QueryParamsDto } from '../../common/dto'
 import {
 	fromFiltersToWhere,
@@ -28,28 +34,41 @@ export class ActivityTemplatesService {
 		return new ActivityTemplateEntity(newFavoriteAddress)
 	}
 
-	async findAll(queryParamsDto: QueryParamsDto) {
-		const { page, limit, filters, sorts, logicalFilters } = queryParamsDto
+	async findAll(userId: string, queryParamsDto: QueryParamsDto) {
+		const parsedFilters = fromFiltersToWhere(queryParamsDto.filters)
+		const parsedLogicalFilters = fromLogicalFiltersToWhere(
+			queryParamsDto.logicalFilters
+		)
+		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
 
-		const parseFilters = filters ? fromFiltersToWhere(filters) : {}
-
-		const parseLogical = logicalFilters
-			? fromLogicalFiltersToWhere(logicalFilters)
-			: {}
-
-		const parseSorts = sorts ? fromSortsToOrderby(sorts) : {}
-
-		return await this.prisma.activityTemplate.findMany({
+		const query: Prisma.ActivityTemplateFindManyArgs = {
 			where: {
-				...parseFilters,
-				...parseLogical,
+				userId,
+				...parsedFilters,
+				...parsedLogicalFilters,
 			},
 			orderBy: {
-				...parseSorts,
+				...parsedSorts,
 			},
-			skip: (page - 1) * limit,
-			take: limit,
+			skip: (queryParamsDto.page - 1) * queryParamsDto.limit,
+			take: queryParamsDto.limit,
+		}
+
+		const [records, totalPages] = await this.prisma.$transaction([
+			this.prisma.activityTemplate.findMany(query),
+			this.prisma.activityTemplate.count({ where: query.where }),
+		])
+
+		const metadata = plainToInstance(PaginationMetadataEntity, {
+			total: totalPages,
+			page: queryParamsDto.page,
+			lastPage: Math.ceil(totalPages / queryParamsDto.limit),
 		})
+
+		return new PaginatedResponseEntity<ActivityTemplateEntity>(
+			plainToInstance(ActivityTemplateEntity, records),
+			metadata
+		)
 	}
 
 	async findOne(userId: string, id: string) {
