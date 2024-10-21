@@ -20,8 +20,6 @@ export class RuleMatchesValueTypeConstraint
 	validate(rule: FilterRules, args: ValidationArguments) {
 		const value = (args.object as any).value
 
-		console.log(rule)
-
 		if (typeof value === 'string' && VALID_STRING_RULES.includes(rule)) {
 			return true
 		}

@@ -20,7 +20,7 @@ export class FilterFieldDto {
 
 	@IsOptional()
 	@IsBoolean()
-	isInsensitive?: boolean = true
+	isInsensitive?: boolean
 
 	@IsNotEmpty()
 	@ValidateIf(o => o.value)

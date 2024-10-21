@@ -1,5 +1,5 @@
 import { FilterFieldDto } from '../dto'
-import { FilterRules } from '../enums'
+import { FilterRules, FilterTypes } from '../enums'
 
 export const fromFiltersToWhere = <T extends object>(
 	filters?: FilterFieldDto[]
@@ -21,7 +21,7 @@ export const fromFiltersToWhere = <T extends object>(
 		return isNot ? { not: { [rule]: value }, mode } : { [rule]: value, mode }
 	}
 
-	filters?.forEach(({ field, rule, value, isNot, isInsensitive }) => {
+	filters?.forEach(({ field, rule, value, isNot, type, isInsensitive }) => {
 		const applyTo = (obj: Record<string, any>, fieldPath: string[]) =>
 			fieldPath.reduce(
 				(acc, curr, index) =>
@@ -31,7 +31,11 @@ export const fromFiltersToWhere = <T extends object>(
 								rule,
 								value,
 								isNot,
-								isInsensitive ? 'insensitive' : 'default'
+								type === FilterTypes.STRING
+									? isInsensitive
+										? 'insensitive'
+										: 'default'
+									: undefined
 							))
 						: (acc[curr] = acc[curr] || {}),
 				obj

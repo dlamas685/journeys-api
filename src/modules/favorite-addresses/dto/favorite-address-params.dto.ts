@@ -6,8 +6,11 @@ import {
 	QueryParamsDto,
 	SortFieldDto,
 } from 'src/common/dto'
+import { FavoriteAddressEntity } from '../entities/favorite-address.entity'
 
-const VALID_FIELDS = ['address', 'alias']
+type ValidFieldsType = keyof FavoriteAddressEntity
+
+const VALID_FIELDS: ValidFieldsType[] = ['address', 'alias', 'createdAt']
 
 export class FavoriteAddressFilterFieldDto extends FilterFieldDto {
 	@IsIn(VALID_FIELDS)
