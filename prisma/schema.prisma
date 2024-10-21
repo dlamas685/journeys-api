@@ -33,19 +33,20 @@ model Account {
 }
 
 model User {
-  id              String            @id @default(uuid()) @db.Uuid
-  email           String            @unique
-  emailVerified   DateTime?         @map("email_verified") @db.Timestamptz(6)
-  password        String?
-  imageUrl        String?           @map("image_url")
-  userType        UserType?         @map("user_type")
-  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime?         @updatedAt @map("updated_at") @db.Timestamptz(6)
-  accounts        Account[]
-  personalProfile PersonalProfile?
-  companyProfile  CompanyProfile?
-  FavoriteAddress FavoriteAddress[]
-  FavoritePlace   FavoritePlace[]
+  id               String             @id @default(uuid()) @db.Uuid
+  email            String             @unique
+  emailVerified    DateTime?          @map("email_verified") @db.Timestamptz(6)
+  password         String?
+  imageUrl         String?            @map("image_url")
+  userType         UserType?          @map("user_type")
+  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  accounts         Account[]
+  personalProfile  PersonalProfile?
+  companyProfile   CompanyProfile?
+  FavoriteAddress  FavoriteAddress[]
+  FavoritePlace    FavoritePlace[]
+  ActivityTemplate ActivityTemplate[]
 
   @@map("users")
 }
@@ -116,4 +117,19 @@ model FavoritePlace {
 
   @@unique([userId, placeId])
   @@map("favorite_place")
+}
+
+model ActivityTemplate {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  name        String
+  description String?
+  activities  Json?
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, name])
+  @@map("activity_template")
 }
