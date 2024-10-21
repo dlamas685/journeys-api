@@ -1,5 +1,5 @@
 export enum FilterRules {
-	EQUALS = 'eq',
+	EQUALS = 'equals',
 	CONTAINS = 'contains',
 	STARTS_WITH = 'startsWith',
 	ENDS_WITH = 'endsWith',

@@ -10,6 +10,7 @@ import {
 	Patch,
 	Post,
 	Query,
+	UseGuards,
 } from '@nestjs/common'
 import {
 	ApiBearerAuth,
@@ -17,17 +18,20 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger'
+import { ApiOkResponsePaginated } from 'src/common/decorators'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { CreateUserDto, UpdateUserDto, UsersQueryParamsDto } from './dto'
-import { UserEntity } from './entities/user.entity'
+import { UserEntity } from './entities'
 import { UsersService } from './users.service'
 
 @ApiTags('Users')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JWT-auth')
 @Controller('users')
 export class UsersController {
 	constructor(private readonly users: UsersService) {}
 
+	//TODO: ESTE ENDPOINT ES A MODO DE EJEMPLO NO DEBE USARSE - SOLO SE PERMITE CREAR DESDE AUTH (REGISTRO)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -44,9 +48,8 @@ export class UsersController {
 		summary: 'Listar usuarios',
 		description: 'Permite listar todos los usuarios',
 	})
-	@ApiOkResponse({ type: [UserEntity] })
+	@ApiOkResponsePaginated(UserEntity)
 	findAll(@Query() queryParamsDto: UsersQueryParamsDto) {
-		console.log(queryParamsDto)
 		return this.users.findAll(queryParamsDto)
 	}
 
@@ -60,6 +63,7 @@ export class UsersController {
 		return this.users.findOne(id)
 	}
 
+	//TODO: ESTE ENDPOINT ES A MODO DE EJEMPLO NO DEBE USARSE - ACTUALIZACIONES VIA MODULO OPTIONS
 	@Patch(':id')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
@@ -72,6 +76,7 @@ export class UsersController {
 		return this.users.update(id, updateUserDto)
 	}
 
+	//TODO: ESTE ENDPOINT ES A MODO DE EJEMPLO NO DEBE USARSE - ELIMINACIONES VIA MODULO OPTIONS
 	@Delete(':id')
 	@ApiOperation({
 		summary: 'Eliminar usuario',

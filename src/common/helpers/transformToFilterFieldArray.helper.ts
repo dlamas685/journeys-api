@@ -2,20 +2,23 @@ import { BadRequestException } from '@nestjs/common'
 import { plainToClass, TransformFnParams } from 'class-transformer'
 import { FilterFieldDto } from '../dto'
 import { FilterRules } from '../enums'
-import { FilterModes } from '../enums/filter-modes.enum'
 
 export const transformToFilterFieldArray = ({ value }: TransformFnParams) =>
 	value.map(filter => {
 		const parts = filter.split(':')
 		if (parts.length < 2 || parts.length > 4) {
-			throw new BadRequestException('Formato de filtro inválido')
+			throw new BadRequestException(
+				'Formato de filtro inválido, se esperan 2 a 4 partes separadas por ":" (field:rule:type:value)'
+			)
 		}
 
-		const [field, rule, value, mode] = parts
+		const [field, rule, type, value] = parts
 
-		const isNot = rule.startsWith('!')
+		const isNot = !!rule.startsWith('!')
 
-		const newRule = (isNot ? rule.slice(1) : rule) as FilterRules
+		const isInsensitive = !!rule.endsWith('~')
+
+		const newRule = rule.slice(isNot ? 1 : 0, isInsensitive ? -1 : undefined)
 
 		const newValue =
 			newRule === FilterRules.IN || newRule === FilterRules.NOT_IN
@@ -27,6 +30,7 @@ export const transformToFilterFieldArray = ({ value }: TransformFnParams) =>
 			rule: newRule,
 			value: newValue,
 			isNot,
-			mode: mode ?? FilterModes.INSENSITIVE,
+			isInsensitive,
+			type,
 		})
 	})

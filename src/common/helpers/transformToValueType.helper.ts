@@ -1,22 +1,27 @@
 import { TransformFnParams } from 'class-transformer'
+import { FilterTypes } from '../enums'
 
-export const transformToValueType = ({ value }: TransformFnParams) => {
-	if (typeof value === 'number') return Number(value)
+export const transformToValueType = ({ value, obj }: TransformFnParams) => {
+	const type = obj?.type
 
-	if (typeof value === 'boolean') return value
+	if (!value) return null
 
-	if (!isNaN(Date.parse(value))) return new Date(value)
+	if (type === FilterTypes.NUMBER) return Number(value)
 
-	if (value instanceof Array)
-		return value.map(v => {
-			if (typeof v === 'number') return Number(v)
+	if (type === FilterTypes.BOOLEAN) return value === 'true'
 
-			if (!isNaN(Date.parse(v))) return new Date(v)
+	if (type === FilterTypes.DATE) return new Date(value)
 
-			if (typeof v === 'string') return v.trim()
-		})
+	if (type === FilterTypes.ARRAY_OF_DATES)
+		return value.map((v: string) => new Date(v))
 
-	if (typeof value === 'string') return value.trim()
+	if (type === FilterTypes.ARRAY_OF_NUMBERS)
+		return value.map((v: string) => Number(v))
+
+	if (type === FilterTypes.ARRAY_OF_STRINGS)
+		return value.map((v: string) => v.toString())
+
+	if (type === FilterTypes.STRING) return value.toString()
 
 	return value
 }

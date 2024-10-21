@@ -6,6 +6,7 @@ import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { UsersModule } from 'src/modules/users/users.module'
 import { AuthController } from './controllers/auth.controller'
 import { VerificationTokensController } from './controllers/verification-tokens.controller'
+import { AccountsService } from './services/accounts.service'
 import { AuthService } from './services/auth.service'
 import { CleanupService } from './services/cleanup.service'
 import { TokensService } from './services/tokens.service'
@@ -35,6 +36,7 @@ import { LocalStrategy } from './strategies/local.strategy'
 		CleanupService,
 		TokensService,
 		VerificationTokensService,
+		AccountsService,
 	],
 	controllers: [AuthController, VerificationTokensController],
 })

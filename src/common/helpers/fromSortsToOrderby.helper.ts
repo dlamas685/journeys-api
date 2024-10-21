@@ -1,9 +1,11 @@
 import { SortFieldDto } from '../dto'
 
-export const fromSortsToOrderby = <T extends object>(sorts: SortFieldDto[]) => {
+export const fromSortsToOrderby = <T extends object>(
+	sorts?: SortFieldDto[]
+) => {
 	const sortQuery: Record<string, any> = {}
 
-	sorts.forEach(({ field, direction }) => {
+	sorts?.forEach(({ field, direction }) => {
 		const fieldPath = field.split('.')
 
 		fieldPath.reduce((acc, curr, index) => {

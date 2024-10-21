@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcrypt'
-import { UserEntity } from '../auth/entities'
 import { PrismaService } from '../prisma/prisma.service'
+import { UserEntity } from '../users/entities'
 import { ChangePasswordDto } from './dto/change-password.dto'
 
 @Injectable()

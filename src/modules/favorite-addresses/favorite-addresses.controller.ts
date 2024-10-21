@@ -9,30 +9,17 @@ import {
 	ParseUUIDPipe,
 	Patch,
 	Post,
+	Query,
 	UseGuards,
 } from '@nestjs/common'
-import {
-	ApiBearerAuth,
-	ApiOkResponse,
-	ApiQuery,
-	ApiTags,
-} from '@nestjs/swagger'
-import { UserId } from '../../common/decorators'
-import {
-	Filtering,
-	FilteringParams,
-} from '../../common/decorators/filtering-params.decorator'
-import {
-	Pagination,
-	PaginationParams,
-} from '../../common/decorators/pagination-params.decorator'
-import {
-	Sorting,
-	SortingParams,
-} from '../../common/decorators/sorting-params.decorator'
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import { ApiOkResponsePaginated, UserId } from '../../common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateFavoriteAddressDto } from './dto/create-favorite-address.dto'
-import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'
+import {
+	CreateFavoriteAddressDto,
+	FavoriteAddressQueryParamsDto,
+	UpdateFavoriteAddressDto,
+} from './dto'
 import { FavoriteAddressEntity } from './entities/favorite-address.entity'
 import { FavoriteAddressesService } from './favorite-addresses.service'
 
@@ -60,20 +47,12 @@ export class FavoriteAddressesController {
 
 	@Get()
 	@HttpCode(HttpStatus.OK)
-	@ApiQuery({ name: 'sort', isArray: true, example: 'address:asc' })
-	@ApiQuery({ name: 'filter', isArray: true, example: 'address:like:Av' })
-	findAllTest(
+	@ApiOkResponsePaginated(FavoriteAddressEntity)
+	findAll(
 		@UserId() userId: string,
-		@PaginationParams() paginationParams: Pagination,
-		@SortingParams(['address', 'alias']) sort?: Sorting[],
-		@FilteringParams(['address', 'alias']) filter?: Filtering[]
+		@Query() queryParamsDto: FavoriteAddressQueryParamsDto
 	) {
-		return this.favoriteAddressesService.findAll(
-			userId,
-			paginationParams,
-			sort,
-			filter
-		)
+		return this.favoriteAddressesService.findAll(userId, queryParamsDto)
 	}
 
 	@Get(':id')

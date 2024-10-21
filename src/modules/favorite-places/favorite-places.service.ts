@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
-import { Sorting } from 'src/common/decorators/sorting-params.decorator'
-import { Filtering } from '../../common/decorators/filtering-params.decorator'
-import { Pagination } from '../../common/decorators/pagination-params.decorator'
+import { Sorting } from 'src/deprecated/decorator/sorting-params.decorator'
+
 import {
 	getOrder,
 	getWhere,
-} from '../../common/helpers/prisma-pagination-helper'
+} from 'src/deprecated/helpers/prisma-pagination-helper'
+import { Filtering } from '../../deprecated/decorator/filtering-params.decorator'
+import { Pagination } from '../../deprecated/decorator/pagination-params.decorator'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateFavoritePlaceDto } from './dto/create-favorite-place.dto'
 import { UpdateFavoritePlaceDto } from './dto/update-favorite-place.dto'

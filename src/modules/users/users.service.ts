@@ -1,17 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { Prisma } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
+import { plainToClass } from 'class-transformer'
 import { QueryParamsDto } from 'src/common/dto'
+import {
+	PaginatedResponseEntity,
+	PaginationMetadataEntity,
+} from 'src/common/entities/paginated-response.entity'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
+import { CreateAccountDto } from '../auth/dto'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateAccountDto, CreateUserDto, UpdateUserDto } from './dto'
-import { CompanyProfileEntity } from './entities/company-profile.entity'
-import { PersonalProfileEntity } from './entities/personal-profile.entity'
-import { UserEntity } from './entities/user.entity'
+import { CreateUserDto, UpdateUserDto } from './dto'
+import {
+	CompanyProfileEntity,
+	PersonalProfileEntity,
+	UserEntity,
+} from './entities'
 
 @Injectable()
 export class UsersService {
@@ -51,27 +60,40 @@ export class UsersService {
 	}
 
 	async findAll(queryParamsDto: QueryParamsDto) {
-		const { page, limit, filters, sorts, logicalFilters } = queryParamsDto
+		const parsedFilters = fromFiltersToWhere(queryParamsDto.filters)
 
-		const parseFilters = filters ? fromFiltersToWhere(filters) : {}
+		const parsedLogicalFilters = fromLogicalFiltersToWhere(
+			queryParamsDto.logicalFilters
+		)
 
-		const parseLogical = logicalFilters
-			? fromLogicalFiltersToWhere(logicalFilters)
-			: {}
+		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
 
-		const parseSorts = sorts ? fromSortsToOrderby(sorts) : {}
-
-		return await this.prisma.user.findMany({
+		const query: Prisma.UserFindManyArgs = {
+			skip: (queryParamsDto.page - 1) * queryParamsDto.limit,
+			take: queryParamsDto.limit,
 			where: {
-				...parseFilters,
-				...parseLogical,
+				...parsedFilters,
+				...parsedLogicalFilters,
 			},
 			orderBy: {
-				...parseSorts,
+				...parsedSorts,
 			},
-			skip: (page - 1) * limit,
-			take: limit,
+		}
+
+		const [records, totalPages] = await this.prisma.$transaction([
+			this.prisma.user.findMany(query),
+			this.prisma.user.count({ where: query.where }),
+		])
+
+		const users = records.map(record => new UserEntity(record))
+
+		const metadata = plainToClass(PaginationMetadataEntity, {
+			total: totalPages,
+			page: queryParamsDto.page,
+			lastPage: Math.ceil(totalPages / queryParamsDto.limit),
 		})
+
+		return new PaginatedResponseEntity<UserEntity>(users, metadata)
 	}
 
 	async findOne(id: string) {

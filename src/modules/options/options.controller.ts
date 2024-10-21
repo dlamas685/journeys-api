@@ -15,9 +15,9 @@ import {
 	ApiTags,
 } from '@nestjs/swagger'
 import { UserId } from 'src/common/decorators'
-import { UserEntity } from '../auth/entities'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { UpdateUserDto } from '../users/dto'
+import { UserEntity } from '../users/entities'
 import { UsersService } from '../users/users.service'
 import { ChangePasswordDto } from './dto/change-password.dto'
 import { OptionsService } from './options.service'
