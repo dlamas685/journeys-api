@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
-import { Sorting } from 'src/deprecated/decorator/sorting-params.decorator'
 
+import { QueryParamsDto } from 'src/common/dto'
 import {
-	getOrder,
-	getWhere,
-} from 'src/deprecated/helpers/prisma-pagination-helper'
-import { Filtering } from '../../deprecated/decorator/filtering-params.decorator'
-import { Pagination } from '../../deprecated/decorator/pagination-params.decorator'
+	PaginatedResponseEntity,
+	PaginationMetadataEntity,
+} from 'src/common/entities/paginated-response.entity'
+import {
+	fromFiltersToWhere,
+	fromLogicalFiltersToWhere,
+	fromSortsToOrderby,
+} from 'src/common/helpers'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateFavoritePlaceDto } from './dto/create-favorite-place.dto'
 import { UpdateFavoritePlaceDto } from './dto/update-favorite-place.dto'
@@ -32,23 +35,24 @@ export class FavoritePlacesService {
 		return new FavoritePlaceEntity(newFavoritePlace)
 	}
 
-	async findAll(
-		userId: string,
-		paginationParams: Pagination,
-		sort: Sorting[],
-		filter: Filtering[]
-	) {
-		const whereFilters = getWhere(filter)
-		const order = getOrder(sort)
+	async findAll(userId: string, queryParamsDto: QueryParamsDto) {
+		const parsedFilters = fromFiltersToWhere(queryParamsDto.filters)
+		const parsedLogicalFilters = fromLogicalFiltersToWhere(
+			queryParamsDto.logicalFilters
+		)
+		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
 
 		const query: Prisma.FavoritePlaceFindManyArgs = {
-			skip: (paginationParams.page - 1) * paginationParams.limit,
-			take: paginationParams.limit,
 			where: {
-				userId: userId,
-				...whereFilters,
+				userId,
+				...parsedFilters,
+				...parsedLogicalFilters,
 			},
-			orderBy: order,
+			orderBy: {
+				...parsedSorts,
+			},
+			skip: (queryParamsDto.page - 1) * queryParamsDto.limit,
+			take: queryParamsDto.limit,
 		}
 
 		const [records, totalPages] = await this.prisma.$transaction([
@@ -56,13 +60,16 @@ export class FavoritePlacesService {
 			this.prisma.favoritePlace.count({ where: query.where }),
 		])
 
-		return {
-			data: plainToInstance(FavoritePlaceEntity, records),
-			meta: {
-				total: totalPages,
-				page: paginationParams.page,
-			},
-		}
+		const metadata = plainToInstance(PaginationMetadataEntity, {
+			total: totalPages,
+			page: queryParamsDto.page,
+			lastPage: Math.ceil(totalPages / queryParamsDto.limit),
+		})
+
+		return new PaginatedResponseEntity<FavoritePlaceEntity>(
+			plainToInstance(FavoritePlaceEntity, records),
+			metadata
+		)
 	}
 
 	async findOne(userId: string, id: string): Promise<FavoritePlaceEntity> {

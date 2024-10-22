@@ -9,29 +9,19 @@ import {
 	ParseUUIDPipe,
 	Patch,
 	Post,
+	Query,
 	UseGuards,
 } from '@nestjs/common'
 import {
 	ApiBearerAuth,
 	ApiOkResponse,
-	ApiQuery,
+	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger'
-import { UserId } from '../../common/decorators'
-import {
-	Filtering,
-	FilteringParams,
-} from '../../deprecated/decorator/filtering-params.decorator'
-import {
-	Pagination,
-	PaginationParams,
-} from '../../deprecated/decorator/pagination-params.decorator'
-import {
-	Sorting,
-	SortingParams,
-} from '../../deprecated/decorator/sorting-params.decorator'
+import { ApiOkResponsePaginated, UserId } from '../../common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { CreateFavoritePlaceDto } from './dto/create-favorite-place.dto'
+import { FavoritePlaceQueryParamsDto } from './dto/favorite-place-params.dto'
 import { UpdateFavoritePlaceDto } from './dto/update-favorite-place.dto'
 import { FavoritePlaceEntity } from './entities/favorite-place.entity'
 import { FavoritePlacesService } from './favorite-places.service'
@@ -54,21 +44,15 @@ export class FavoritePlacesController {
 	}
 
 	@Get()
-	@HttpCode(HttpStatus.OK)
-	@ApiQuery({ name: 'sort', isArray: true, example: 'name:asc' })
-	@ApiQuery({ name: 'filter', isArray: true, example: 'name:like:Av' })
-	findAllTest(
+	@ApiOperation({
+		summary: 'Listar lugares favoritos del usuario',
+	})
+	@ApiOkResponsePaginated(FavoritePlaceEntity)
+	findAll(
 		@UserId() userId: string,
-		@PaginationParams() paginationParams: Pagination,
-		@SortingParams(['name']) sort?: Sorting[],
-		@FilteringParams(['name', 'placeType']) filter?: Filtering[]
+		@Query() queryParamsDto: FavoritePlaceQueryParamsDto
 	) {
-		return this.favoritePlacesService.findAll(
-			userId,
-			paginationParams,
-			sort,
-			filter
-		)
+		return this.favoritePlacesService.findAll(userId, queryParamsDto)
 	}
 
 	@Get(':id')
