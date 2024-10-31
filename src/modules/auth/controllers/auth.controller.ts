@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { Response } from 'express'
+import { CookieOptions, Response } from 'express'
 import { CreateUserDto } from 'src/modules/users/dto'
 import { UserEntity } from 'src/modules/users/entities'
 import {
@@ -113,8 +113,22 @@ export class AuthController {
 		}
 
 		const auth = await this.auth.login(req.user)
+
+		const options: CookieOptions = {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'lax',
+			expires: new Date(auth.expires * 1000),
+		}
+
+		res.cookie('session.token', auth.accessToken, options)
+
+		res.cookie('session.expires', auth.expires.toString(), options)
+
+		res.cookie('session.user', JSON.stringify(auth.user), options)
+
 		return res.redirect(
-			`${this.config.get<string>('FRONTEND_URL')}/providers?token=${auth.accessToken}`
+			`${this.config.get<string>('FRONTEND_URL')}/first-steps`
 		)
 	}
 
