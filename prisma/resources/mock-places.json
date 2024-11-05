@@ -1,0 +1,582 @@
+[
+  {
+    "name": "Salta",
+    "placeId": "ChIJ-bdRUaPDG5QRBvKH1SyZzaU",
+    "types": ["locality", "political"],
+    "address": "Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+    "latitude": -24.7821269,
+    "longitude": -65.4231976
+  },
+  {
+    "name": "Hotel Alejandro I",
+    "placeId": "ChIJ_f7Do7vDG5QRyYWTsHIjfec",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Balcarce 252, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.786856,
+    "longitude": -65.41195259999999
+  },
+  {
+    "name": "Sheraton Salta Hotel",
+    "placeId": "ChIJBXF9X7BdIpQRzbAWjSrscKQ",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Coronel Francisco De Uriondo 330, A4406BKQ Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.7855686,
+    "longitude": -65.398382
+  },
+  {
+    "name": "Solar de la Plaza Hotel",
+    "placeId": "ChIJw2kzW7nDG5QRF21dKCW_w_c",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "J. M. Leguizamon 669, A4400 BOM, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.7837589,
+    "longitude": -65.4112773
+  },
+  {
+    "name": "Design Suites Salta",
+    "placeId": "ChIJs4Sgq7vDG5QRAxtfbshIPjY",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Pje. M. Castro 215, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.786876,
+    "longitude": -65.4130508
+  },
+  {
+    "name": "Hotel Marilian",
+    "placeId": "ChIJY3IceaPDG5QRXgPOAcH7ZYA",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Buenos Aires 176, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.791962,
+    "longitude": -65.4099336
+  },
+  {
+    "name": "Hotel Legado Mítico Salta",
+    "placeId": "ChIJe7_h0r7DG5QRa08Z_8ALLjI",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Bartolomé Mitre 647, A4400 EHM, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.782045,
+    "longitude": -65.41035099999999
+  },
+  {
+    "name": "Hotel Altos de Balcarce",
+    "placeId": "ChIJe_2wxrjDG5QRT96pKmPd7tE",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Balcarce 747, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.78051559999999,
+    "longitude": -65.4116367
+  },
+  {
+    "name": "Hotel San Francisco",
+    "placeId": "ChIJ50xumKLDG5QRk2kbvKgJ4tQ",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Caseros 160, A4400 DMD, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.7901241,
+    "longitude": -65.4051618
+  },
+  {
+    "name": "APARTHO DEAN FUNES",
+    "placeId": "ChIJt_MiTrzDG5QR4KWI513AVqY",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Deán Funes 362, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.7858217,
+    "longitude": -65.4076972
+  },
+  {
+    "name": "Hotel Salta",
+    "placeId": "ChIJpWFWr9rKvJURB-1eayLxhRc",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Buenos Aires Nº1, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.789955,
+    "longitude": -65.40960319999999
+  },
+  {
+    "name": "Gran Hotel Presidente",
+    "placeId": "ChIJM-_U4bzDG5QRQM5SZDMc0IE",
+    "types": [
+      "lodging",
+      "restaurant",
+      "food",
+      "point_of_interest",
+      "establishment"
+    ],
+    "address": "Av. Belgrano 353, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.7877016,
+    "longitude": -65.407525
+  },
+  {
+    "name": "Las Vegas Hotel",
+    "placeId": "ChIJN4z9LqXDG5QRixoGEeVBRFk",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Ituzaingó 84, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.790499,
+    "longitude": -65.414194
+  },
+  {
+    "name": "Brisas de Salta Hotel",
+    "placeId": "ChIJi_nZz7zDG5QRfNFuhwPeQFc",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Deán Funes 70, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.7894444,
+    "longitude": -65.4080556
+  },
+  {
+    "name": "Villa Vicuña Salta Hotel Boutique",
+    "placeId": "ChIJN_eEw6LDG5QRhg_elRv45SQ",
+    "types": [
+      "lodging",
+      "clothing_store",
+      "point_of_interest",
+      "store",
+      "establishment"
+    ],
+    "address": "Caseros 266, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.7900008,
+    "longitude": -65.4064763
+  },
+  {
+    "name": "Hotel Munay Salta",
+    "placeId": "ChIJ4W-_XKTDG5QRTPDWUnN_7PY",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Av. San Martín 654/656, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.7932314,
+    "longitude": -65.4121025
+  },
+  {
+    "name": "Ghala Hotel Salta",
+    "placeId": "ChIJHSgzUqLDG5QRuNFXNCHEk24",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Lerma 184, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.7922382,
+    "longitude": -65.4071792
+  },
+  {
+    "name": "HOTEL REGIDOR",
+    "placeId": "ChIJARFEZqPDG5QRJqE9LS9M2hc",
+    "types": [
+      "real_estate_agency",
+      "lodging",
+      "point_of_interest",
+      "establishment"
+    ],
+    "address": "Buenos Aires 8, 4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.7900812,
+    "longitude": -65.40981409999999
+  },
+  {
+    "name": "Ayres de Salta Hotel",
+    "placeId": "ChIJOdISu8JQGJQR2Y6f6osjImI",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Gral. Martin Güemes 650, A4400 BET, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -24.786144,
+    "longitude": -65.411419
+  },
+  {
+    "name": "Centro",
+    "placeId": "ChIJy1R0eL7DG5QRV-pa20XPLjU",
+    "types": ["neighborhood", "political"],
+    "address": "Centro, A4400 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+    "latitude": -24.7876689,
+    "longitude": -65.4108324
+  },
+
+  {
+    "name": "Cachi",
+    "placeId": "ChIJd0e5BEIeHJQRRVAm2F8cxMw",
+    "types": ["locality", "political"],
+    "address": "Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+    "latitude": -25.1202353,
+    "longitude": -66.1624965
+  },
+  {
+    "name": "El Cortijo Hotel Boutique",
+    "placeId": "ChIJQUC-d_seHJQRX8cNQf36Xho",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Av. Automóvil Club Argentino s/n, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -25.1216646,
+    "longitude": -66.16554110000001
+  },
+  {
+    "name": "Hosteria Villa Cardon",
+    "placeId": "ChIJF3nFuGgeHJQRkvElHgeGQ6M",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Aranda Sin numero, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -25.11938349999999,
+    "longitude": -66.1598655
+  },
+  {
+    "name": "Hosteria Cachi",
+    "placeId": "ChIJkTFomOQeHJQReC1RKZQDpA8",
+    "types": [
+      "lodging",
+      "restaurant",
+      "food",
+      "point_of_interest",
+      "establishment"
+    ],
+    "address": "Av. Automóvil Club Argentino s/n, A4717 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+    "latitude": -25.1230095,
+    "longitude": -66.1659356
+  },
+  {
+    "name": "Museo Arqueológico Pío Pablo Díaz.",
+    "placeId": "ChIJb6N5kmgeHJQRnc3sDHoMYNw",
+    "types": [
+      "museum",
+      "tourist_attraction",
+      "point_of_interest",
+      "establishment"
+    ],
+    "address": "Juan Calchaquí s/n, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/museum-71.png",
+    "latitude": -25.120216,
+    "longitude": -66.16152869999999
+  },
+  {
+    "name": "Aventura Calchaqui",
+    "placeId": "ChIJzwDcZGgeHJQRQ_Tw-zu_KRs",
+    "types": ["travel_agency", "point_of_interest", "establishment"],
+    "address": "Benjamín Zorrilla 0, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+    "latitude": -25.1200751,
+    "longitude": -66.1628709
+  },
+  {
+    "name": "MUNICIPALIDAD DE CACHI",
+    "placeId": "ChIJMb0htPweHJQRjIZyn-x5ctY",
+    "types": ["point_of_interest", "establishment"],
+    "address": "Av M M Güemes, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/civic_building-71.png",
+    "latitude": -25.11965,
+    "longitude": -66.1622363
+  },
+  {
+    "name": "Hotel Nevado De Cachi (No restaurant).",
+    "placeId": "ChIJiUkumGgeHJQRy4Xbm4AW0rY",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Ruiz De Los Llanos S/N, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -25.1195945,
+    "longitude": -66.1611033
+  },
+  {
+    "name": "Hostal de las Tinajas",
+    "placeId": "ChIJ_SFsuWgeHJQRe4WQzrsR1bk",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -25.11990329999999,
+    "longitude": -66.16063749999999
+  },
+  {
+    "name": "Hostal Neriz y Casa de comidas Cachimba",
+    "placeId": "ChIJ4fVUpEIeHJQRdEHEjC6gwJg",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Sarmiento s/n°, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -25.1206965,
+    "longitude": -66.1658641
+  },
+  {
+    "name": "PAMI",
+    "placeId": "ChIJF9Zp-kIeHJQR3xiOA_19ptY",
+    "types": [
+      "pharmacy",
+      "health",
+      "point_of_interest",
+      "store",
+      "establishment"
+    ],
+    "address": "Cnel R Llanos Inst Con Aparato, Cachi, SALTA, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/pharmacy-71.png",
+    "latitude": -25.122437,
+    "longitude": -66.16764599999999
+  },
+  {
+    "name": "Cabañas Inti Killa",
+    "placeId": "ChIJpQrHO0MeHJQRHMRYlwETsx8",
+    "types": [
+      "travel_agency",
+      "real_estate_agency",
+      "point_of_interest",
+      "establishment"
+    ],
+    "address": "Dr. Arne Hoygaard 550, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+    "latitude": -25.1212271,
+    "longitude": -66.1692054
+  },
+  {
+    "name": "Plaza 9 de Julio",
+    "placeId": "ChIJHWAw0QUfHJQRsluVmWh-VG4",
+    "types": ["park", "point_of_interest", "establishment"],
+    "address": "A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/park-71.png",
+    "latitude": -25.1198452,
+    "longitude": -66.1619379
+  },
+  {
+    "name": "Cachi",
+    "placeId": "ChIJXUpqKb8xH5QRnPG_w7jUpkU",
+    "types": ["tourist_attraction", "point_of_interest", "establishment"],
+    "address": "A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+    "latitude": -25.1198939,
+    "longitude": -66.161867
+  },
+  {
+    "name": "Secretaria de turismo Cachi",
+    "placeId": "ChIJR6QSh2geHJQRtXPxCX7XyKw",
+    "types": ["travel_agency", "point_of_interest", "establishment"],
+    "address": "4417, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+    "latitude": -25.1197092,
+    "longitude": -66.162258
+  },
+  {
+    "name": "Oficina de Formulación de Proyectos",
+    "placeId": "ChIJl7QwSq4fHJQRG3iQrXvaNYs",
+    "types": ["point_of_interest", "establishment"],
+    "address": "A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+    "latitude": -25.1197076,
+    "longitude": -66.1622593
+  },
+  {
+    "name": "Ministerio publico salta",
+    "placeId": "ChIJ-7vRK7UfHJQR0kyYVLY2N1Q",
+    "types": ["point_of_interest", "establishment"],
+    "address": "A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+    "latitude": -25.1197088,
+    "longitude": -66.1622664
+  },
+  {
+    "name": "Cajero Automático Banco Macro",
+    "placeId": "ChIJhd8DeR8fHJQR7tY7qUxlJMs",
+    "types": ["atm", "finance", "point_of_interest", "establishment"],
+    "address": "Av. Juan XXIII S/N, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/atm-71.png",
+    "latitude": -25.1194804,
+    "longitude": -66.16214
+  },
+  {
+    "name": "Biblioteca Popular Hilda Diaz Ruiz de los Llanos",
+    "placeId": "ChIJoUfwo34fHJQR58TrUBGoSd8",
+    "types": ["library", "point_of_interest", "establishment"],
+    "address": "VRJQ+66, A4417 Cachi, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/civic_building-71.png",
+    "latitude": -25.1194116,
+    "longitude": -66.16194109999999
+  },
+  {
+    "name": "El Angosto Zona Alta",
+    "placeId": "ChIJEcJeSD8eHJQRxgIt1O-uV_I",
+    "types": ["neighborhood", "political"],
+    "address": "El Angosto Zona Alta, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+    "latitude": -25.1327287,
+    "longitude": -66.1701561
+  },
+  {
+    "name": "Cafayate",
+    "placeId": "ChIJG6bDaRMxH5QRDF06H8ZhDlQ",
+    "types": ["locality", "political"],
+    "address": "Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+    "latitude": -26.0730798,
+    "longitude": -65.976052
+  },
+  {
+    "name": "Villa Vicuña Cafayate Hotel Boutique",
+    "placeId": "ChIJlzLn1moxH5QRE-3zn16IME0",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Belgrano 76, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0737277,
+    "longitude": -65.97441409999999
+  },
+  {
+    "name": "Hotel Los Toneles",
+    "placeId": "ChIJHSPNNWsxH5QRivSxEhHKHDk",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Camila Quintana de Niño 38, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0722605,
+    "longitude": -65.9745879
+  },
+  {
+    "name": "Hotel Killa Cafayate",
+    "placeId": "ChIJ423DPRUxH5QRRuLYjdO-9Jw",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.07472929999999,
+    "longitude": -65.9763067
+  },
+  {
+    "name": "Hotel Cerro de la Cruz",
+    "placeId": "ChIJdydR7hYxH5QRG0nOoS3FvFE",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Colon esquina, Cnel. Santos, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0742131,
+    "longitude": -65.9829077
+  },
+  {
+    "name": "Hostal La Morada",
+    "placeId": "ChIJw3aUuWoxH5QRE2y5r_ByL0c",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Hurtado 111, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0752233,
+    "longitude": -65.9738914
+  },
+  {
+    "name": "Casa Arbol",
+    "placeId": "ChIJG1NLWRQxH5QR6Pxc_WOZzkg",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Calchaquí 70, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0730838,
+    "longitude": -65.97801969999999
+  },
+  {
+    "name": "Hotel Asturias",
+    "placeId": "ChIJl2DGLxUxH5QRM9cWLSg1RNE",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Av. Gral. Güemes Sur 154, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0745339,
+    "longitude": -65.9754274
+  },
+  {
+    "name": "Lo de Peñalba",
+    "placeId": "ChIJc0IZ5hQxH5QR6AHgpM1VHSk",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Ntra Sra del Rosario 79, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.07324,
+    "longitude": -65.97697099999999
+  },
+  {
+    "name": "Apart Hotel Ñusta",
+    "placeId": "ChIJ9Y8WCxMxH5QRPGSOAuWAfno",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Catamarca 15 N-15, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0715939,
+    "longitude": -65.97930649999999
+  },
+  {
+    "name": "La Tranquera Cafayate",
+    "placeId": "ChIJq2unJGsxH5QRQDv8ulD5SP4",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Silverio Chavarría 10, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0728169,
+    "longitude": -65.973736
+  },
+  {
+    "name": "Cabañas Luna y Sol",
+    "placeId": "ChIJcQh7EhQxH5QRj10WCwHi-dU",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "9 de Julio 31, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0724308,
+    "longitude": -65.97974789999999
+  },
+  {
+    "name": "Patios de Cafayate Wine Hotel",
+    "placeId": "ChIJe-hu9HMxH5QRo4uoYCFiUIo",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "RN40 Km 4343 Cafayate, A4427 Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.06065229999999,
+    "longitude": -65.9705385
+  },
+  {
+    "name": "Hostal Candelaria",
+    "placeId": "ChIJtzq_HgI0H5QRwx66SdZ67dI",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "25 de Mayo 345, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0767157,
+    "longitude": -65.98065369999999
+  },
+  {
+    "name": "mirador del Valle, CAFAYATE",
+    "placeId": "ChIJV2OLHgI0H5QRFPAYReVsei8",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Alvarado 550, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0688166,
+    "longitude": -65.98262369999999
+  },
+  {
+    "name": "Divina Presencia",
+    "placeId": "ChIJl-WxxBQxH5QR_ZN2DVeyw9s",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Pje. Jorge B. Vazquez 170, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.07580179999999,
+    "longitude": -65.97327609999999
+  },
+  {
+    "name": "Casa del Sol Cafayate Hotel",
+    "placeId": "ChIJQxhjdBQxH5QRYSNoSYbHXME",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "San Martín 285, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0717467,
+    "longitude": -65.9791875
+  },
+  {
+    "name": "Hotel Don Benito",
+    "placeId": "ChIJB9kw_RMxH5QRlGFGqv30RgU",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Lerma 40, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0712082,
+    "longitude": -65.980909
+  },
+  {
+    "name": "Hotel Los Sauces Cafayate",
+    "placeId": "ChIJF56unhMxH5QRZlY2VWQL37A",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "Calchaquí 62, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.072685,
+    "longitude": -65.97790499999999
+  },
+  {
+    "name": "Malco",
+    "placeId": "ChIJ1w9wlxMxH5QRw20Agwh5PMg",
+    "types": ["lodging", "point_of_interest", "establishment"],
+    "address": "San Martín 162, A4427 Cafayate, Salta, Argentina",
+    "iconUrl": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+    "latitude": -26.0722058,
+    "longitude": -65.9774893
+  }
+]

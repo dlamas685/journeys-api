@@ -1,22 +1,18 @@
-import { faker } from '@faker-js/faker'
-import { randFullAddress } from '@ngneat/falso'
 import { FavoriteAddress, Prisma, type PrismaClient } from '@prisma/client'
+import * as fs from 'fs'
+import * as path from 'path'
 
-type FavoriteAddressMock = Omit<Prisma.FavoriteAddressCreateInput, 'user'>
+type MockAddress = {
+	address?: string
+	alias?: string
+	latitude?: number
+	longitude?: number
+}
 
-function getInitialFavoriteAddresses() {
-	const results = new Array<FavoriteAddressMock>(15)
-
-	for (let i = 0; i < results.length; i++) {
-		results[i] = {
-			address: randFullAddress({ includeCounty: false }),
-			alias: faker.word.words({ count: { min: 1, max: 3 } }),
-			latitude: faker.location.latitude(),
-			longitude: faker.location.longitude(),
-		}
-	}
-
-	return results
+function getMockAddresses(): MockAddress[] {
+	const filePath = path.join(__dirname, '../resources/mock-addresses.json')
+	const jsonString = fs.readFileSync(filePath, 'utf-8')
+	return JSON.parse(jsonString)
 }
 
 const seedFavoriteAddress = async (
@@ -30,13 +26,17 @@ const seedFavoriteAddress = async (
 	await prisma.favoriteAddress.deleteMany()
 
 	const records: FavoriteAddress[] = []
-	const mock = getInitialFavoriteAddresses()
-	for (const favoriteAddress of mock) {
+	const mockAddresses = getMockAddresses()
+
+	for (const mockAddress of mockAddresses) {
 		try {
 			const newFavoriteAddress = await prisma.favoriteAddress.create({
 				data: {
 					userId,
-					...favoriteAddress,
+					address: mockAddress.address ?? '',
+					alias: mockAddress.alias,
+					latitude: new Prisma.Decimal(mockAddress.latitude),
+					longitude: new Prisma.Decimal(mockAddress.longitude),
 				},
 			})
 			records.push(newFavoriteAddress)

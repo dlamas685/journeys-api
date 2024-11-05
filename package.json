@@ -2,7 +2,7 @@
 	"name": "journeys-api",
 	"version": "1.0.0",
 	"prisma": {
-		"seed": "ts-node prisma/seeds/main.ts"
+		"seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seeds/main.ts"
 	},
 	"description": "",
 	"author": "",
