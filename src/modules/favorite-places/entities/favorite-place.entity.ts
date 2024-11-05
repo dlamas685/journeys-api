@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { FavoritePlace } from '@prisma/client'
+import { FavoritePlace, Prisma } from '@prisma/client'
 import { Type } from 'class-transformer'
 import { DecimalNumber } from '../../../modules/prisma/decimal-number.class'
 
@@ -17,7 +17,13 @@ export class FavoritePlaceEntity implements FavoritePlace {
 	placeId: string
 
 	@ApiProperty()
-	placeType: string
+	address: string
+
+	@ApiProperty()
+	types: Prisma.JsonValue
+
+	@ApiProperty()
+	iconUrl: string
 
 	@ApiProperty()
 	@Type(() => DecimalNumber)
