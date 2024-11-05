@@ -108,7 +108,9 @@ model FavoritePlace {
   userId    String    @map("user_id") @db.Uuid
   name      String
   placeId   String?   @map("place_id")
-  placeType String?   @map("place_type")
+  address   String?
+  types     Json?
+  iconUrl   String?
   latitude  Decimal?
   longitude Decimal?
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
