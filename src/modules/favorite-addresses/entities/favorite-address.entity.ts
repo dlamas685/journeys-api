@@ -12,21 +12,18 @@ export class FavoriteAddressEntity implements FavoriteAddress {
 	userId: string
 
 	@ApiProperty()
-	address: string
+	alias: string
 
 	@ApiProperty()
-	alias: string | null
-
-	@ApiProperty()
-	placeId: string | null
+	placeId: string
 
 	@ApiProperty({ type: Number })
 	@Transform(transformToNumber)
-	latitude: Decimal | null
+	latitude: Decimal
 
 	@ApiProperty({ type: Number })
 	@Transform(transformToNumber)
-	longitude: Decimal | null
+	longitude: Decimal
 
 	@ApiProperty()
 	createdAt: Date
