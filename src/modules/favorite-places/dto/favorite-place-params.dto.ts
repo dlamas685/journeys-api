@@ -7,7 +7,7 @@ import {
 	SortFieldDto,
 } from '../../../common/dto'
 
-const VALID_FIELDS = ['name', 'placeType', 'createdAt']
+const VALID_FIELDS = ['createdAt']
 
 export class FavoritePlaceFilterFieldDto extends FilterFieldDto {
 	@IsIn(VALID_FIELDS)

@@ -3,11 +3,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 type MockPlace = {
-	name?: string
 	placeId?: string
-	types?: object
-	address?: string
-	iconUrl?: string
 	latitude?: number
 	longitude?: number
 }
@@ -36,11 +32,7 @@ const seedFavoritePlace = async (
 			const newFavoritePlace = await prisma.favoritePlace.create({
 				data: {
 					userId,
-					name: mockPlace.name ?? '',
 					placeId: mockPlace.placeId,
-					address: mockPlace.address,
-					types: mockPlace.types,
-					iconUrl: mockPlace.iconUrl,
 					latitude: new Prisma.Decimal(mockPlace.latitude),
 					longitude: new Prisma.Decimal(mockPlace.longitude),
 				},
