@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import { plainToClass } from 'class-transformer'
@@ -68,8 +68,14 @@ export class FavoriteAddressesService {
 			this.prisma.favoriteAddress.count({ where: query.where }),
 		])
 
-		const favoriteAddresses = records.map(
-			record => new FavoriteAddressEntity(record)
+		const favoriteAddresses = await Promise.all(
+			records.map(async record => {
+				const placeDetails = await this.places.getPlaceDetails(record.placeId)
+				return new FavoriteAddressEntity({
+					...record,
+					address: placeDetails.formatted_address,
+				})
+			})
 		)
 
 		const metadata = plainToClass(PaginationMetadataEntity, {
@@ -91,6 +97,12 @@ export class FavoriteAddressesService {
 				userId,
 			},
 		})
+
+		if (!foundAddress) {
+			throw new NotFoundException(
+				`No se encontró la dirección favorita con el id ${id}`
+			)
+		}
 
 		const details = await this.places.getPlaceDetails(foundAddress.placeId)
 

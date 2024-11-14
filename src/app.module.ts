@@ -1,7 +1,9 @@
+import { CacheModule, CacheStore } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { ScheduleModule } from '@nestjs/schedule'
 import { ServeStaticModule } from '@nestjs/serve-static'
+import { redisStore } from 'cache-manager-redis-store'
 import { join } from 'path'
 import { envConfig } from './config'
 import { ActivityTemplatesModule } from './modules/activity-templates/activity-templates.module'
@@ -21,6 +23,20 @@ import { UsersModule } from './modules/users/users.module'
 		ConfigModule.forRoot(envConfig),
 		ServeStaticModule.forRoot({
 			rootPath: join(__dirname, '..', 'public'),
+		}),
+		CacheModule.registerAsync({
+			isGlobal: true,
+			inject: [ConfigService],
+			useFactory: async (config: ConfigService) => {
+				const store = await redisStore({
+					url: config.get('REDIS_URL'),
+				})
+
+				return {
+					store: store as unknown as CacheStore,
+					ttl: config.get('CACHE_TTL'),
+				}
+			},
 		}),
 		ScheduleModule.forRoot(),
 		PrismaModule,
