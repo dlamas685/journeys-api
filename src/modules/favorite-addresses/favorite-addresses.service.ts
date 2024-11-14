@@ -12,6 +12,7 @@ import {
 } from 'src/common/helpers'
 import { fromFiltersToWhere } from '../../common/helpers/fromFiltersToWhere.helper'
 import { PrismaService } from '../../modules/prisma/prisma.service'
+import { PlacesService } from '../google-maps/services/places.service'
 import { FavoriteAddressQueryParamsDto } from './dto'
 import { CreateFavoriteAddressDto } from './dto/create-favorite-address.dto'
 import { UpdateFavoriteAddressDto } from './dto/update-favorite-address.dto'
@@ -19,7 +20,10 @@ import { FavoriteAddressEntity } from './entities/favorite-address.entity'
 
 @Injectable()
 export class FavoriteAddressesService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly places: PlacesService
+	) {}
 
 	async create(
 		userId: string,
@@ -88,7 +92,12 @@ export class FavoriteAddressesService {
 			},
 		})
 
-		return new FavoriteAddressEntity(foundAddress)
+		const details = await this.places.getPlaceDetails(foundAddress.placeId)
+
+		return new FavoriteAddressEntity({
+			...foundAddress,
+			address: details.formatted_address,
+		})
 	}
 
 	async update(

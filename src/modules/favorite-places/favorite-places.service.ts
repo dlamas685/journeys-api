@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 
+import { Decimal } from '@prisma/client/runtime/library'
 import { QueryParamsDto } from 'src/common/dto'
 import {
 	PaginatedResponseEntity,
@@ -29,6 +30,8 @@ export class FavoritePlacesService {
 			data: {
 				userId,
 				...createFavoritePlaceDto,
+				latitude: new Decimal(createFavoritePlaceDto.latitude),
+				longitude: new Decimal(createFavoritePlaceDto.longitude),
 			},
 		})
 
@@ -95,6 +98,12 @@ export class FavoritePlacesService {
 			},
 			data: {
 				...updateFavoritePlaceDto,
+				latitude: updateFavoritePlaceDto.latitude
+					? new Decimal(updateFavoritePlaceDto.latitude)
+					: undefined,
+				longitude: updateFavoritePlaceDto.longitude
+					? new Decimal(updateFavoritePlaceDto.longitude)
+					: undefined,
 			},
 		})
 

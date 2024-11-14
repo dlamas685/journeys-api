@@ -1,9 +1,9 @@
 import { BadRequestException } from '@nestjs/common'
-import { plainToClass, TransformFnParams } from 'class-transformer'
+import { plainToClass } from 'class-transformer'
 import { FilterFieldDto } from '../dto'
 import { FilterRules, FilterTypes } from '../enums'
 
-export const transformToFilterFieldArray = ({ value }: TransformFnParams) =>
+export const transformToFilterFieldArray = value =>
 	value.map(filter => {
 		const parts = filter.match(/([^:]+):([^:]+):([^:]+):(.+)/)?.slice(1)
 
@@ -13,7 +13,7 @@ export const transformToFilterFieldArray = ({ value }: TransformFnParams) =>
 			)
 		}
 
-		const [field, rule, type, value] = parts
+		const [field, rule, type, parsedValue] = parts
 
 		const isNot = rule.startsWith('!')
 		const isInsensitive = rule.endsWith('~')
@@ -27,8 +27,8 @@ export const transformToFilterFieldArray = ({ value }: TransformFnParams) =>
 		const newRule = rule.slice(isNot ? 1 : 0, isInsensitive ? -1 : undefined)
 		const newValue =
 			newRule === FilterRules.IN || newRule === FilterRules.NOT_IN
-				? value.split('/')
-				: value
+				? parsedValue.split('/')
+				: parsedValue
 
 		return plainToClass(FilterFieldDto, {
 			field,

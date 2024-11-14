@@ -3,7 +3,7 @@ import { plainToClass } from 'class-transformer'
 import { FilterFieldDto, LogicalFilterDto } from '../dto'
 import { FilterRules } from '../enums'
 
-export const transformToLogicalFilterArray = ({ value }) =>
+export const transformToLogicalFilterArray = value =>
 	value
 		.map(filter => {
 			const parts = filter.split(':')

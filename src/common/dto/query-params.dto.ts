@@ -33,11 +33,12 @@ export class QueryParamsDto {
 	@IsOptional()
 	@IsArray()
 	@ArrayNotEmpty()
-	@Transform(transformToQueryArray)
-	@Transform(transformToFilterFieldArray, { toClassOnly: true })
+	@Transform(({ value }) => transformToQueryArray(value))
+	@Transform(({ value }) => transformToFilterFieldArray(value), {
+		toClassOnly: true,
+	})
 	@ValidateNested({ each: true })
 	@Type(() => FilterFieldDto)
-	// @Transform(transformToWhere, { toPlainOnly: true })
 	@ApiPropertyOptional({
 		type: String,
 		isArray: true,
@@ -48,11 +49,12 @@ export class QueryParamsDto {
 	@IsOptional()
 	@IsArray()
 	@ArrayNotEmpty()
-	@Transform(transformToQueryArray)
-	@Transform(transformToSortFieldArray, { toClassOnly: true })
+	@Transform(({ value }) => transformToQueryArray(value))
+	@Transform(({ value }) => transformToSortFieldArray(value), {
+		toClassOnly: true,
+	})
 	@ValidateNested({ each: true })
 	@Type(() => SortFieldDto)
-	// @Transform(transformToOrderby, { toClassOnly: true })
 	@ApiPropertyOptional({
 		type: String,
 		isArray: true,
@@ -63,11 +65,12 @@ export class QueryParamsDto {
 	@IsOptional()
 	@IsArray()
 	@ArrayNotEmpty()
-	@Transform(transformToQueryArray)
-	@Transform(transformToLogicalFilterArray, { toClassOnly: true })
+	@Transform(({ value }) => transformToQueryArray(value))
+	@Transform(({ value }) => transformToLogicalFilterArray(value), {
+		toClassOnly: true,
+	})
 	@ValidateNested({ each: true })
 	@Type(() => LogicalFilterDto)
-	// @Transform(transformToWhere, { toPlainOnly: true })
 	@ApiPropertyOptional({
 		type: String,
 		isArray: true,

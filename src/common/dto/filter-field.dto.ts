@@ -32,6 +32,6 @@ export class FilterFieldDto {
 	type?: FilterTypes
 
 	@IsOptional()
-	@Transform(transformToValueType)
+	@Transform(({ value, obj }) => transformToValueType(value, obj))
 	value?: any
 }

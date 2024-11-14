@@ -27,6 +27,7 @@
 		"email:export": "email export"
 	},
 	"dependencies": {
+		"@googlemaps/google-maps-services-js": "^3.4.0",
 		"@nestjs-modules/mailer": "^2.0.2",
 		"@nestjs/common": "^10.0.0",
 		"@nestjs/config": "^3.2.3",

@@ -31,6 +31,9 @@ export class FavoriteAddressEntity implements FavoriteAddress {
 	@ApiProperty()
 	updatedAt: Date | null
 
+	@ApiProperty()
+	address: string
+
 	constructor(partial: Partial<FavoriteAddressEntity>) {
 		Object.assign(this, partial)
 	}

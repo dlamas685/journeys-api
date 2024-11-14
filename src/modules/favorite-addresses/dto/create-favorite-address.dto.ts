@@ -1,24 +1,20 @@
 import { ApiPropertyOptional } from '@nestjs/swagger'
-import { IsNumber, IsOptional, IsString } from 'class-validator'
+import { IsNumber, IsString } from 'class-validator'
 
 export class CreateFavoriteAddressDto {
 	@ApiPropertyOptional({ example: 'Casa Mamucha' })
-	@IsOptional()
 	@IsString()
-	alias: string | null
+	alias: string
 
 	@ApiPropertyOptional({ example: 'ChIJN1t_tDeuEmsRUsoyG83frY4' })
-	@IsOptional()
 	@IsString()
-	placeId: string | null
+	placeId: string
 
 	@ApiPropertyOptional({ example: -33.866489 })
-	@IsOptional()
 	@IsNumber()
-	latitude: number | null
+	latitude: number
 
 	@ApiPropertyOptional({ example: 151.1958561 })
-	@IsOptional()
 	@IsNumber()
-	longitude: number | null
+	longitude: number
 }

@@ -10,7 +10,7 @@ import { FavoriteAddressEntity } from '../entities/favorite-address.entity'
 
 type ValidFieldsType = keyof FavoriteAddressEntity
 
-const VALID_FIELDS: ValidFieldsType[] = ['alias', 'createdAt']
+const VALID_FIELDS: ValidFieldsType[] = ['alias', 'createdAt', 'address']
 
 export class FavoriteAddressFilterFieldDto extends FilterFieldDto {
 	@IsIn(VALID_FIELDS)

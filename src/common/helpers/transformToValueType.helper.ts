@@ -1,7 +1,6 @@
-import { TransformFnParams } from 'class-transformer'
 import { FilterTypes } from '../enums'
 
-export const transformToValueType = ({ value, obj }: TransformFnParams) => {
+export const transformToValueType = (value, obj) => {
 	const type = obj?.type
 
 	if (!value) return null
