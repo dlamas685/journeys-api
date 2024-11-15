@@ -13,6 +13,8 @@ import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
+import { translatePlaceTypes } from '../google-maps/helpers/place-translations.helper'
+import { PlacesService } from '../google-maps/services/places.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateFavoritePlaceDto } from './dto/create-favorite-place.dto'
 import { UpdateFavoritePlaceDto } from './dto/update-favorite-place.dto'
@@ -20,7 +22,10 @@ import { FavoritePlaceEntity } from './entities/favorite-place.entity'
 
 @Injectable()
 export class FavoritePlacesService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly places: PlacesService
+	) {}
 
 	async create(
 		userId: string,
@@ -39,15 +44,31 @@ export class FavoritePlacesService {
 	}
 
 	async findAll(userId: string, queryParamsDto: QueryParamsDto) {
-		const parsedFilters = fromFiltersToWhere(queryParamsDto.filters)
+		let placeIds: string[] = []
+
+		const addressFilter = queryParamsDto.filters?.find(
+			filter => filter.field === 'name'
+		)
+
+		const newFilters =
+			queryParamsDto.filters?.filter(filter => filter.field !== 'address') || []
+
+		if (addressFilter?.value) {
+			placeIds = await this.places.searchPlaces(addressFilter.value)
+		}
+
+		const parsedFilters = fromFiltersToWhere(newFilters)
+
 		const parsedLogicalFilters = fromLogicalFiltersToWhere(
 			queryParamsDto.logicalFilters
 		)
+
 		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
 
 		const query: Prisma.FavoritePlaceFindManyArgs = {
 			where: {
 				userId,
+				placeId: placeIds.length > 0 ? { in: placeIds } : undefined,
 				...parsedFilters,
 				...parsedLogicalFilters,
 			},
@@ -63,6 +84,23 @@ export class FavoritePlacesService {
 			this.prisma.favoritePlace.count({ where: query.where }),
 		])
 
+		const favoritePlaces = await Promise.all(
+			records.map(async record => {
+				const placeDetails = await this.places.getPlaceDetails(record.placeId, [
+					'icon',
+					'types',
+				])
+
+				return new FavoritePlaceEntity({
+					...record,
+					name: placeDetails.name,
+					types: translatePlaceTypes(placeDetails.types),
+					address: placeDetails.formatted_address,
+					iconUrl: placeDetails.icon,
+				})
+			})
+		)
+
 		const metadata = plainToInstance(PaginationMetadataEntity, {
 			total: totalPages,
 			page: queryParamsDto.page,
@@ -70,7 +108,7 @@ export class FavoritePlacesService {
 		})
 
 		return new PaginatedResponseEntity<FavoritePlaceEntity>(
-			plainToInstance(FavoritePlaceEntity, records),
+			favoritePlaces,
 			metadata
 		)
 	}
@@ -83,7 +121,21 @@ export class FavoritePlacesService {
 			},
 		})
 
-		return new FavoritePlaceEntity(foundPlace)
+		if (!foundPlace) {
+			throw new Error('Place not found')
+		}
+
+		const details = await this.places.getPlaceDetails(foundPlace.placeId, [
+			'icon',
+			'types',
+		])
+
+		return new FavoritePlaceEntity({
+			...foundPlace,
+			types: translatePlaceTypes(details.types),
+			address: details.formatted_address,
+			iconUrl: details.icon,
+		})
 	}
 
 	async update(

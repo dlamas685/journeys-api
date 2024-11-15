@@ -42,7 +42,20 @@ export class FavoriteAddressesService {
 	}
 
 	async findAll(userId: string, queryParamsDto: FavoriteAddressQueryParamsDto) {
-		const parsedFilters = fromFiltersToWhere(queryParamsDto.filters)
+		let placeIds: string[] = []
+
+		const addressFilter = queryParamsDto.filters?.find(
+			filter => filter.field === 'address'
+		)
+
+		const newFilters =
+			queryParamsDto.filters?.filter(filter => filter.field !== 'address') || []
+
+		if (addressFilter?.value) {
+			placeIds = await this.places.searchAddresses(addressFilter.value)
+		}
+
+		const parsedFilters = fromFiltersToWhere(newFilters)
 
 		const parsedLogicalFilters = fromLogicalFiltersToWhere(
 			queryParamsDto.logicalFilters
@@ -55,6 +68,7 @@ export class FavoriteAddressesService {
 			take: queryParamsDto.limit,
 			where: {
 				userId,
+				placeId: placeIds.length > 0 ? { in: placeIds } : undefined,
 				...parsedFilters,
 				...parsedLogicalFilters,
 			},

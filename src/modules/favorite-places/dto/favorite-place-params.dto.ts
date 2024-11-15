@@ -5,9 +5,12 @@ import {
 	LogicalFilterDto,
 	QueryParamsDto,
 	SortFieldDto,
-} from '../../../common/dto'
+} from 'src/common/dto'
+import { FavoritePlaceEntity } from '../entities/favorite-place.entity'
 
-const VALID_FIELDS = ['createdAt']
+type ValidFieldsType = keyof FavoritePlaceEntity
+
+const VALID_FIELDS: ValidFieldsType[] = ['createdAt', 'name']
 
 export class FavoritePlaceFilterFieldDto extends FilterFieldDto {
 	@IsIn(VALID_FIELDS)

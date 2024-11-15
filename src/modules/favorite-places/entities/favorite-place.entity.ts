@@ -28,6 +28,18 @@ export class FavoritePlaceEntity implements FavoritePlace {
 	@ApiProperty()
 	updatedAt: Date | null
 
+	@ApiProperty()
+	name: string
+
+	@ApiProperty()
+	address: string
+
+	@ApiProperty()
+	iconUrl: string
+
+	@ApiProperty()
+	types: string[]
+
 	constructor(partial: Partial<FavoritePlaceEntity>) {
 		Object.assign(this, partial)
 	}
