@@ -35,12 +35,6 @@ export class FavoritePlaceEntity implements FavoritePlace {
 	address: string
 
 	@ApiProperty()
-	iconUrl: string
-
-	@ApiProperty()
-	iconBackgroundColor: string
-
-	@ApiProperty()
 	types: string[]
 
 	constructor(partial: Partial<FavoritePlaceEntity>) {

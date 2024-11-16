@@ -87,8 +87,6 @@ export class FavoritePlacesService {
 		const favoritePlaces = await Promise.all(
 			records.map(async record => {
 				const placeDetails = await this.places.getPlaceDetails(record.placeId, [
-					'icon',
-					'icon_background_color',
 					'types',
 				])
 
@@ -97,8 +95,6 @@ export class FavoritePlacesService {
 					name: placeDetails.name,
 					types: translatePlaceTypes(placeDetails.types),
 					address: placeDetails.formatted_address,
-					iconUrl: placeDetails.icon,
-					iconBackgroundColor: placeDetails.icon_background_color,
 				})
 			})
 		)
@@ -128,8 +124,6 @@ export class FavoritePlacesService {
 		}
 
 		const details = await this.places.getPlaceDetails(foundPlace.placeId, [
-			'icon',
-			'icon_background_color',
 			'types',
 		])
 
@@ -137,8 +131,6 @@ export class FavoritePlacesService {
 			...foundPlace,
 			types: translatePlaceTypes(details.types),
 			address: details.formatted_address,
-			iconUrl: details.icon,
-			iconBackgroundColor: details.icon_background_color,
 		})
 	}
 
