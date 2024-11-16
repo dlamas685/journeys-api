@@ -18,6 +18,8 @@ const validationSchema = Joi.object({
 	CLOUDINARY_API_KEY: Joi.string().required(),
 	CLOUDINARY_API_SECRET: Joi.string().required(),
 	GOOGLE_MAPS_API_KEY: Joi.string().required(),
+	REDIS_URL: Joi.string().required(),
+	CACHE_TTL: Joi.number().default(86400),
 	SALTS: Joi.number().default(10),
 })
 

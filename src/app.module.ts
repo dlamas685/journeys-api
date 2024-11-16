@@ -30,11 +30,11 @@ import { UsersModule } from './modules/users/users.module'
 			useFactory: async (config: ConfigService) => {
 				const store = await redisStore({
 					url: config.get('REDIS_URL'),
+					ttl: Number(config.get('CACHE_TTL')),
 				})
 
 				return {
 					store: store as unknown as CacheStore,
-					ttl: config.get('CACHE_TTL'),
 				}
 			},
 		}),
