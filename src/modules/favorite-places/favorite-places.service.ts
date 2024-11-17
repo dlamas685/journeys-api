@@ -46,16 +46,31 @@ export class FavoritePlacesService {
 	async findAll(userId: string, queryParamsDto: QueryParamsDto) {
 		let placeIds: string[] = []
 
-		const addressFilter = queryParamsDto.filters?.find(
+		const nameFilter = queryParamsDto.filters?.find(
 			filter => filter.field === 'name'
 		)
 
-		const newFilters =
-			queryParamsDto.filters?.filter(filter => filter.field !== 'address') || []
+		const addressFilter = queryParamsDto.filters?.find(
+			filter => filter.field === 'address'
+		)
 
-		if (addressFilter?.value) {
-			placeIds = await this.places.searchPlaces(addressFilter.value)
+		const newFilters =
+			queryParamsDto.filters?.filter(
+				filter => filter.field !== 'name' && filter.field !== 'address'
+			) || []
+
+		if (nameFilter) {
+			placeIds = await this.places.searchPlaces(nameFilter.value)
 		}
+
+		if (addressFilter) {
+			placeIds = [
+				...placeIds,
+				...(await this.places.searchAddresses(addressFilter.value)),
+			]
+		}
+
+		console.log({ newFilters, placeIds })
 
 		const parsedFilters = fromFiltersToWhere(newFilters)
 
