@@ -57,7 +57,10 @@ export class PlacesService {
 		}
 	}
 
-	async searchAddresses(query: string) {
+	async searchAddresses(
+		query: string,
+		types: PlaceAutocompleteType = PlaceAutocompleteType.address
+	) {
 		const searchCacheKey = `address-search-${query}`
 
 		const cachedPlaces = await this.cacheManager.get<string[]>(searchCacheKey)
@@ -75,7 +78,7 @@ export class PlacesService {
 					key: this.apiKey,
 					input: query,
 					components: ['country:ar'],
-					types: PlaceAutocompleteType.address,
+					types,
 					language: Language.es,
 				},
 			})

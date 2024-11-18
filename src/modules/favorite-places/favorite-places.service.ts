@@ -66,11 +66,9 @@ export class FavoritePlacesService {
 		if (addressFilter) {
 			placeIds = [
 				...placeIds,
-				...(await this.places.searchAddresses(addressFilter.value)),
+				...(await this.places.searchPlaces(addressFilter.value)),
 			]
 		}
-
-		console.log({ newFilters, placeIds })
 
 		const parsedFilters = fromFiltersToWhere(newFilters)
 
