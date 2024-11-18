@@ -14,13 +14,10 @@ services:
       - POSTGRES_PASSWORD=123456
       - POSTGRES_DB=journeys
   redis:
-      container_name: redis
-      image: redis:latest
-      restart: always
-      ports:
-        - 6379:6379
-      volumes:
-        - redis-data:/data
-        
-volumes:
-  redis-data:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    volumes:
+      - ./redis-data:/data
+    ports:
+      - 6379:6379

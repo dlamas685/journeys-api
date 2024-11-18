@@ -47,6 +47,7 @@ model User {
   FavoriteAddress  FavoriteAddress[]
   FavoritePlace    FavoritePlace[]
   ActivityTemplate ActivityTemplate[]
+  Fleet            Fleet[]
 
   @@map("users")
 }
@@ -129,4 +130,20 @@ model ActivityTemplate {
 
   @@unique([userId, name])
   @@map("activity_templates")
+}
+
+model Fleet {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  name        String
+  description String?
+  maxVehicles Int?      @map("max_vehicles") @db.SmallInt
+  maxDrivers  Int?      @map("max_drivers") @db.SmallInt
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, name])
+  @@map("fleets")
 }
