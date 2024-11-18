@@ -17,6 +17,7 @@ import { EmailsModule } from './modules/mails/emails.module'
 import { OptionsModule } from './modules/options/options.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { UsersModule } from './modules/users/users.module'
+import { FleetsModule } from './modules/fleets/fleets.module';
 
 @Module({
 	imports: [
@@ -50,6 +51,7 @@ import { UsersModule } from './modules/users/users.module'
 		FavoritePlacesModule,
 		ActivityTemplatesModule,
 		GoogleMapsModule,
+		FleetsModule,
 	],
 	controllers: [],
 	providers: [],
