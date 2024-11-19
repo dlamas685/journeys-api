@@ -48,6 +48,7 @@ model User {
   FavoritePlace    FavoritePlace[]
   ActivityTemplate ActivityTemplate[]
   Fleet            Fleet[]
+  Vehicle          Vehicle[]
 
   @@map("users")
 }
@@ -142,8 +143,29 @@ model Fleet {
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user User @relation(fields: [userId], references: [id])
+  user    User      @relation(fields: [userId], references: [id])
+  Vehicle Vehicle[]
 
   @@unique([userId, name])
   @@map("fleets")
+}
+
+model Vehicle {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  fleetId      String?   @map("fleet_id") @db.Uuid
+  licensePlate String    @map("license_plate")
+  make         String?
+  model        String?
+  year         Int?      @db.SmallInt
+  vin          String?
+  notes        String?
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user  User   @relation(fields: [userId], references: [id])
+  fleet Fleet? @relation(fields: [fleetId], references: [id])
+
+  @@unique([userId, licensePlate])
+  @@map("vehicles")
 }
