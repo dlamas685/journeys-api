@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 
@@ -136,7 +136,7 @@ export class FavoritePlacesService {
 		})
 
 		if (!foundPlace) {
-			throw new Error('Place not found')
+			throw new NotFoundException('Lugar no encontrado')
 		}
 
 		const details = await this.places.getPlaceDetails(foundPlace.placeId, [

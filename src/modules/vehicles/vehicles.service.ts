@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common'
+import {
+	Injectable,
+	InternalServerErrorException,
+	NotFoundException,
+} from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 import {
@@ -9,7 +13,9 @@ import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
+	getPublicIdFromUrl,
 } from 'src/common/helpers'
+import { CloudinaryService } from '../cloudinary/cloudinary.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { VehicleQueryParamsDto } from './dto'
 import { CreateVehicleDto } from './dto/create-vehicle.dto'
@@ -18,7 +24,10 @@ import { VehicleEntity } from './entities/vehicle.entity'
 
 @Injectable()
 export class VehiclesService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly cloudinary: CloudinaryService
+	) {}
 
 	async create(
 		userId: string,
@@ -90,7 +99,7 @@ export class VehiclesService {
 		})
 
 		if (!foundVehicle) {
-			throw new Error('Fleet not found')
+			throw new NotFoundException('Vehículo no encontrado')
 		}
 
 		return plainToInstance(VehicleEntity, foundVehicle)
@@ -115,8 +124,25 @@ export class VehiclesService {
 	}
 
 	async remove(userId: string, id: string) {
-		await this.prisma.vehicle.delete({
-			where: { id, userId },
+		await this.prisma.$transaction(async prisma => {
+			const deletedVehicle = await prisma.vehicle.delete({
+				where: {
+					userId,
+					id,
+				},
+			})
+
+			try {
+				if (deletedVehicle.imageUrl) {
+					const publicId = getPublicIdFromUrl(deletedVehicle.imageUrl)
+
+					await this.cloudinary.deleteFile(publicId)
+				}
+			} catch (error) {
+				throw new InternalServerErrorException(
+					`Error al eliminar la imagen del vehículo: ${error.message}`
+				)
+			}
 		})
 
 		return `Eliminación completa!`

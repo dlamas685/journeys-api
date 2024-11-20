@@ -1,7 +1,7 @@
 import { TransformFnParams } from 'class-transformer'
 import { FilterFieldDto } from '../dto'
-import { fromFiltersToWhere } from './fromFiltersToWhere.helper'
-import { fromLogicalFiltersToWhere } from './fromLogicalFiltersToWhere.helper'
+import { fromFiltersToWhere } from './from-filters-to-where.helper'
+import { fromLogicalFiltersToWhere } from './from-logical-filters-to-where.helper'
 
 export const transformToWhere = ({ value }: TransformFnParams) => {
 	if (value.every((item: any) => item instanceof FilterFieldDto))

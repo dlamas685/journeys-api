@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 import {
@@ -94,7 +94,7 @@ export class FleetsService {
 		})
 
 		if (!foundFleet) {
-			throw new Error('Fleet not found')
+			throw new NotFoundException('Flota no encontrada')
 		}
 
 		return plainToInstance(FleetEntity, foundFleet)

@@ -9,5 +9,6 @@ import { FilesService } from './files.service'
 	imports: [CloudinaryModule, UsersModule, VehiclesModule],
 	controllers: [FilesController],
 	providers: [FilesService],
+	exports: [FilesService],
 })
 export class FilesModule {}

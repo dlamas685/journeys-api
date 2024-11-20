@@ -7,10 +7,10 @@ import {
 	PaginationMetadataEntity,
 } from 'src/common/entities/paginated-response.entity'
 import {
+	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
-import { fromFiltersToWhere } from '../../common/helpers/fromFiltersToWhere.helper'
 import { PrismaService } from '../../modules/prisma/prisma.service'
 import { PlacesService } from '../google-maps/services/places.service'
 import { FavoriteAddressQueryParamsDto } from './dto'
@@ -113,9 +113,7 @@ export class FavoriteAddressesService {
 		})
 
 		if (!foundAddress) {
-			throw new NotFoundException(
-				`No se encontró la dirección favorita con el id ${id}`
-			)
+			throw new NotFoundException('Dirección no encontrada')
 		}
 
 		const details = await this.places.getPlaceDetails(foundAddress.placeId)
@@ -155,6 +153,6 @@ export class FavoriteAddressesService {
 			where: { id, userId },
 		})
 
-		return `Eliminacion Completa!`
+		return `Eliminación Completa!`
 	}
 }

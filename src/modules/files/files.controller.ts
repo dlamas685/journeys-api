@@ -22,11 +22,8 @@ import {
 import { Response } from 'express'
 import { Public, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CloudinaryService } from '../cloudinary/cloudinary.service'
 import { UserEntity } from '../users/entities'
-import { UsersService } from '../users/users.service'
 import { VehicleEntity } from '../vehicles/entities/vehicle.entity'
-import { VehiclesService } from '../vehicles/vehicles.service'
 import { FilesService } from './files.service'
 import { imageFilter } from './helpers/image-filter.helper'
 
@@ -34,12 +31,7 @@ import { imageFilter } from './helpers/image-filter.helper'
 @UseGuards(JwtAuthGuard)
 @Controller('files')
 export class FilesController {
-	constructor(
-		private readonly files: FilesService,
-		private readonly cloudinary: CloudinaryService,
-		private readonly users: UsersService,
-		private readonly vehicles: VehiclesService
-	) {}
+	constructor(private readonly files: FilesService) {}
 
 	@Public()
 	@Get(':folder/:name')
@@ -84,20 +76,7 @@ export class FilesController {
 		@UserId() userId,
 		@UploadedFile() file: Express.Multer.File
 	) {
-		const user = await this.users.findOne(userId)
-
-		if (user.imageUrl && !this.isGoogleImage(user.imageUrl)) {
-			const publicId = this.getPublicIdFromUrl(user.imageUrl)
-			await this.cloudinary.deleteFile(publicId)
-		}
-
-		const cloud = await this.cloudinary.uploadFile(file)
-
-		const updatedUser = await this.users.update(userId, {
-			imageUrl: cloud.secure_url,
-		})
-
-		return updatedUser
+		return this.files.uploadUserImage(userId, file)
 	}
 
 	@Delete('profile')
@@ -108,18 +87,7 @@ export class FilesController {
 	@ApiBearerAuth('JWT-auth')
 	@ApiOkResponse({ type: UserEntity })
 	async deleteUserImage(@UserId() userId) {
-		const user = await this.users.findOne(userId)
-
-		if (user.imageUrl) {
-			const publicId = this.getPublicIdFromUrl(user.imageUrl)
-			await this.cloudinary.deleteFile(publicId)
-
-			const updatedUser = await this.users.update(userId, { imageUrl: null })
-
-			return updatedUser
-		}
-
-		return user
+		return this.files.deleteUserImage(userId)
 	}
 
 	@Post('vehicles/:id')
@@ -135,34 +103,25 @@ export class FilesController {
 	})
 	@ApiBearerAuth('JWT-auth')
 	@ApiOkResponse({ type: VehicleEntity })
-	async uploadVehiclesImage(
+	async uploadVehicleImage(
 		@UserId() userId,
 		@Param('id', ParseUUIDPipe) id: string,
 		@UploadedFile() file: Express.Multer.File
 	) {
-		const vehicle = await this.vehicles.findOne(userId, id)
-
-		if (vehicle.imageUrl && !this.isGoogleImage(vehicle.imageUrl)) {
-			const publicId = this.getPublicIdFromUrl(vehicle.imageUrl)
-			await this.cloudinary.deleteFile(publicId)
-		}
-
-		const cloud = await this.cloudinary.uploadFile(file)
-
-		const updatedVehicle = await this.vehicles.update(userId, id, {
-			imageUrl: cloud.secure_url,
-		})
-
-		return updatedVehicle
+		return this.files.uploadVehicleImage(userId, id, file)
 	}
 
-	private getPublicIdFromUrl(url: string): string {
-		const parts = url.split('/')
-		const lastPart = parts[parts.length - 1]
-		return lastPart.split('.')[0]
-	}
-
-	private isGoogleImage(imageUrl: string): boolean {
-		return imageUrl.includes('googleusercontent.com')
+	@Delete('vehicles/:id')
+	@ApiOperation({
+		summary: 'Eliminación de imagen (vehículos)',
+		description: 'Elimina la imagen actual de un vehículo.',
+	})
+	@ApiBearerAuth('JWT-auth')
+	@ApiOkResponse({ type: VehicleEntity })
+	async deleteVehicleImage(
+		@UserId() userId,
+		@Param('id', ParseUUIDPipe) id: string
+	) {
+		return this.files.deleteVehicleImage(userId, id)
 	}
 }
