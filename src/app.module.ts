@@ -19,6 +19,7 @@ import { PrismaModule } from './modules/prisma/prisma.module'
 import { UsersModule } from './modules/users/users.module'
 import { FleetsModule } from './modules/fleets/fleets.module';
 import { VehiclesModule } from './modules/vehicles/vehicles.module';
+import { DriversModule } from './modules/drivers/drivers.module';
 
 @Module({
 	imports: [
@@ -54,6 +55,7 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module';
 		GoogleMapsModule,
 		FleetsModule,
 		VehiclesModule,
+		DriversModule,
 	],
 	controllers: [],
 	providers: [],

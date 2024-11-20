@@ -53,12 +53,15 @@ async function bootstrap() {
 
 	const document = SwaggerModule.createDocument(app, config)
 
-	SwaggerModule.setup('docs', app, document)
+	const swaggerPath = 'docs'
+	SwaggerModule.setup(swaggerPath, app, document)
 
 	const port = app.get(ConfigService).get('PORT')
 
 	await app.listen(port)
 
-	logger.log(`Application is running on port ${port} 🚀`)
+	logger.log(
+		`🚀Application is running at "http://localhost:${port}/${swaggerPath}"`
+	)
 }
 bootstrap()
