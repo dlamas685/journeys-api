@@ -49,6 +49,7 @@ model User {
   ActivityTemplate ActivityTemplate[]
   Fleet            Fleet[]
   Vehicle          Vehicle[]
+  Driver           Driver[]
 
   @@map("users")
 }
@@ -145,6 +146,7 @@ model Fleet {
 
   user    User      @relation(fields: [userId], references: [id])
   Vehicle Vehicle[]
+  Driver  Driver[]
 
   @@unique([userId, name])
   @@map("fleets")
@@ -169,4 +171,22 @@ model Vehicle {
 
   @@unique([userId, licensePlate])
   @@map("vehicles")
+}
+
+model Driver {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  fleetId       String?   @map("fleet_id") @db.Uuid
+  licenseNumber String    @map("license_number")
+  name          String
+  imageUrl      String?   @map("image_url")
+  notes         String?
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user  User   @relation(fields: [userId], references: [id])
+  fleet Fleet? @relation(fields: [fleetId], references: [id])
+
+  @@unique([userId, licenseNumber])
+  @@map("drivers")
 }
