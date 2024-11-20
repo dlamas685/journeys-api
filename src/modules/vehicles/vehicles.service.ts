@@ -1,6 +1,17 @@
 import { Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
+import {
+	PaginatedResponseEntity,
+	PaginationMetadataEntity,
+} from 'src/common/entities/paginated-response.entity'
+import {
+	fromFiltersToWhere,
+	fromLogicalFiltersToWhere,
+	fromSortsToOrderby,
+} from 'src/common/helpers'
 import { PrismaService } from '../prisma/prisma.service'
+import { VehicleQueryParamsDto } from './dto'
 import { CreateVehicleDto } from './dto/create-vehicle.dto'
 import { UpdateVehicleDto } from './dto/update-vehicle.dto'
 import { VehicleEntity } from './entities/vehicle.entity'
@@ -23,14 +34,51 @@ export class VehiclesService {
 		return plainToInstance(VehicleEntity, newVehicle)
 	}
 
-	async findAll(userId: string, fleetId?: string): Promise<VehicleEntity[]> {
-		const findVehicles = await this.prisma.vehicle.findMany({
+	async findAll(
+		userId: string,
+		queryParamsDto: VehicleQueryParamsDto
+	): Promise<PaginatedResponseEntity<VehicleEntity>> {
+		const parsedFilters = fromFiltersToWhere(queryParamsDto.filters)
+
+		const parsedLogicalFilters = fromLogicalFiltersToWhere(
+			queryParamsDto.logicalFilters
+		)
+
+		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
+
+		const query: Prisma.VehicleFindManyArgs = {
 			where: {
 				userId,
-				fleetId,
+				...parsedFilters,
+				...parsedLogicalFilters,
 			},
+			orderBy: {
+				...parsedSorts,
+			},
+			skip:
+				queryParamsDto.page && queryParamsDto.limit
+					? (queryParamsDto.page - 1) * queryParamsDto.limit
+					: undefined,
+			take: queryParamsDto.limit,
+		}
+
+		const [records, totalPages] = await this.prisma.$transaction([
+			this.prisma.vehicle.findMany(query),
+			this.prisma.vehicle.count({ where: query.where }),
+		])
+
+		const vehicles = plainToInstance(VehicleEntity, records)
+
+		const metadata = plainToInstance(PaginationMetadataEntity, {
+			total: totalPages,
+			page: queryParamsDto.page,
+			lastPage: Math.ceil(totalPages / queryParamsDto.limit),
 		})
-		return plainToInstance(VehicleEntity, findVehicles)
+
+		return plainToInstance(PaginatedResponseEntity, {
+			data: vehicles,
+			meta: metadata,
+		})
 	}
 
 	async findOne(userId: string, id: string): Promise<VehicleEntity> {

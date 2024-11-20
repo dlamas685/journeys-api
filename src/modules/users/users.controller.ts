@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common'
 import {
 	ApiBearerAuth,
+	ApiExcludeEndpoint,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
@@ -33,9 +34,10 @@ export class UsersController {
 
 	//TODO: ESTE ENDPOINT ES A MODO DE EJEMPLO NO DEBE USARSE - SOLO SE PERMITE CREAR DESDE AUTH (REGISTRO)
 	@Post()
+	@ApiExcludeEndpoint()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
-		summary: 'Crear usuario',
+		summary: 'Creación de usuario',
 		description:
 			'Permite crear un nuevo usuario con su perfil personal o de empresa',
 	})
@@ -45,8 +47,8 @@ export class UsersController {
 
 	@Get()
 	@ApiOperation({
-		summary: 'Listar usuarios',
-		description: 'Permite listar todos los usuarios',
+		summary: 'Listado de usuarios',
+		description: 'Permite recuperar de forma paginada los usuarios.',
 	})
 	@ApiOkResponsePaginated(UserEntity)
 	findAll(@Query() queryParamsDto: UsersQueryParamsDto) {
@@ -55,7 +57,7 @@ export class UsersController {
 
 	@Get(':id')
 	@ApiOperation({
-		summary: 'Buscar usuario',
+		summary: 'Búsqueda de usuario',
 		description: 'Permite buscar un usuario por su ID',
 	})
 	@ApiOkResponse({ type: UserEntity })
@@ -66,8 +68,9 @@ export class UsersController {
 	//TODO: ESTE ENDPOINT ES A MODO DE EJEMPLO NO DEBE USARSE - ACTUALIZACIONES VIA MODULO OPTIONS
 	@Patch(':id')
 	@HttpCode(HttpStatus.OK)
+	@ApiExcludeEndpoint()
 	@ApiOperation({
-		summary: 'Actualizar usuario',
+		summary: 'Actualización de usuario',
 		description:
 			'Permite actualizar los datos de un usuario y su perfil personal o de empresa',
 	})
@@ -78,8 +81,9 @@ export class UsersController {
 
 	//TODO: ESTE ENDPOINT ES A MODO DE EJEMPLO NO DEBE USARSE - ELIMINACIONES VIA MODULO OPTIONS
 	@Delete(':id')
+	@ApiExcludeEndpoint()
 	@ApiOperation({
-		summary: 'Eliminar usuario',
+		summary: 'Eliminación de usuario',
 		description: 'Permite eliminar un usuario por su ID',
 	})
 	@ApiOkResponse({ type: UserEntity })

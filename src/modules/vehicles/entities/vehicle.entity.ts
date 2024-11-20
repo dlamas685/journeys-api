@@ -9,6 +9,9 @@ export class VehicleEntity implements Vehicle {
 	userId: string
 
 	@ApiProperty()
+	imageUrl: string | null
+
+	@ApiProperty()
 	fleetId: string | null
 
 	@ApiProperty()

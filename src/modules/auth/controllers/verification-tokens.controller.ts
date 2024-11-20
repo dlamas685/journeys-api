@@ -18,7 +18,7 @@ export class VerificationTokensController {
 	@Get('link-validation')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
-		summary: 'Verifica la existencia de un token',
+		summary: 'Verificación de existencia de token',
 		description:
 			'Permite verificar si un token de verificación existe en la base de datos',
 	})

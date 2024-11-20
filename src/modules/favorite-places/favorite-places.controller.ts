@@ -20,9 +20,11 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from '../../common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateFavoritePlaceDto } from './dto/create-favorite-place.dto'
-import { FavoritePlaceQueryParamsDto } from './dto/favorite-place-params.dto'
-import { UpdateFavoritePlaceDto } from './dto/update-favorite-place.dto'
+import {
+	CreateFavoritePlaceDto,
+	FavoritePlaceQueryParamsDto,
+	UpdateFavoritePlaceDto,
+} from './dto'
 import { FavoritePlaceEntity } from './entities/favorite-place.entity'
 import { FavoritePlacesService } from './favorite-places.service'
 
@@ -35,6 +37,10 @@ export class FavoritePlacesController {
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Creación de lugar favorito',
+		description: 'Permite agregar un nuevo lugar favorito.',
+	})
 	@ApiOkResponse({ type: FavoritePlaceEntity })
 	create(
 		@UserId() userId: string,
@@ -45,7 +51,8 @@ export class FavoritePlacesController {
 
 	@Get()
 	@ApiOperation({
-		summary: 'Listar lugares favoritos del usuario',
+		summary: 'Listado de lugares favoritos',
+		description: 'Permite recuperar de forma paginada los lugares favoritos.',
 	})
 	@ApiOkResponsePaginated(FavoritePlaceEntity)
 	findAll(
@@ -57,6 +64,10 @@ export class FavoritePlacesController {
 
 	@Get(':id')
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Búsqueda de lugar favorito',
+		description: 'Permite buscar un lugar favorito por su ID.',
+	})
 	@ApiOkResponse({ type: FavoritePlaceEntity })
 	findOne(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.favoritePlacesService.findOne(userId, id)
@@ -64,6 +75,10 @@ export class FavoritePlacesController {
 
 	@Patch(':id')
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Actualización de lugar favorito',
+		description: 'Permite actualizar los datos de un lugar favorito.',
+	})
 	@ApiOkResponse({ type: FavoritePlaceEntity })
 	update(
 		@UserId() userId: string,
@@ -74,6 +89,10 @@ export class FavoritePlacesController {
 	}
 
 	@Delete(':id')
+	@ApiOperation({
+		summary: 'Eliminación de lugar favorito',
+		description: 'Permite eliminar un lugar favorito por su ID.',
+	})
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.favoritePlacesService.remove(userId, id)
 	}

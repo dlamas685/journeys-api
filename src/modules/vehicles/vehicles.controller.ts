@@ -15,11 +15,12 @@ import {
 import {
 	ApiBearerAuth,
 	ApiOkResponse,
-	ApiQuery,
+	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger'
-import { UserId } from 'src/common/decorators'
+import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { VehicleQueryParamsDto } from './dto'
 import { CreateVehicleDto } from './dto/create-vehicle.dto'
 import { UpdateVehicleDto } from './dto/update-vehicle.dto'
 import { VehicleEntity } from './entities/vehicle.entity'
@@ -34,28 +35,35 @@ export class VehiclesController {
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Creación de vehículo',
+		description: 'Permite crear un nuevo vehículo.',
+	})
 	@ApiOkResponse({ type: VehicleEntity })
 	create(@UserId() userId: string, @Body() createVehicleDto: CreateVehicleDto) {
 		return this.vehiclesService.create(userId, createVehicleDto)
 	}
 
 	@Get()
-	@ApiQuery({
-		name: 'fleetId',
-		type: String,
-		required: false,
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Listado de vehículos',
+		description: 'Permite recuperar de forma paginada los vehículos.',
 	})
-	@ApiOkResponse({ type: [VehicleEntity] })
+	@ApiOkResponsePaginated(VehicleEntity)
 	findAll(
 		@UserId() userId: string,
-		@Query('fleetId', new ParseUUIDPipe({ optional: true }))
-		fleetId?: string
+		@Query() queryParamsDto: VehicleQueryParamsDto
 	) {
-		return this.vehiclesService.findAll(userId, fleetId)
+		return this.vehiclesService.findAll(userId, queryParamsDto)
 	}
 
 	@Get(':id')
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Búsqueda de vehículo',
+		description: 'Permite buscar un vehículo por su ID.',
+	})
 	@ApiOkResponse({ type: VehicleEntity })
 	findOne(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.vehiclesService.findOne(userId, id)
@@ -63,6 +71,10 @@ export class VehiclesController {
 
 	@Patch(':id')
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Actualización de vehículo',
+		description: 'Permite actualizar los datos de un vehículo.',
+	})
 	@ApiOkResponse({ type: VehicleEntity })
 	update(
 		@UserId() userId: string,
@@ -73,6 +85,10 @@ export class VehiclesController {
 	}
 
 	@Delete(':id')
+	@ApiOperation({
+		summary: 'Eliminación de vehículo',
+		description: 'Permite eliminar un vehículo por su ID.',
+	})
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.vehiclesService.remove(userId, id)
 	}

@@ -22,13 +22,13 @@ export class QueryParamsDto {
 	@IsPositive()
 	@Type(() => Number)
 	@ApiPropertyOptional()
-	page?: number = 1
+	page?: number
 
 	@IsOptional()
 	@IsPositive()
 	@Type(() => Number)
 	@ApiPropertyOptional()
-	limit?: number = 10
+	limit?: number
 
 	@IsOptional()
 	@IsArray()

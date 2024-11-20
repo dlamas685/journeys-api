@@ -1,31 +1,88 @@
 import { Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
+import {
+	PaginatedResponseEntity,
+	PaginationMetadataEntity,
+} from 'src/common/entities/paginated-response.entity'
+import { FilterRules, FilterTypes } from 'src/common/enums'
+import {
+	fromFiltersToWhere,
+	fromLogicalFiltersToWhere,
+	fromSortsToOrderby,
+} from 'src/common/helpers'
 import { PrismaService } from '../prisma/prisma.service'
+import { VehicleQueryParamsDto } from '../vehicles/dto'
+import { VehicleEntity } from '../vehicles/entities/vehicle.entity'
+import { VehiclesService } from '../vehicles/vehicles.service'
+import { FleetQueryParamsDto } from './dto'
 import { CreateFleetDto } from './dto/create-fleet.dto'
 import { UpdateFleetDto } from './dto/update-fleet.dto'
 import { FleetEntity } from './entities/fleet.entity'
 
 @Injectable()
 export class FleetsService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly vehicles: VehiclesService
+	) {}
 
 	async create(
 		userId: string,
 		createFleetDto: CreateFleetDto
 	): Promise<FleetEntity> {
-		const newFleet = await this.prisma.fleet.create({
+		const createdFleet = await this.prisma.fleet.create({
 			data: {
 				userId,
 				...createFleetDto,
 			},
 		})
 
-		return new FleetEntity(newFleet)
+		return plainToInstance(FleetEntity, createdFleet)
 	}
 
-	async findAll(userId: string): Promise<FleetEntity[]> {
-		const findFleets = await this.prisma.fleet.findMany({ where: { userId } })
-		return plainToInstance(FleetEntity, findFleets)
+	async findAll(
+		userId: string,
+		queryParamsDto: FleetQueryParamsDto
+	): Promise<PaginatedResponseEntity<FleetEntity>> {
+		const parsedFilters = fromFiltersToWhere(queryParamsDto.filters)
+
+		const parsedLogicalFilters = fromLogicalFiltersToWhere(
+			queryParamsDto.logicalFilters
+		)
+
+		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
+
+		const query: Prisma.FleetFindManyArgs = {
+			where: {
+				userId,
+				...parsedFilters,
+				...parsedLogicalFilters,
+			},
+			orderBy: {
+				...parsedSorts,
+			},
+			skip: (queryParamsDto.page - 1) * queryParamsDto.limit,
+			take: queryParamsDto.limit,
+		}
+
+		const [records, totalPages] = await this.prisma.$transaction([
+			this.prisma.fleet.findMany(query),
+			this.prisma.fleet.count({ where: query.where }),
+		])
+
+		const fleets = plainToInstance(FleetEntity, records)
+
+		const metadata = plainToInstance(PaginationMetadataEntity, {
+			total: totalPages,
+			page: queryParamsDto.page,
+			lastPage: Math.ceil(totalPages / queryParamsDto.limit),
+		})
+
+		return plainToInstance(PaginatedResponseEntity, {
+			data: fleets,
+			meta: metadata,
+		})
 	}
 
 	async findOne(userId: string, id: string): Promise<FleetEntity> {
@@ -67,5 +124,28 @@ export class FleetsService {
 		})
 
 		return `Eliminación completa!`
+	}
+
+	async findVehicles(
+		userId: string,
+		id: string,
+		queryParamsDto: VehicleQueryParamsDto
+	): Promise<PaginatedResponseEntity<VehicleEntity>> {
+		await this.findOne(userId, id)
+
+		const newQueryParams: VehicleQueryParamsDto = {
+			...queryParamsDto,
+			filters: [
+				{
+					field: 'fleetId',
+					rule: FilterRules.EQUALS,
+					type: FilterTypes.STRING,
+					value: id,
+				},
+				...queryParamsDto.filters,
+			],
+		}
+
+		return await this.vehicles.findAll(userId, newQueryParams)
 	}
 }

@@ -12,7 +12,12 @@ import {
 	Query,
 	UseGuards,
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import {
+	ApiBearerAuth,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+} from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from '../../common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import {
@@ -34,6 +39,10 @@ export class FavoriteAddressesController {
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Creación de dirección favorita',
+		description: 'Permite agregar una nueva dirección favorita.',
+	})
 	@ApiOkResponse({ type: FavoriteAddressEntity })
 	create(
 		@UserId() userId: string,
@@ -47,6 +56,11 @@ export class FavoriteAddressesController {
 
 	@Get()
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Listado de direcciones favoritas',
+		description:
+			'Permite recuperar de forma paginada las direcciones favoritas.',
+	})
 	@ApiOkResponsePaginated(FavoriteAddressEntity)
 	findAll(
 		@UserId() userId: string,
@@ -57,6 +71,10 @@ export class FavoriteAddressesController {
 
 	@Get(':id')
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Buscar dirección favorita',
+		description: 'Permite buscar una dirección favorita por su ID.',
+	})
 	@ApiOkResponse({ type: FavoriteAddressEntity })
 	findOne(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.favoriteAddressesService.findOne(userId, id)
@@ -64,6 +82,10 @@ export class FavoriteAddressesController {
 
 	@Patch(':id')
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Actualización de dirección favorita',
+		description: 'Permite actualizar los datos de una dirección favorita.',
+	})
 	@ApiOkResponse({ type: FavoriteAddressEntity })
 	update(
 		@UserId() userId: string,
@@ -78,6 +100,10 @@ export class FavoriteAddressesController {
 	}
 
 	@Delete(':id')
+	@ApiOperation({
+		summary: 'Eliminación de dirección favorita',
+		description: 'Permite eliminar una dirección favorita por su ID.',
+	})
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.favoriteAddressesService.remove(userId, id)
 	}

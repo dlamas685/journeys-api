@@ -5,6 +5,7 @@ import {
 	HttpCode,
 	HttpStatus,
 	Param,
+	ParseUUIDPipe,
 	Post,
 	Res,
 	UploadedFile,
@@ -24,6 +25,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { CloudinaryService } from '../cloudinary/cloudinary.service'
 import { UserEntity } from '../users/entities'
 import { UsersService } from '../users/users.service'
+import { VehicleEntity } from '../vehicles/entities/vehicle.entity'
+import { VehiclesService } from '../vehicles/vehicles.service'
 import { FilesService } from './files.service'
 import { imageFilter } from './helpers/image-filter.helper'
 
@@ -34,15 +37,16 @@ export class FilesController {
 	constructor(
 		private readonly files: FilesService,
 		private readonly cloudinary: CloudinaryService,
-		private readonly users: UsersService
+		private readonly users: UsersService,
+		private readonly vehicles: VehiclesService
 	) {}
 
 	@Public()
 	@Get(':folder/:name')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
-		summary: 'Consultar imagen estática',
-		description: 'Obtiene una imagen estática',
+		summary: 'Consulta de imagen estática',
+		description: 'Permite obtener una imagen estática',
 	})
 	@ApiOkResponse({
 		content: {
@@ -71,8 +75,8 @@ export class FilesController {
 	)
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
-		summary: 'Subir imagen a mi perfil',
-		description: 'Sube una imagen al perfil del usuario autenticado',
+		summary: 'Carga de imagen (perfil)',
+		description: 'Permite cargar una imagen al perfil del usuario autenticado',
 	})
 	@ApiBearerAuth('JWT-auth')
 	@ApiOkResponse({ type: UserEntity })
@@ -98,7 +102,7 @@ export class FilesController {
 
 	@Delete('profile')
 	@ApiOperation({
-		summary: 'Eliminar imagen de mi perfil',
+		summary: 'Eliminación de imagen (perfil)',
 		description: 'Elimina la imagen actual del perfil del usuario autenticado',
 	})
 	@ApiBearerAuth('JWT-auth')
@@ -116,6 +120,40 @@ export class FilesController {
 		}
 
 		return user
+	}
+
+	@Post('vehicles/:id')
+	@UseInterceptors(
+		FileInterceptor('file', {
+			fileFilter: imageFilter,
+		})
+	)
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Carga de imagen (vehículos)',
+		description: 'Permite cargar imagen a un vehículo.',
+	})
+	@ApiBearerAuth('JWT-auth')
+	@ApiOkResponse({ type: VehicleEntity })
+	async uploadVehiclesImage(
+		@UserId() userId,
+		@Param('id', ParseUUIDPipe) id: string,
+		@UploadedFile() file: Express.Multer.File
+	) {
+		const vehicle = await this.vehicles.findOne(userId, id)
+
+		if (vehicle.imageUrl && !this.isGoogleImage(vehicle.imageUrl)) {
+			const publicId = this.getPublicIdFromUrl(vehicle.imageUrl)
+			await this.cloudinary.deleteFile(publicId)
+		}
+
+		const cloud = await this.cloudinary.uploadFile(file)
+
+		const updatedVehicle = await this.vehicles.update(userId, id, {
+			imageUrl: cloud.secure_url,
+		})
+
+		return updatedVehicle
 	}
 
 	private getPublicIdFromUrl(url: string): string {

@@ -34,7 +34,7 @@ export class OptionsController {
 
 	@Get('profile')
 	@ApiOperation({
-		summary: 'Obtener mi perfil',
+		summary: 'Búsqueda de perfil',
 		description: 'Permite obtener el perfil del usuario autenticado',
 	})
 	@ApiOkResponse({ type: UserEntity })
@@ -45,7 +45,7 @@ export class OptionsController {
 	@Patch('profile')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
-		summary: 'Actualizar datos de mi perfil',
+		summary: 'Actualización de perfil',
 		description:
 			'Permite actualizar los datos del usuario autenticado y su perfil personal o de empresa',
 	})
@@ -56,7 +56,7 @@ export class OptionsController {
 
 	@Delete('security')
 	@ApiOperation({
-		summary: 'Eliminar mi cuenta',
+		summary: 'Eliminación de cuenta',
 		description: 'Permite eliminar la cuenta del usuario autenticado',
 	})
 	@ApiOkResponse({ type: UserEntity })
@@ -66,7 +66,7 @@ export class OptionsController {
 
 	@Patch('security')
 	@ApiOperation({
-		summary: 'Cambiar mi contraseña',
+		summary: 'Cambio de contraseña',
 		description: 'Permite cambiar la contraseña del usuario autenticado',
 	})
 	changePassword(
@@ -78,7 +78,7 @@ export class OptionsController {
 
 	@Get('security/password-exists')
 	@ApiOperation({
-		summary: 'Verificar si tengo contraseña',
+		summary: 'Verificación de existencia de contraseña',
 		description: 'Permite verificar si el usuario autenticado tiene contraseña',
 	})
 	@ApiOkResponse({ type: Boolean })

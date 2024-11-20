@@ -154,6 +154,7 @@ model Vehicle {
   id           String    @id @default(uuid()) @db.Uuid
   userId       String    @map("user_id") @db.Uuid
   fleetId      String?   @map("fleet_id") @db.Uuid
+  imageUrl     String?   @map("image_url")
   licensePlate String    @map("license_plate")
   make         String?
   model        String?
