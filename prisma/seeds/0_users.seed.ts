@@ -46,6 +46,10 @@ const seedUsers = async (prisma: PrismaClient): Promise<User[]> => {
 	const deleteFavoriteAddress = prisma.favoriteAddress.deleteMany()
 	const deleteFavoritePlaces = prisma.favoritePlace.deleteMany()
 	const deleteActivityTemplates = prisma.activityTemplate.deleteMany()
+	const deleteFleets = prisma.fleet.deleteMany()
+	const deleteVehicles = prisma.vehicle.deleteMany()
+	const deleteDrivers = prisma.driver.deleteMany()
+
 	const deleteUsers = prisma.user.deleteMany()
 
 	// The transaction runs synchronously so deleteUsers must run last.
@@ -55,6 +59,9 @@ const seedUsers = async (prisma: PrismaClient): Promise<User[]> => {
 		deleteFavoriteAddress,
 		deleteFavoritePlaces,
 		deleteActivityTemplates,
+		deleteFleets,
+		deleteVehicles,
+		deleteDrivers,
 		deleteUsers,
 	])
 
