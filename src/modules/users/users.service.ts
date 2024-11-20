@@ -69,8 +69,6 @@ export class UsersService {
 		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
 
 		const query: Prisma.UserFindManyArgs = {
-			skip: (queryParamsDto.page - 1) * queryParamsDto.limit,
-			take: queryParamsDto.limit,
 			where: {
 				...parsedFilters,
 				...parsedLogicalFilters,
@@ -78,6 +76,11 @@ export class UsersService {
 			orderBy: {
 				...parsedSorts,
 			},
+			skip:
+				queryParamsDto.page && queryParamsDto.limit
+					? (queryParamsDto.page - 1) * queryParamsDto.limit
+					: undefined,
+			take: queryParamsDto.limit,
 		}
 
 		const [records, totalPages] = await this.prisma.$transaction([

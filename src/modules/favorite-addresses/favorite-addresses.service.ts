@@ -64,8 +64,6 @@ export class FavoriteAddressesService {
 		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
 
 		const query: Prisma.FavoriteAddressFindManyArgs = {
-			skip: (queryParamsDto.page - 1) * queryParamsDto.limit,
-			take: queryParamsDto.limit,
 			where: {
 				userId,
 				placeId: placeIds.length > 0 ? { in: placeIds } : undefined,
@@ -75,6 +73,11 @@ export class FavoriteAddressesService {
 			orderBy: {
 				...parsedSorts,
 			},
+			skip:
+				queryParamsDto.page && queryParamsDto.limit
+					? (queryParamsDto.page - 1) * queryParamsDto.limit
+					: undefined,
+			take: queryParamsDto.limit,
 		}
 
 		const [records, totalPages] = await this.prisma.$transaction([

@@ -50,7 +50,10 @@ export class ActivityTemplatesService {
 			orderBy: {
 				...parsedSorts,
 			},
-			skip: (queryParamsDto.page - 1) * queryParamsDto.limit,
+			skip:
+				queryParamsDto.page && queryParamsDto.limit
+					? (queryParamsDto.page - 1) * queryParamsDto.limit
+					: undefined,
 			take: queryParamsDto.limit,
 		}
 
