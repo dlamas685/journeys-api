@@ -33,7 +33,7 @@ type MockDriver = {
 
 function createMockFleet(): MockFleet {
 	return <MockFleet>{
-		name: faker.company.buzzNoun(),
+		name: faker.word.noun(),
 		description: faker.lorem.text(),
 		maxVehicles: faker.number.int({ min: 10, max: 25 }),
 		maxDrivers: faker.number.int({ min: 13, max: 30 }),
@@ -117,6 +117,20 @@ const seedFleet = async (
 				include: {
 					Driver: true,
 					Vehicle: true,
+				},
+			})
+			records.push(newFleet)
+		} catch (error) {
+			console.log(error)
+		}
+	}
+	// add empty fleet for test propose
+	for (let i = 0; i < 25; i++) {
+		try {
+			const newFleet = await prisma.fleet.create({
+				data: {
+					userId,
+					...createMockFleet(),
 				},
 			})
 			records.push(newFleet)
