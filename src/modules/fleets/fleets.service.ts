@@ -11,6 +11,7 @@ import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
+import { DriverQueryParamsDto } from '../drivers/dto'
 import { PrismaService } from '../prisma/prisma.service'
 import { VehicleQueryParamsDto } from '../vehicles/dto'
 import { VehicleEntity } from '../vehicles/entities/vehicle.entity'
@@ -137,6 +138,29 @@ export class FleetsService {
 		await this.findOne(userId, id)
 
 		const newQueryParams: VehicleQueryParamsDto = {
+			...queryParamsDto,
+			filters: [
+				{
+					field: 'fleetId',
+					rule: FilterRules.EQUALS,
+					type: FilterTypes.STRING,
+					value: id,
+				},
+				...queryParamsDto.filters,
+			],
+		}
+
+		return await this.vehicles.findAll(userId, newQueryParams)
+	}
+
+	async findDrivers(
+		userId: string,
+		id: string,
+		queryParamsDto: DriverQueryParamsDto
+	): Promise<PaginatedResponseEntity<VehicleEntity>> {
+		await this.findOne(userId, id)
+
+		const newQueryParams: DriverQueryParamsDto = {
 			...queryParamsDto,
 			filters: [
 				{

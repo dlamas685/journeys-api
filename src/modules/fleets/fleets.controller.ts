@@ -20,6 +20,8 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { DriverQueryParamsDto } from '../drivers/dto'
+import { DriverEntity } from '../drivers/entities/driver.entity'
 import { VehicleQueryParamsDto } from '../vehicles/dto'
 import { VehicleEntity } from '../vehicles/entities/vehicle.entity'
 import { CreateFleetDto, FleetQueryParamsDto, UpdateFleetDto } from './dto'
@@ -105,5 +107,20 @@ export class FleetsController {
 		@Query() queryParamsDto: VehicleQueryParamsDto
 	) {
 		return this.fleetsService.findVehicles(userId, id, queryParamsDto)
+	}
+
+	@Get(':id/drivers')
+	@ApiOperation({
+		summary: 'Listado de conductores de una flota',
+		description:
+			'Permite recuperar de forma paginada los conductores de una flota.',
+	})
+	@ApiOkResponsePaginated(DriverEntity)
+	findDrivers(
+		@UserId() userId: string,
+		@Param('id', ParseUUIDPipe) id: string,
+		@Query() queryParamsDto: DriverQueryParamsDto
+	) {
+		return this.fleetsService.findDrivers(userId, id, queryParamsDto)
 	}
 }
