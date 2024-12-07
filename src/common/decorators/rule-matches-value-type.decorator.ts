@@ -1,4 +1,10 @@
 import {
+	isArray,
+	isBoolean,
+	isDate,
+	isNumber,
+	isString,
+	isUUID,
 	registerDecorator,
 	ValidationArguments,
 	ValidationOptions,
@@ -10,6 +16,7 @@ import {
 	VALID_DATE_RULES,
 	VALID_NUMBER_RULES,
 	VALID_STRING_RULES,
+	VALID_UUID_RULES,
 } from '../constants'
 import { FilterRules } from '../enums'
 
@@ -20,23 +27,27 @@ export class RuleMatchesValueTypeConstraint
 	validate(rule: FilterRules, args: ValidationArguments) {
 		const value = (args.object as any).value
 
-		if (typeof value === 'string' && VALID_STRING_RULES.includes(rule)) {
+		if (isUUID(value) && VALID_UUID_RULES.includes(rule)) {
 			return true
 		}
 
-		if (value instanceof Date && VALID_DATE_RULES.includes(rule)) {
+		if (isDate(value) && VALID_DATE_RULES.includes(rule)) {
 			return true
 		}
 
-		if (typeof value === 'number' && VALID_NUMBER_RULES.includes(rule)) {
+		if (isNumber(value) && VALID_NUMBER_RULES.includes(rule)) {
 			return true
 		}
 
-		if (value instanceof Array && VALID_ARRAY_RULES.includes(rule)) {
+		if (isArray(value) && VALID_ARRAY_RULES.includes(rule)) {
 			return true
 		}
 
-		if (typeof value === 'boolean' && rule === FilterRules.EQUALS) {
+		if (isBoolean(value) && rule === FilterRules.EQUALS) {
+			return true
+		}
+
+		if (isString(value) && VALID_STRING_RULES.includes(rule)) {
 			return true
 		}
 

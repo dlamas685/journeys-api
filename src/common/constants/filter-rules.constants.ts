@@ -25,3 +25,5 @@ export const VALID_STRING_RULES = [
 	FilterRules.ENDS_WITH,
 	FilterRules.LIKE,
 ]
+
+export const VALID_UUID_RULES = [FilterRules.EQUALS]

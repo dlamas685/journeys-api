@@ -14,18 +14,20 @@ const VALID_FIELDS: ValidFieldsType[] = [
 	'make',
 	'model',
 	'vin',
+	'notes',
 	'year',
 	'licensePlate',
 	'createdAt',
+	'fleetId',
 ]
 
 export class VehicleFilterFieldDto extends FilterFieldDto {
-	@IsIn(VALID_FIELDS)
+	@IsIn([...VALID_FIELDS, 'fleet.name'])
 	field: string
 }
 
 export class VehicleSortFieldDto extends SortFieldDto {
-	@IsIn(VALID_FIELDS)
+	@IsIn([...VALID_FIELDS, 'fleet.name'])
 	field: string
 }
 

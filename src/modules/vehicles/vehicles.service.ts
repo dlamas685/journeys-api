@@ -64,6 +64,9 @@ export class VehiclesService {
 			orderBy: {
 				...parsedSorts,
 			},
+			include: {
+				fleet: true,
+			},
 			skip:
 				queryParamsDto.page && queryParamsDto.limit
 					? (queryParamsDto.page - 1) * queryParamsDto.limit

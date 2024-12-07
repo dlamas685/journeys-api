@@ -19,16 +19,17 @@ export class CreateFleetDto {
 	})
 	@IsOptional()
 	@IsString()
-	@IsNotEmpty()
 	description: string
 
 	@ApiPropertyOptional({ example: 2 })
+	@IsOptional()
 	@IsInt()
 	@Min(2)
 	@Max(10)
 	maxVehicles: number = 2
 
 	@ApiPropertyOptional({ example: 2 })
+	@IsOptional()
 	@IsInt()
 	@Min(2)
 	@Max(10)

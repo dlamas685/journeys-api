@@ -1,4 +1,5 @@
 export enum FilterTypes {
+	UUID = 'uuid',
 	NUMBER = 'number',
 	STRING = 'string',
 	DATE = 'date',
