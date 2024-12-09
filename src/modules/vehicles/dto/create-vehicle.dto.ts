@@ -5,7 +5,9 @@ import {
 	IsOptional,
 	IsString,
 	IsUUID,
+	Matches,
 } from 'class-validator'
+import { LICENSE_PLATE_PATTERN, VIN_PATTERN } from 'src/common/constants'
 import { VehicleEntity } from '../entities/vehicle.entity'
 
 export class CreateVehicleDto {
@@ -21,6 +23,9 @@ export class CreateVehicleDto {
 
 	@IsString()
 	@IsNotEmpty()
+	@Matches(LICENSE_PLATE_PATTERN, {
+		message: 'Invalid licensePlate format',
+	})
 	@ApiProperty({ example: 'AF-000-AA' })
 	licensePlate: string
 
@@ -44,6 +49,9 @@ export class CreateVehicleDto {
 	@IsOptional()
 	@IsString()
 	@IsNotEmpty()
+	@Matches(VIN_PATTERN, {
+		message: 'Invalid VIN format',
+	})
 	@ApiPropertyOptional({ example: '4Y1SL65848Z411439' })
 	vin: string | null
 
