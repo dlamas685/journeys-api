@@ -16,11 +16,6 @@ export class CreateVehicleDto {
 	@ApiPropertyOptional()
 	fleetId: string | null
 
-	@IsOptional()
-	@IsString()
-	@ApiPropertyOptional()
-	imageUrl: string | null
-
 	@IsString()
 	@IsNotEmpty()
 	@Matches(LICENSE_PLATE_PATTERN, {

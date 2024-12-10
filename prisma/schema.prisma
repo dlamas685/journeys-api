@@ -144,9 +144,9 @@ model Fleet {
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user    User      @relation(fields: [userId], references: [id])
-  Vehicle Vehicle[]
-  Driver  Driver[]
+  user     User      @relation(fields: [userId], references: [id])
+  vehicles Vehicle[]
+  drivers  Driver[]
 
   @@unique([userId, name])
   @@map("fleets")
@@ -157,7 +157,7 @@ model Vehicle {
   userId       String    @map("user_id") @db.Uuid
   fleetId      String?   @map("fleet_id") @db.Uuid
   imageUrl     String?   @map("image_url")
-  licensePlate String    @map("license_plate")
+  licensePlate String    @unique @map("license_plate")
   make         String?
   model        String?
   year         Int?      @db.SmallInt

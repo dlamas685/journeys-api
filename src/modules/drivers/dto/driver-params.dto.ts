@@ -18,12 +18,12 @@ const VALID_FIELDS: ValidFieldsType[] = [
 ]
 
 export class DriverFilterFieldDto extends FilterFieldDto {
-	@IsIn(VALID_FIELDS)
+	@IsIn([...VALID_FIELDS, 'fleet.name'])
 	field: string
 }
 
 export class DriverSortFieldDto extends SortFieldDto {
-	@IsIn(VALID_FIELDS)
+	@IsIn([...VALID_FIELDS, 'fleet.name'])
 	field: string
 }
 

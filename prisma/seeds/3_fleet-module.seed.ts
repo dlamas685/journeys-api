@@ -103,20 +103,20 @@ const seedFleet = async (
 				data: {
 					userId,
 					...createMockFleet(),
-					Driver: {
+					drivers: {
 						createMany: {
 							data: createManyMockDrivers(userId),
 						},
 					},
-					Vehicle: {
+					vehicles: {
 						createMany: {
 							data: createManyMockVehicles(userId),
 						},
 					},
 				},
 				include: {
-					Driver: true,
-					Vehicle: true,
+					drivers: true,
+					vehicles: true,
 				},
 			})
 			records.push(newFleet)
