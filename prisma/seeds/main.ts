@@ -3,6 +3,7 @@ import seedUsers from './0_users.seed'
 import seedFavoriteAddress from './1_favorite-address.seed'
 import seedFavoritePlace from './2_favorite-places.seed'
 import seedFleet from './3_fleet-module.seed'
+import seedActivitiesTemplate from './4_activities-template.seed'
 
 const prisma = new PrismaClient()
 
@@ -13,6 +14,7 @@ async function main() {
 	const users = await seedUsers(prisma)
 	await seedFavoriteAddress(prisma, users[0].id)
 	await seedFavoritePlace(prisma, users[0].id)
+	await seedActivitiesTemplate(prisma, users[0].id)
 	await seedFleet(prisma, users[1].id)
 
 	const end = new Date()
