@@ -33,23 +33,23 @@ model Account {
 }
 
 model User {
-  id               String             @id @default(uuid()) @db.Uuid
-  email            String             @unique
-  emailVerified    DateTime?          @map("email_verified") @db.Timestamptz(6)
-  password         String?
-  imageUrl         String?            @map("image_url")
-  userType         UserType?          @map("user_type")
-  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime?          @updatedAt @map("updated_at") @db.Timestamptz(6)
-  accounts         Account[]
-  personalProfile  PersonalProfile?
-  companyProfile   CompanyProfile?
-  FavoriteAddress  FavoriteAddress[]
-  FavoritePlace    FavoritePlace[]
-  ActivityTemplate ActivityTemplate[]
-  Fleet            Fleet[]
-  Vehicle          Vehicle[]
-  Driver           Driver[]
+  id                  String               @id @default(uuid()) @db.Uuid
+  email               String               @unique
+  emailVerified       DateTime?            @map("email_verified") @db.Timestamptz(6)
+  password            String?
+  imageUrl            String?              @map("image_url")
+  userType            UserType?            @map("user_type")
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime?            @updatedAt @map("updated_at") @db.Timestamptz(6)
+  accounts            Account[]
+  personalProfile     PersonalProfile?
+  companyProfile      CompanyProfile?
+  favoriteAddresses   FavoriteAddress[]
+  favoritePlaces      FavoritePlace[]
+  activitiesTemplates ActivitiesTemplate[]
+  fleets              Fleet[]
+  vehicles            Vehicle[]
+  drivers             Driver[]
 
   @@map("users")
 }
@@ -119,11 +119,11 @@ model FavoritePlace {
   @@map("favorite_places")
 }
 
-model ActivityTemplate {
+model ActivitiesTemplate {
   id          String    @id @default(uuid()) @db.Uuid
   userId      String    @map("user_id") @db.Uuid
   name        String
-  description String?
+  description String
   activities  Json?
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -131,7 +131,7 @@ model ActivityTemplate {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([userId, name])
-  @@map("activity_templates")
+  @@map("activities_templates")
 }
 
 model Fleet {
@@ -157,7 +157,7 @@ model Vehicle {
   userId       String    @map("user_id") @db.Uuid
   fleetId      String?   @map("fleet_id") @db.Uuid
   imageUrl     String?   @map("image_url")
-  licensePlate String    @unique @map("license_plate")
+  licensePlate String    @map("license_plate")
   make         String?
   model        String?
   year         Int?      @db.SmallInt

@@ -89,6 +89,7 @@ export class VehiclesController {
 		summary: 'Eliminación de vehículo',
 		description: 'Permite eliminar un vehículo por su ID.',
 	})
+	@ApiOkResponse({ type: String })
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.vehiclesService.remove(userId, id)
 	}

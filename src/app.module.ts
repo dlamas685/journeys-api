@@ -6,20 +6,20 @@ import { ServeStaticModule } from '@nestjs/serve-static'
 import { redisStore } from 'cache-manager-redis-store'
 import { join } from 'path'
 import { envConfig } from './config'
-import { ActivityTemplatesModule } from './modules/activity-templates/activity-templates.module'
+import { ActivitiesTemplatesModule } from './modules/activities-templates/activities-templates.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module'
+import { DriversModule } from './modules/drivers/drivers.module'
 import { FavoriteAddressesModule } from './modules/favorite-addresses/favorite-addresses.module'
 import { FavoritePlacesModule } from './modules/favorite-places/favorite-places.module'
 import { FilesModule } from './modules/files/files.module'
+import { FleetsModule } from './modules/fleets/fleets.module'
 import { GoogleMapsModule } from './modules/google-maps/google-maps.module'
 import { EmailsModule } from './modules/mails/emails.module'
 import { OptionsModule } from './modules/options/options.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { UsersModule } from './modules/users/users.module'
-import { FleetsModule } from './modules/fleets/fleets.module';
-import { VehiclesModule } from './modules/vehicles/vehicles.module';
-import { DriversModule } from './modules/drivers/drivers.module';
+import { VehiclesModule } from './modules/vehicles/vehicles.module'
 
 @Module({
 	imports: [
@@ -51,7 +51,7 @@ import { DriversModule } from './modules/drivers/drivers.module';
 		FilesModule,
 		OptionsModule,
 		FavoritePlacesModule,
-		ActivityTemplatesModule,
+		ActivitiesTemplatesModule,
 		GoogleMapsModule,
 		FleetsModule,
 		VehiclesModule,

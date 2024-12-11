@@ -1,5 +1,4 @@
 import { ApiPropertyOptional } from '@nestjs/swagger'
-import { Decimal } from '@prisma/client/runtime/library'
 import { IsNumber, IsString } from 'class-validator'
 
 export class CreateFavoritePlaceDto {
@@ -7,11 +6,11 @@ export class CreateFavoritePlaceDto {
 	@IsString()
 	placeId: string
 
-	@ApiPropertyOptional({ type: Decimal, example: -24.7862567 })
+	@ApiPropertyOptional({ example: -24.7862567 })
 	@IsNumber()
-	latitude: Decimal
+	latitude: number
 
-	@ApiPropertyOptional({ type: Decimal, example: -65.4037916 })
+	@ApiPropertyOptional({ example: -65.4037916 })
 	@IsNumber()
-	longitude: Decimal
+	longitude: number
 }

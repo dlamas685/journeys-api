@@ -12,26 +12,26 @@ import {
 	fromSortsToOrderby,
 } from '../../common/helpers'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateActivityTemplateDto } from './dto/create-activity-template.dto'
-import { UpdateActivityTemplateDto } from './dto/update-activity-template.dto'
-import { ActivityTemplateEntity } from './entities/activity-template.entity'
+import { CreateActivitiesTemplateDto } from './dto/create-activities-template.dto'
+import { UpdateActivitiesTemplateDto } from './dto/update-activities-template.dto'
+import { ActivitiesTemplateEntity } from './entities/activities-template.entity'
 
 @Injectable()
-export class ActivityTemplatesService {
+export class ActivitiesTemplatesService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async create(
 		userId: string,
-		createActivityTemplateDto: CreateActivityTemplateDto
-	): Promise<ActivityTemplateEntity> {
-		const newFavoriteAddress = await this.prisma.activityTemplate.create({
+		createActivityTemplateDto: CreateActivitiesTemplateDto
+	): Promise<ActivitiesTemplateEntity> {
+		const newFavoriteAddress = await this.prisma.activitiesTemplate.create({
 			data: {
 				userId,
 				...createActivityTemplateDto,
 			},
 		})
 
-		return new ActivityTemplateEntity(newFavoriteAddress)
+		return new ActivitiesTemplateEntity(newFavoriteAddress)
 	}
 
 	async findAll(userId: string, queryParamsDto: QueryParamsDto) {
@@ -41,7 +41,7 @@ export class ActivityTemplatesService {
 		)
 		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
 
-		const query: Prisma.ActivityTemplateFindManyArgs = {
+		const query: Prisma.ActivitiesTemplateFindManyArgs = {
 			where: {
 				userId,
 				...parsedFilters,
@@ -58,8 +58,8 @@ export class ActivityTemplatesService {
 		}
 
 		const [records, totalPages] = await this.prisma.$transaction([
-			this.prisma.activityTemplate.findMany(query),
-			this.prisma.activityTemplate.count({ where: query.where }),
+			this.prisma.activitiesTemplate.findMany(query),
+			this.prisma.activitiesTemplate.count({ where: query.where }),
 		])
 
 		const metadata = plainToInstance(PaginationMetadataEntity, {
@@ -68,43 +68,44 @@ export class ActivityTemplatesService {
 			lastPage: Math.ceil(totalPages / queryParamsDto.limit),
 		})
 
-		return new PaginatedResponseEntity<ActivityTemplateEntity>(
-			plainToInstance(ActivityTemplateEntity, records),
+		return new PaginatedResponseEntity<ActivitiesTemplateEntity>(
+			plainToInstance(ActivitiesTemplateEntity, records),
 			metadata
 		)
 	}
 
 	async findOne(userId: string, id: string) {
-		const foundActivityTemplate = await this.prisma.activityTemplate.findFirst({
+		const activitiesTemplate = await this.prisma.activitiesTemplate.findFirst({
 			where: {
 				id,
 				userId,
 			},
 		})
 
-		return new ActivityTemplateEntity(foundActivityTemplate)
+		return new ActivitiesTemplateEntity(activitiesTemplate)
 	}
 
 	async update(
 		userId: string,
 		id: string,
-		updateActivityTemplateDto: UpdateActivityTemplateDto
-	): Promise<ActivityTemplateEntity> {
-		const updatedActivityTemplate = await this.prisma.activityTemplate.update({
-			where: {
-				id,
-				userId,
-			},
-			data: {
-				...updateActivityTemplateDto,
-			},
-		})
+		updateActivityTemplateDto: UpdateActivitiesTemplateDto
+	): Promise<ActivitiesTemplateEntity> {
+		const updatedActivitiesTemplate =
+			await this.prisma.activitiesTemplate.update({
+				where: {
+					id,
+					userId,
+				},
+				data: {
+					...updateActivityTemplateDto,
+				},
+			})
 
-		return new ActivityTemplateEntity(updatedActivityTemplate)
+		return new ActivitiesTemplateEntity(updatedActivitiesTemplate)
 	}
 
 	async remove(userId: string, id: string) {
-		await this.prisma.activityTemplate.delete({
+		await this.prisma.activitiesTemplate.delete({
 			where: { id, userId },
 		})
 

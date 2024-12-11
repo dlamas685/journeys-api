@@ -11,9 +11,9 @@ async function main() {
 	console.log('🌱Seeding database...')
 
 	const users = await seedUsers(prisma)
-	const favoriteAddresses = await seedFavoriteAddress(prisma, users[0].id)
-	const favoritePlaces = await seedFavoritePlace(prisma, users[0].id)
-	const fleetModule = await seedFleet(prisma, users[1].id)
+	await seedFavoriteAddress(prisma, users[0].id)
+	await seedFavoritePlace(prisma, users[0].id)
+	await seedFleet(prisma, users[1].id)
 
 	const end = new Date()
 	console.log(`🌱Seeding completed: ${end.getTime() - start.getTime()}ms`)
