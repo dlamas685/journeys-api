@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { ActivitiesTemplate, Prisma } from '@prisma/client'
+import { ActivityTemplate } from '@prisma/client'
+import { JsonValue } from '@prisma/client/runtime/library'
 
-export class ActivitiesTemplateEntity implements ActivitiesTemplate {
+export class ActivityTemplateEntity implements ActivityTemplate {
 	@ApiProperty()
 	id: string
 
@@ -15,7 +16,7 @@ export class ActivitiesTemplateEntity implements ActivitiesTemplate {
 	description: string
 
 	@ApiProperty()
-	activities: Prisma.JsonValue | null
+	activities: JsonValue | null
 
 	@ApiProperty()
 	createdAt: Date
@@ -23,7 +24,7 @@ export class ActivitiesTemplateEntity implements ActivitiesTemplate {
 	@ApiPropertyOptional()
 	updatedAt: Date | null
 
-	constructor(partial: Partial<ActivitiesTemplateEntity>) {
+	constructor(partial: Partial<ActivityTemplateEntity>) {
 		Object.assign(this, partial)
 	}
 }

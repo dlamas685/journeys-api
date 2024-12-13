@@ -45,7 +45,7 @@ const seedUsers = async (prisma: PrismaClient): Promise<User[]> => {
 	const deleteCompanyProfile = prisma.companyProfile.deleteMany()
 	const deleteFavoriteAddress = prisma.favoriteAddress.deleteMany()
 	const deleteFavoritePlaces = prisma.favoritePlace.deleteMany()
-	const deleteActivitiesTemplates = prisma.activitiesTemplate.deleteMany()
+	const deleteActivitiesTemplates = prisma.activityTemplate.deleteMany()
 	const deleteFleets = prisma.fleet.deleteMany()
 	const deleteVehicles = prisma.vehicle.deleteMany()
 	const deleteDrivers = prisma.driver.deleteMany()

@@ -20,19 +20,21 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from '../../common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { ActivitiesTemplatesService } from './activities-templates.service'
-import { ActivitiesTemplatesQueryParamsDto } from './dto/activities-templates-params.dto'
-import { CreateActivitiesTemplateDto } from './dto/create-activities-template.dto'
-import { UpdateActivitiesTemplateDto } from './dto/update-activities-template.dto'
-import { ActivitiesTemplateEntity } from './entities/activities-template.entity'
+import { ActivityTemplatesService } from './activity-templates.service'
+import {
+	ActivityTemplatesQueryParamsDto,
+	CreateActivityTemplateDto,
+	UpdateActivityTemplateDto,
+} from './dto'
+import { ActivityTemplateEntity } from './entities/activity-template.entity'
 
-@Controller('activities-templates')
+@Controller('activity-templates')
 @UseGuards(JwtAuthGuard)
-@ApiTags('Activities Templates')
+@ApiTags('Activity Templates')
 @ApiBearerAuth('JWT-auth')
-export class ActivitiesTemplatesController {
+export class ActivityTemplatesController {
 	constructor(
-		private readonly activityTemplatesService: ActivitiesTemplatesService
+		private readonly activityTemplatesService: ActivityTemplatesService
 	) {}
 
 	@Post()
@@ -41,10 +43,10 @@ export class ActivitiesTemplatesController {
 		summary: 'Creación de plantilla de actividades',
 		description: 'Permite crear una nueva plantilla de actividades.',
 	})
-	@ApiOkResponse({ type: ActivitiesTemplateEntity })
+	@ApiOkResponse({ type: ActivityTemplateEntity })
 	create(
 		@UserId() userId: string,
-		@Body() createActivityTemplateDto: CreateActivitiesTemplateDto
+		@Body() createActivityTemplateDto: CreateActivityTemplateDto
 	) {
 		return this.activityTemplatesService.create(
 			userId,
@@ -58,10 +60,10 @@ export class ActivitiesTemplatesController {
 		description:
 			'Permite recuperar de forma paginada las plantillas de actividades.',
 	})
-	@ApiOkResponsePaginated(ActivitiesTemplateEntity)
+	@ApiOkResponsePaginated(ActivityTemplateEntity)
 	findAll(
 		@UserId() userId: string,
-		@Query() queryParamsDto: ActivitiesTemplatesQueryParamsDto
+		@Query() queryParamsDto: ActivityTemplatesQueryParamsDto
 	) {
 		return this.activityTemplatesService.findAll(userId, queryParamsDto)
 	}
@@ -72,7 +74,7 @@ export class ActivitiesTemplatesController {
 		summary: 'Búsqueda de plantilla de actividades',
 		description: 'Permite buscar una plantilla de actividades por su ID.',
 	})
-	@ApiOkResponse({ type: ActivitiesTemplateEntity })
+	@ApiOkResponse({ type: ActivityTemplateEntity })
 	findOne(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.activityTemplatesService.findOne(userId, id)
 	}
@@ -84,11 +86,11 @@ export class ActivitiesTemplatesController {
 		description:
 			'Permite actualizar los datos de una plantilla de actividades.',
 	})
-	@ApiOkResponse({ type: ActivitiesTemplateEntity })
+	@ApiOkResponse({ type: ActivityTemplateEntity })
 	update(
 		@UserId() userId: string,
 		@Param('id', ParseUUIDPipe) id: string,
-		@Body() updateActivityTemplateDto: UpdateActivitiesTemplateDto
+		@Body() updateActivityTemplateDto: UpdateActivityTemplateDto
 	) {
 		return this.activityTemplatesService.update(
 			userId,

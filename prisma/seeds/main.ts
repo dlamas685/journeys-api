@@ -3,7 +3,7 @@ import seedUsers from './0_users.seed'
 import seedFavoriteAddress from './1_favorite-address.seed'
 import seedFavoritePlace from './2_favorite-places.seed'
 import seedFleet from './3_fleet-module.seed'
-import seedActivitiesTemplate from './4_activities-template.seed'
+import seedActivitiesTemplate from './4_activity-template.seed'
 
 const prisma = new PrismaClient()
 

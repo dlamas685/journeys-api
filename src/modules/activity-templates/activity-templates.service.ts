@@ -5,43 +5,48 @@ import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
 } from 'src/common/entities/paginated-response.entity'
-import { QueryParamsDto } from '../../common/dto'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from '../../common/helpers'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateActivitiesTemplateDto } from './dto/create-activities-template.dto'
-import { UpdateActivitiesTemplateDto } from './dto/update-activities-template.dto'
-import { ActivitiesTemplateEntity } from './entities/activities-template.entity'
+import {
+	ActivityTemplatesQueryParamsDto,
+	CreateActivityTemplateDto,
+	UpdateActivityTemplateDto,
+} from './dto'
+import { ActivityTemplateEntity } from './entities/activity-template.entity'
 
 @Injectable()
-export class ActivitiesTemplatesService {
+export class ActivityTemplatesService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async create(
 		userId: string,
-		createActivityTemplateDto: CreateActivitiesTemplateDto
-	): Promise<ActivitiesTemplateEntity> {
-		const newFavoriteAddress = await this.prisma.activitiesTemplate.create({
+		createActivityTemplateDto: CreateActivityTemplateDto
+	): Promise<ActivityTemplateEntity> {
+		const newFavoriteAddress = await this.prisma.activityTemplate.create({
 			data: {
 				userId,
 				...createActivityTemplateDto,
 			},
 		})
 
-		return new ActivitiesTemplateEntity(newFavoriteAddress)
+		return new ActivityTemplateEntity(newFavoriteAddress)
 	}
 
-	async findAll(userId: string, queryParamsDto: QueryParamsDto) {
+	async findAll(
+		userId: string,
+		queryParamsDto: ActivityTemplatesQueryParamsDto
+	) {
 		const parsedFilters = fromFiltersToWhere(queryParamsDto.filters)
 		const parsedLogicalFilters = fromLogicalFiltersToWhere(
 			queryParamsDto.logicalFilters
 		)
 		const parsedSorts = fromSortsToOrderby(queryParamsDto.sorts)
 
-		const query: Prisma.ActivitiesTemplateFindManyArgs = {
+		const query: Prisma.ActivityTemplateFindManyArgs = {
 			where: {
 				userId,
 				...parsedFilters,
@@ -58,8 +63,8 @@ export class ActivitiesTemplatesService {
 		}
 
 		const [records, totalPages] = await this.prisma.$transaction([
-			this.prisma.activitiesTemplate.findMany(query),
-			this.prisma.activitiesTemplate.count({ where: query.where }),
+			this.prisma.activityTemplate.findMany(query),
+			this.prisma.activityTemplate.count({ where: query.where }),
 		])
 
 		const metadata = plainToInstance(PaginationMetadataEntity, {
@@ -68,30 +73,30 @@ export class ActivitiesTemplatesService {
 			lastPage: Math.ceil(totalPages / queryParamsDto.limit),
 		})
 
-		return new PaginatedResponseEntity<ActivitiesTemplateEntity>(
-			plainToInstance(ActivitiesTemplateEntity, records),
+		return new PaginatedResponseEntity<ActivityTemplateEntity>(
+			plainToInstance(ActivityTemplateEntity, records),
 			metadata
 		)
 	}
 
 	async findOne(userId: string, id: string) {
-		const activitiesTemplate = await this.prisma.activitiesTemplate.findFirst({
+		const activitiesTemplate = await this.prisma.activityTemplate.findFirst({
 			where: {
 				id,
 				userId,
 			},
 		})
 
-		return new ActivitiesTemplateEntity(activitiesTemplate)
+		return new ActivityTemplateEntity(activitiesTemplate)
 	}
 
 	async update(
 		userId: string,
 		id: string,
-		updateActivityTemplateDto: UpdateActivitiesTemplateDto
-	): Promise<ActivitiesTemplateEntity> {
-		const updatedActivitiesTemplate =
-			await this.prisma.activitiesTemplate.update({
+		updateActivityTemplateDto: UpdateActivityTemplateDto
+	): Promise<ActivityTemplateEntity> {
+		const updatedActivitiesTemplate = await this.prisma.activityTemplate.update(
+			{
 				where: {
 					id,
 					userId,
@@ -99,13 +104,14 @@ export class ActivitiesTemplatesService {
 				data: {
 					...updateActivityTemplateDto,
 				},
-			})
+			}
+		)
 
-		return new ActivitiesTemplateEntity(updatedActivitiesTemplate)
+		return new ActivityTemplateEntity(updatedActivitiesTemplate)
 	}
 
 	async remove(userId: string, id: string) {
-		await this.prisma.activitiesTemplate.delete({
+		await this.prisma.activityTemplate.delete({
 			where: { id, userId },
 		})
 

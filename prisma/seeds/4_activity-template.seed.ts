@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { ActivitiesTemplate, type PrismaClient } from '@prisma/client'
+import { ActivityTemplate, type PrismaClient } from '@prisma/client'
 
 type MockActivity = {
 	id: string
@@ -31,18 +31,18 @@ function createManyMockActivities(): MockActivity[] {
 const seedActivitiesTemplate = async (
 	prisma: PrismaClient,
 	userId: string
-): Promise<ActivitiesTemplate[]> => {
+): Promise<ActivityTemplate[]> => {
 	const start = Date.now()
 	console.log('🌱Seeding Activities Template...')
 
 	// clean up before the seeding (optional)
-	await prisma.activitiesTemplate.deleteMany()
+	await prisma.activityTemplate.deleteMany()
 
-	const records: ActivitiesTemplate[] = []
+	const records: ActivityTemplate[] = []
 
 	for (let i = 0; i < 10; i++) {
 		try {
-			const newActivitiesTemplate = await prisma.activitiesTemplate.create({
+			const newActivitiesTemplate = await prisma.activityTemplate.create({
 				data: {
 					userId,
 					name: faker.music.album(),

@@ -33,23 +33,23 @@ model Account {
 }
 
 model User {
-  id                  String               @id @default(uuid()) @db.Uuid
-  email               String               @unique
-  emailVerified       DateTime?            @map("email_verified") @db.Timestamptz(6)
-  password            String?
-  imageUrl            String?              @map("image_url")
-  userType            UserType?            @map("user_type")
-  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt           DateTime?            @updatedAt @map("updated_at") @db.Timestamptz(6)
-  accounts            Account[]
-  personalProfile     PersonalProfile?
-  companyProfile      CompanyProfile?
-  favoriteAddresses   FavoriteAddress[]
-  favoritePlaces      FavoritePlace[]
-  activitiesTemplates ActivitiesTemplate[]
-  fleets              Fleet[]
-  vehicles            Vehicle[]
-  drivers             Driver[]
+  id                String             @id @default(uuid()) @db.Uuid
+  email             String             @unique
+  emailVerified     DateTime?          @map("email_verified") @db.Timestamptz(6)
+  password          String?
+  imageUrl          String?            @map("image_url")
+  userType          UserType?          @map("user_type")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime?          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  accounts          Account[]
+  personalProfile   PersonalProfile?
+  companyProfile    CompanyProfile?
+  favoriteAddresses FavoriteAddress[]
+  favoritePlaces    FavoritePlace[]
+  activityTemplates ActivityTemplate[]
+  fleets            Fleet[]
+  vehicles          Vehicle[]
+  drivers           Driver[]
 
   @@map("users")
 }
@@ -119,7 +119,7 @@ model FavoritePlace {
   @@map("favorite_places")
 }
 
-model ActivitiesTemplate {
+model ActivityTemplate {
   id          String    @id @default(uuid()) @db.Uuid
   userId      String    @map("user_id") @db.Uuid
   name        String
@@ -131,7 +131,7 @@ model ActivitiesTemplate {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([userId, name])
-  @@map("activities_templates")
+  @@map("activity_templates")
 }
 
 model Fleet {

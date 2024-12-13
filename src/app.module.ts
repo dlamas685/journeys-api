@@ -6,7 +6,7 @@ import { ServeStaticModule } from '@nestjs/serve-static'
 import { redisStore } from 'cache-manager-redis-store'
 import { join } from 'path'
 import { envConfig } from './config'
-import { ActivitiesTemplatesModule } from './modules/activities-templates/activities-templates.module'
+import { ActivityTemplatesModule } from './modules/activity-templates/activity-templates.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module'
 import { DriversModule } from './modules/drivers/drivers.module'
@@ -51,7 +51,7 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module'
 		FilesModule,
 		OptionsModule,
 		FavoritePlacesModule,
-		ActivitiesTemplatesModule,
+		ActivityTemplatesModule,
 		GoogleMapsModule,
 		FleetsModule,
 		VehiclesModule,
