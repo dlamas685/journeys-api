@@ -28,7 +28,6 @@ type MockDriver = {
 	userId: string
 	licenseNumber: string
 	name: string
-	imageUrl: string
 	notes: string
 }
 
@@ -60,7 +59,6 @@ function createMockDriver(userId?: string): MockDriver {
 		userId: userId ?? faker.string.uuid(),
 		licenseNumber: faker.helpers.fromRegExp(/[0-9]{7,8}/),
 		name: fullName,
-		imageUrl: `https://api.dicebear.com/9.x/initials/svg?seed=${fullName}`,
 		notes: faker.person.bio(),
 	}
 }
