@@ -7,5 +7,6 @@ import { DriversService } from './drivers.service'
 	controllers: [DriversController],
 	providers: [DriversService],
 	imports: [CloudinaryModule],
+	exports: [DriversService],
 })
 export class DriversModule {}

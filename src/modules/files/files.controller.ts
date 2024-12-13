@@ -22,6 +22,7 @@ import {
 import { Response } from 'express'
 import { Public, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { DriverEntity } from '../drivers/entities/driver.entity'
 import { UserEntity } from '../users/entities'
 import { VehicleEntity } from '../vehicles/entities/vehicle.entity'
 import { FilesService } from './files.service'
@@ -123,5 +124,40 @@ export class FilesController {
 		@Param('id', ParseUUIDPipe) id: string
 	) {
 		return this.files.deleteVehicleImage(userId, id)
+	}
+
+	@Post('drivers/:id')
+	@UseInterceptors(
+		FileInterceptor('file', {
+			fileFilter: imageFilter,
+		})
+	)
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Carga de imagen (conductores)',
+		description: 'Permite cargar imagen a un conductor.',
+	})
+	@ApiBearerAuth('JWT-auth')
+	@ApiOkResponse({ type: DriverEntity })
+	async uploadDriverImage(
+		@UserId() userId,
+		@Param('id', ParseUUIDPipe) id: string,
+		@UploadedFile() file: Express.Multer.File
+	) {
+		return this.files.uploadDriverImage(userId, id, file)
+	}
+
+	@Delete('drivers/:id')
+	@ApiOperation({
+		summary: 'Eliminación de imagen (conductores)',
+		description: 'Elimina la imagen actual de un conductor.',
+	})
+	@ApiBearerAuth('JWT-auth')
+	@ApiOkResponse({ type: DriverEntity })
+	async deleteDriverImage(
+		@UserId() userId,
+		@Param('id', ParseUUIDPipe) id: string
+	) {
+		return this.files.deleteDriverImage(userId, id)
 	}
 }
