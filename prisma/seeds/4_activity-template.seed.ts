@@ -36,16 +36,16 @@ const seedActivitiesTemplate = async (
 	console.log('🌱Seeding Activities Template...')
 
 	// clean up before the seeding (optional)
-	await prisma.activityTemplate.deleteMany()
+	await prisma.activityTemplate.deleteMany({ where: { userId } })
 
 	const records: ActivityTemplate[] = []
 
-	for (let i = 0; i < 10; i++) {
+	for (let i = 0; i < 20; i++) {
 		try {
 			const newActivitiesTemplate = await prisma.activityTemplate.create({
 				data: {
 					userId,
-					name: faker.music.album(),
+					name: faker.music.artist(),
 					description: faker.lorem.sentence(),
 					activities: [...createManyMockActivities()],
 				},

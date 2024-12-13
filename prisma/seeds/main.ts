@@ -15,6 +15,7 @@ async function main() {
 	await seedFavoriteAddress(prisma, users[0].id)
 	await seedFavoritePlace(prisma, users[0].id)
 	await seedActivitiesTemplate(prisma, users[0].id)
+	await seedActivitiesTemplate(prisma, users[1].id)
 	await seedFleet(prisma, users[1].id)
 
 	const end = new Date()
