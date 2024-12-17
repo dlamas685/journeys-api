@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker'
+import { faker, fakerES_MX } from '@faker-js/faker'
 import { Fleet, type PrismaClient } from '@prisma/client'
 
 // TODO: Try to implement next time
@@ -60,6 +60,17 @@ function createMockDriver(userId?: string): MockDriver {
 		licenseNumber: faker.helpers.fromRegExp(/[0-9]{7,8}/),
 		name: fullName,
 		notes: faker.person.bio(),
+	}
+}
+
+function createMockDriverV2(userId?: string): MockDriver {
+	const fullName = fakerES_MX.person.fullName()
+
+	return <MockDriver>{
+		userId: userId ?? fakerES_MX.string.uuid(),
+		licenseNumber: fakerES_MX.helpers.fromRegExp(/[A-Z]{3}[0-9]{6}/), // como si fuese un pasaporte
+		name: fullName,
+		notes: fakerES_MX.person.bio(),
 	}
 }
 
@@ -144,6 +155,38 @@ const seedFleet = async (
 	const end = Date.now()
 	console.log(`🌱Seeding Fleet Module completed in ${end - start}ms`)
 	return records
+}
+
+export const seedVehicleAndDriver = async (
+	prisma: PrismaClient,
+	userId: string
+): Promise<any> => {
+	// add drivers and vehicle without fleet
+	const drivers = []
+	const vehicles = []
+
+	for (let i = 0; i < 15; i++) {
+		try {
+			const driver = await prisma.driver.create({
+				data: {
+					userId,
+					...createMockDriverV2(userId),
+				},
+			})
+			drivers.push(driver)
+
+			const vehicle = await prisma.vehicle.create({
+				data: {
+					userId,
+					...createMockVehicle(userId),
+				},
+			})
+			vehicles.push(vehicle)
+		} catch (error) {
+			console.log(error)
+		}
+	}
+	return { drivers, vehicles }
 }
 
 export default seedFleet

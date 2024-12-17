@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import seedUsers from './0_users.seed'
 import seedFavoriteAddress from './1_favorite-address.seed'
 import seedFavoritePlace from './2_favorite-places.seed'
-import seedFleet from './3_fleet-module.seed'
+import seedFleet, { seedVehicleAndDriver } from './3_fleet-module.seed'
 import seedActivitiesTemplate from './4_activity-template.seed'
 
 const prisma = new PrismaClient()
@@ -17,6 +17,7 @@ async function main() {
 	await seedActivitiesTemplate(prisma, users[0].id)
 	await seedActivitiesTemplate(prisma, users[1].id)
 	await seedFleet(prisma, users[1].id)
+	await seedVehicleAndDriver(prisma, users[1].id)
 
 	const end = new Date()
 	console.log(`🌱Seeding completed: ${end.getTime() - start.getTime()}ms`)
