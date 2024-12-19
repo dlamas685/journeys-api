@@ -16,7 +16,11 @@ import { PrismaService } from '../prisma/prisma.service'
 import { VehicleQueryParamsDto } from '../vehicles/dto'
 import { VehicleEntity } from '../vehicles/entities/vehicle.entity'
 import { VehiclesService } from '../vehicles/vehicles.service'
-import { FleetQueryParamsDto } from './dto'
+import {
+	FleetQueryParamsDto,
+	RelateDriversToFleetDto,
+	RelateVehiclesToFleetDto,
+} from './dto'
 import { CreateFleetDto } from './dto/create-fleet.dto'
 import { UpdateFleetDto } from './dto/update-fleet.dto'
 import { FleetEntity } from './entities/fleet.entity'
@@ -178,5 +182,101 @@ export class FleetsService {
 		}
 
 		return await this.vehicles.findAll(userId, newQueryParams)
+	}
+
+	async linkVehiclesToFleet(
+		userId: string,
+		id: string,
+		relateVehiclesToFleetDto: RelateVehiclesToFleetDto
+	): Promise<FleetEntity> {
+		await this.findOne(userId, id)
+
+		const updatedFleet = await this.prisma.fleet.update({
+			where: {
+				userId,
+				id,
+			},
+			data: {
+				vehicles: {
+					connect: relateVehiclesToFleetDto.vehicleIds.map(vehicleId => ({
+						id: vehicleId,
+					})),
+				},
+			},
+		})
+
+		return plainToInstance(FleetEntity, updatedFleet)
+	}
+
+	async unlinkVehiclesFromFleet(
+		userId: string,
+		id: string,
+		relateVehiclesToFleetDto: RelateVehiclesToFleetDto
+	): Promise<FleetEntity> {
+		await this.findOne(userId, id)
+
+		const updatedFleet = await this.prisma.fleet.update({
+			where: {
+				userId,
+				id,
+			},
+			data: {
+				vehicles: {
+					disconnect: relateVehiclesToFleetDto.vehicleIds.map(vehicleId => ({
+						id: vehicleId,
+					})),
+				},
+			},
+		})
+
+		return plainToInstance(FleetEntity, updatedFleet)
+	}
+
+	async linkDriversToFleet(
+		userId: string,
+		id: string,
+		relateDriversToFleetDto: RelateDriversToFleetDto
+	): Promise<FleetEntity> {
+		await this.findOne(userId, id)
+
+		const updatedFleet = await this.prisma.fleet.update({
+			where: {
+				userId,
+				id,
+			},
+			data: {
+				drivers: {
+					connect: relateDriversToFleetDto.driverIds.map(driverId => ({
+						id: driverId,
+					})),
+				},
+			},
+		})
+
+		return plainToInstance(FleetEntity, updatedFleet)
+	}
+
+	async unlinkDriversFromFleet(
+		userId: string,
+		id: string,
+		relateDriversToFleetDto: RelateDriversToFleetDto
+	): Promise<FleetEntity> {
+		await this.findOne(userId, id)
+
+		const updatedFleet = await this.prisma.fleet.update({
+			where: {
+				userId,
+				id,
+			},
+			data: {
+				drivers: {
+					disconnect: relateDriversToFleetDto.driverIds.map(driverId => ({
+						id: driverId,
+					})),
+				},
+			},
+		})
+
+		return plainToInstance(FleetEntity, updatedFleet)
 	}
 }

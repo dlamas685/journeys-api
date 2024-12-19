@@ -24,8 +24,15 @@ import { DriverQueryParamsDto } from '../drivers/dto'
 import { DriverEntity } from '../drivers/entities/driver.entity'
 import { VehicleQueryParamsDto } from '../vehicles/dto'
 import { VehicleEntity } from '../vehicles/entities/vehicle.entity'
-import { CreateFleetDto, FleetQueryParamsDto, UpdateFleetDto } from './dto'
+import {
+	CreateFleetDto,
+	FleetQueryParamsDto,
+	RelateDriversToFleetDto,
+	RelateVehiclesToFleetDto,
+	UpdateFleetDto,
+} from './dto'
 import { FleetEntity } from './entities/fleet.entity'
+import { RelationOperations } from './enums/relation-operations.enum'
 import { FleetsService } from './fleets.service'
 
 @Controller('fleets')
@@ -122,5 +129,59 @@ export class FleetsController {
 		@Query() queryParamsDto: DriverQueryParamsDto
 	) {
 		return this.fleetsService.findDrivers(userId, id, queryParamsDto)
+	}
+
+	@Patch(':id/vehicle-relations')
+	@ApiOperation({
+		summary: 'Relación de vehículos con una flota',
+		description:
+			'Permite relacionar, mediante operaciones (vincular/desvincular), vehículos con la flota.',
+	})
+	@ApiOkResponse({ type: FleetEntity })
+	relateVehiclesToFleet(
+		@UserId() userId: string,
+		@Param('id', ParseUUIDPipe) id: string,
+		@Body() relateVehiclesToFleetDto: RelateVehiclesToFleetDto
+	) {
+		if (relateVehiclesToFleetDto.operation === RelationOperations.LINK) {
+			return this.fleetsService.linkVehiclesToFleet(
+				userId,
+				id,
+				relateVehiclesToFleetDto
+			)
+		}
+
+		return this.fleetsService.unlinkVehiclesFromFleet(
+			userId,
+			id,
+			relateVehiclesToFleetDto
+		)
+	}
+
+	@Patch(':id/driver-relations')
+	@ApiOperation({
+		summary: 'Relación de conductores con una flota',
+		description:
+			'Permite relacionar, mediante operaciones (vincular/desvincular), conductores con la flota.',
+	})
+	@ApiOkResponse({ type: FleetEntity })
+	relateDriversToFleet(
+		@UserId() userId: string,
+		@Param('id', ParseUUIDPipe) id: string,
+		@Body() relateDriversToFleetDto: RelateDriversToFleetDto
+	) {
+		if (relateDriversToFleetDto.operation === RelationOperations.LINK) {
+			return this.fleetsService.linkDriversToFleet(
+				userId,
+				id,
+				relateDriversToFleetDto
+			)
+		}
+
+		return this.fleetsService.unlinkDriversFromFleet(
+			userId,
+			id,
+			relateDriversToFleetDto
+		)
 	}
 }

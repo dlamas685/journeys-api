@@ -1,3 +1,5 @@
 export * from './create-fleet.dto'
 export * from './fleet-params.dto'
+export * from './relate-drivers-to-fleet.dto'
+export * from './relate-vehicles-to-fleet.dto'
 export * from './update-fleet.dto'

@@ -26,7 +26,6 @@ export class CreateVehicleDto {
 
 	@IsOptional()
 	@IsString()
-	@IsNotEmpty()
 	@ApiPropertyOptional({ example: 'Toyota' })
 	make: string | null
 
@@ -41,7 +40,6 @@ export class CreateVehicleDto {
 	@ApiPropertyOptional({ example: 2021 })
 	year: number | null
 
-	@IsOptional()
 	@IsString()
 	@IsNotEmpty()
 	@Matches(VIN_PATTERN, {
@@ -52,7 +50,6 @@ export class CreateVehicleDto {
 
 	@IsOptional()
 	@IsString()
-	@IsNotEmpty()
 	@ApiPropertyOptional()
 	notes: string | null
 

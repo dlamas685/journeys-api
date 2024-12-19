@@ -21,11 +21,6 @@ export class CreateDriverDto {
 	@IsOptional()
 	@IsString()
 	@ApiPropertyOptional()
-	imageUrl: string
-
-	@IsOptional()
-	@IsString()
-	@ApiPropertyOptional()
 	notes: string
 
 	constructor(partial: Partial<DriverEntity>) {

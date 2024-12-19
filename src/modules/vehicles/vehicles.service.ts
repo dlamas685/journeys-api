@@ -150,4 +150,39 @@ export class VehiclesService {
 
 		return `Eliminación completa!`
 	}
+
+	async linkVehicleToFleet(
+		userId: string,
+		id: string,
+		fleetId: string
+	): Promise<VehicleEntity> {
+		const updatedVehicle = await this.prisma.vehicle.update({
+			where: {
+				userId,
+				id,
+			},
+			data: {
+				fleetId,
+			},
+		})
+
+		return plainToInstance(VehicleEntity, updatedVehicle)
+	}
+
+	async unlinkVehicleFromFleet(
+		userId: string,
+		id: string
+	): Promise<VehicleEntity> {
+		const updatedVehicle = await this.prisma.vehicle.update({
+			where: {
+				userId,
+				id,
+			},
+			data: {
+				fleetId: null,
+			},
+		})
+
+		return plainToInstance(VehicleEntity, updatedVehicle)
+	}
 }
