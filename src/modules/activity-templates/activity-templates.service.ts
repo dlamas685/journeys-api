@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common'
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
+import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
 } from 'src/common/entities/paginated-response.entity'
+import { v4 as uuid } from 'uuid'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
@@ -13,14 +15,18 @@ import {
 import { PrismaService } from '../prisma/prisma.service'
 import {
 	ActivityTemplatesQueryParamsDto,
+	CreateActivityDto,
 	CreateActivityTemplateDto,
+	UpdateActivityDto,
 	UpdateActivityTemplateDto,
 } from './dto'
 import { ActivityTemplateEntity } from './entities/activity-template.entity'
-
 @Injectable()
 export class ActivityTemplatesService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache
+	) {}
 
 	async create(
 		userId: string,
@@ -87,6 +93,10 @@ export class ActivityTemplatesService {
 			},
 		})
 
+		if (!activitiesTemplate) {
+			throw new NotFoundException('Plantilla de actividades no encontrada')
+		}
+
 		return new ActivityTemplateEntity(activitiesTemplate)
 	}
 
@@ -116,5 +126,87 @@ export class ActivityTemplatesService {
 		})
 
 		return `Eliminación Completa!`
+	}
+
+	async createActivity(
+		userId: string,
+		id: string,
+		createActivityDto: CreateActivityDto
+	): Promise<ActivityTemplateEntity> {
+		const activityTemplate = await this.findOne(userId, id)
+
+		const newCreateActivityDto = { ...createActivityDto, id: uuid() }
+
+		const activities = [
+			...(activityTemplate.activities as any[]),
+			newCreateActivityDto,
+		]
+
+		const updatedActivities = await this.update(userId, id, {
+			activities,
+		})
+
+		return new ActivityTemplateEntity(updatedActivities)
+	}
+
+	async updateActivity(
+		userId: string,
+		id: string,
+		activityId: string,
+		updateActivityDto: UpdateActivityDto
+	): Promise<ActivityTemplateEntity> {
+		const activityTemplate = await this.findOne(userId, id)
+
+		const activity = (activityTemplate.activities as any[]).find(
+			activity => activity.id === activityId
+		)
+
+		if (!activity) {
+			throw new NotFoundException('Actividad no encontrada')
+		}
+
+		const activities = (activityTemplate.activities as any[]).map(activity =>
+			activity.id === activityId
+				? { ...activity, ...updateActivityDto }
+				: activity
+		)
+
+		const updatedActivities = await this.prisma.activityTemplate.update({
+			where: {
+				id,
+			},
+			data: {
+				activities,
+			},
+		})
+
+		return new ActivityTemplateEntity(updatedActivities)
+	}
+
+	async removeActivity(userId: string, id: string, activityId: string) {
+		const activityTemplate = await this.findOne(userId, id)
+
+		const activity = (activityTemplate.activities as any[]).find(
+			activity => activity.id === activityId
+		)
+
+		if (!activity) {
+			throw new NotFoundException('Actividad no encontrada')
+		}
+
+		const activities = (activityTemplate.activities as any[]).filter(
+			activity => activity.id !== activityId
+		)
+
+		const updatedActivities = await this.prisma.activityTemplate.update({
+			where: {
+				id,
+			},
+			data: {
+				activities,
+			},
+		})
+
+		return new ActivityTemplateEntity(updatedActivities)
 	}
 }

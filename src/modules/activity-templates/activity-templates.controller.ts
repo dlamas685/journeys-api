@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common'
 import {
 	ApiBearerAuth,
+	ApiExcludeEndpoint,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
@@ -23,7 +24,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ActivityTemplatesService } from './activity-templates.service'
 import {
 	ActivityTemplatesQueryParamsDto,
+	CreateActivityDto,
 	CreateActivityTemplateDto,
+	UpdateActivityDto,
 	UpdateActivityTemplateDto,
 } from './dto'
 import { ActivityTemplateEntity } from './entities/activity-template.entity'
@@ -108,5 +111,62 @@ export class ActivityTemplatesController {
 	@ApiOkResponse({ type: String })
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.activityTemplatesService.remove(userId, id)
+	}
+
+	@Post(':id/activities')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Creación de actividades en plantilla',
+		description: 'Permite crear una nueva actividad en una plantilla.',
+	})
+	@ApiOkResponse({ type: ActivityTemplateEntity })
+	createActivity(
+		@UserId() userId: string,
+		@Param('id', ParseUUIDPipe) id: string,
+		@Body() createActivityDto: CreateActivityDto
+	) {
+		return this.activityTemplatesService.createActivity(
+			userId,
+			id,
+			createActivityDto
+		)
+	}
+
+	@Patch(':id/activities/:activityId')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Actualización de actividad en plantilla',
+		description:
+			'Permite actualizar los datos de una actividad en una plantilla.',
+	})
+	@ApiExcludeEndpoint()
+	@ApiOkResponse({ type: ActivityTemplateEntity })
+	updateActivity(
+		@UserId() userId: string,
+		@Param('id', ParseUUIDPipe) id: string,
+		@Param('activityId', ParseUUIDPipe) activityId: string,
+		@Body() updateActivityDto: UpdateActivityDto
+	) {
+		return this.activityTemplatesService.updateActivity(
+			userId,
+			id,
+			activityId,
+			updateActivityDto
+		)
+	}
+
+	@Delete(':id/activities/:activityId')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Eliminación de actividad en plantilla',
+		description: 'Permite eliminar una actividad en una plantilla por su ID.',
+	})
+	@ApiOkResponse({ type: String })
+	removeActivity(
+		@UserId() userId: string,
+		@Param('id', ParseUUIDPipe) id: string,
+		@Param('activityId', ParseUUIDPipe) activityId: string
+	) {
+		return this.activityTemplatesService.removeActivity(userId, id, activityId)
 	}
 }
