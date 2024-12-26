@@ -138,7 +138,7 @@ export class ActivityTemplatesService {
 		const newCreateActivityDto = { ...createActivityDto, id: uuid() }
 
 		const activities = [
-			...(activityTemplate.activities as any[]),
+			...((activityTemplate.activities as any[]) ?? []),
 			newCreateActivityDto,
 		]
 
