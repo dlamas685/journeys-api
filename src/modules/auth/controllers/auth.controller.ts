@@ -119,6 +119,7 @@ export class AuthController {
 			secure: process.env.NODE_ENV === 'production',
 			sameSite: 'none',
 			expires: new Date(auth.expires * 1000),
+			domain: this.config.get<string>('FRONTEND_URL'),
 		}
 
 		res.cookie('session.token', auth.accessToken, options)
