@@ -98,7 +98,7 @@ const WelcomeUser = ({
 					<Container className='bg-offwhite mx-auto my-0 w-[680px] p-4 max-w-full'>
 						<Section className='rounded-md'>
 							<Img
-								src='https://journeys-api.onrender.com/api/images/imagotype-v1.png'
+								src='https://journeys-api.onrender.com/api/files/images/imagotype-v1.png'
 								alt='Journeys'
 								className='object-cover w-56 mx-auto'
 							/>
