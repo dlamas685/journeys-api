@@ -117,7 +117,7 @@ export class AuthController {
 		const options: CookieOptions = {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'lax',
+			sameSite: 'none',
 			expires: new Date(auth.expires * 1000),
 		}
 
