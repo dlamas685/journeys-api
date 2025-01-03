@@ -13,7 +13,7 @@ import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
-import { translatePlaceTypes } from '../google-maps/helpers/place-translations.helper'
+import { translatePlacesType } from '../google-maps/helpers/translate-places-types.helper'
 import { PlacesService } from '../google-maps/services/places.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateFavoritePlaceDto } from './dto/create-favorite-place.dto'
@@ -66,7 +66,10 @@ export class FavoritePlacesService {
 		if (addressFilter) {
 			placeIds = [
 				...placeIds,
-				...(await this.places.searchPlaces(addressFilter.value)),
+				...(await this.places.searchAddresses(addressFilter.value, [
+					'establishment',
+					'hotel',
+				])),
 			]
 		}
 
@@ -108,9 +111,9 @@ export class FavoritePlacesService {
 
 				return new FavoritePlaceEntity({
 					...record,
-					name: placeDetails.name,
-					types: translatePlaceTypes(placeDetails.types),
-					address: placeDetails.formatted_address,
+					name: placeDetails.displayName.text,
+					types: translatePlacesType(placeDetails.types),
+					address: placeDetails.formattedAddress,
 				})
 			})
 		)
@@ -145,8 +148,9 @@ export class FavoritePlacesService {
 
 		return new FavoritePlaceEntity({
 			...foundPlace,
-			types: translatePlaceTypes(details.types),
-			address: details.formatted_address,
+			name: details.displayName.text,
+			types: translatePlacesType(details.types),
+			address: details.formattedAddress,
 		})
 	}
 

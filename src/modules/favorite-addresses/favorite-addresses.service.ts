@@ -90,7 +90,7 @@ export class FavoriteAddressesService {
 				const placeDetails = await this.places.getPlaceDetails(record.placeId)
 				return new FavoriteAddressEntity({
 					...record,
-					address: placeDetails.formatted_address,
+					address: placeDetails.formattedAddress,
 				})
 			})
 		)
@@ -123,7 +123,7 @@ export class FavoriteAddressesService {
 
 		return new FavoriteAddressEntity({
 			...foundAddress,
-			address: details.formatted_address,
+			address: details.formattedAddress,
 		})
 	}
 

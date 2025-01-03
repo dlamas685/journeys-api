@@ -1,100 +1,118 @@
-import {
-	Client,
-	Language,
-	PlaceAutocompleteType,
-	PlaceData,
-} from '@googlemaps/google-maps-services-js'
+import { PlacesClient, protos, v1 } from '@googlemaps/places'
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
-import { HttpException, Inject, Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
+import {
+	Inject,
+	Injectable,
+	InternalServerErrorException,
+	Logger,
+} from '@nestjs/common'
 
 @Injectable()
 export class PlacesService {
-	private apiKey: string
-	private client: Client
+	private client: PlacesClient
+	private readonly logger = new Logger(PlacesService.name)
 
-	constructor(
-		private readonly config: ConfigService,
-		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache
-	) {
-		this.client = new Client({
-			config: {
-				timeout: 5000,
-			},
-		})
-		this.apiKey = this.config.get<string>('GOOGLE_MAPS_API_KEY')
+	constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {
+		this.client = new v1.PlacesClient()
 	}
 
 	async getPlaceDetails(placeId: string, otherFields: string[] = []) {
 		const detailCacheKey = `place-details-${placeId}`
 
 		const cachedPlaceDetails =
-			await this.cacheManager.get<Partial<PlaceData>>(detailCacheKey)
+			await this.cacheManager.get<protos.google.maps.places.v1.IPlace>(
+				detailCacheKey
+			)
 
 		if (cachedPlaceDetails) {
-			console.log('Using cached place details')
+			this.logger.log('Using cached place details')
 			return cachedPlaceDetails
 		}
 
-		console.log('Fetching place details from Google Places API')
+		this.logger.log('Fetching place details from Google Places API')
 
 		try {
-			const response = await this.client.placeDetails({
-				params: {
-					place_id: placeId,
-					key: this.apiKey,
-					fields: ['name', 'formatted_address', ...otherFields],
-					region: 'ar',
-					language: Language.es,
+			const [result] = await this.client.getPlace(
+				{
+					name: `places/${placeId}`,
+					regionCode: 'ar',
+					languageCode: 'es',
 				},
-			})
+				{
+					otherArgs: {
+						headers: {
+							'Content-Type': 'application/json',
+							'X-Goog-FieldMask': `id,displayName,location,formattedAddress,${otherFields.join(',')}`,
+						},
+					},
+				}
+			)
 
-			await this.cacheManager.set(detailCacheKey, response.data.result)
+			await this.cacheManager.set(detailCacheKey, result)
 
-			return response.data.result
+			return result
 		} catch (error) {
-			throw new HttpException(error.response.data, error.response.status)
+			this.logger.error(
+				`Error fetching place details for placeId: ${placeId}` + error
+			)
+			throw new InternalServerErrorException('Error fetching place details')
 		}
 	}
 
 	async searchAddresses(
-		query: string,
-		types: PlaceAutocompleteType = PlaceAutocompleteType.address
+		input: string,
+		includedPrimaryTypes: string[] = [
+			'street_address',
+			'route',
+			'street_number',
+		]
 	) {
-		const searchCacheKey = `address-search-${query}`
+		const searchCacheKey = `address-search-${input}`
 
 		const cachedPlaces = await this.cacheManager.get<string[]>(searchCacheKey)
 
 		if (cachedPlaces) {
-			console.log('Using cached places')
+			this.logger.log('Using cached places')
 			return cachedPlaces
 		}
 
-		console.log('Fetching places from Google Places API')
+		this.logger.log('Fetching places from Google Places API')
 
 		try {
-			const response = await this.client.placeAutocomplete({
-				params: {
-					key: this.apiKey,
-					input: query,
-					components: ['country:ar'],
-					types,
-					language: Language.es,
+			const [result] = await this.client.autocompletePlaces(
+				{
+					input,
+					languageCode: 'es',
+					regionCode: 'ar',
+					includedPrimaryTypes,
 				},
-			})
+				{
+					otherArgs: {
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					},
+				}
+			)
 
-			const placeIds = response.data.predictions.map(result => result.place_id)
+			this.logger.log(result.suggestions)
+
+			const placeIds = result.suggestions.map(
+				suggestion => suggestion.placePrediction.placeId
+			)
 
 			await this.cacheManager.set(searchCacheKey, placeIds)
 
 			return placeIds
 		} catch (error) {
-			throw new HttpException(error.response.data, error.response.status)
+			this.logger.error(`Error fetching places for input: ${input}` + error)
+			this.logger.error(error.statusDetails)
+			throw new InternalServerErrorException('Error fetching places')
 		}
 	}
 
-	async searchPlaces(query: string) {
-		const searchCacheKey = `places-search-${query}`
+	async searchPlaces(textQuery: string) {
+		const searchCacheKey = `places-search-${textQuery}`
 
 		const cachedPlaces = await this.cacheManager.get<string[]>(searchCacheKey)
 
@@ -106,22 +124,31 @@ export class PlacesService {
 		console.log('Fetching places from Google Places API')
 
 		try {
-			const response = await this.client.textSearch({
-				params: {
-					key: this.apiKey,
-					query,
-					language: Language.es,
-					region: 'ar',
+			const [results] = await this.client.searchText(
+				{
+					regionCode: 'ar',
+					languageCode: 'es',
+					textQuery,
 				},
-			})
+				{
+					otherArgs: {
+						headers: {
+							'Content-Type': 'application/json',
+							'X-Goog-FieldMask': 'places.id',
+						},
+					},
+				}
+			)
 
-			const placeIds = response.data.results.map(result => result.place_id)
+			const placeIds = results.places.map(result => result.id)
 
 			await this.cacheManager.set(searchCacheKey, placeIds)
 
 			return placeIds
 		} catch (error) {
-			throw new HttpException(error.response.data, error.response.status)
+			this.logger.error(`Error fetching places for input: ${textQuery}` + error)
+
+			throw new InternalServerErrorException('Error fetching places')
 		}
 	}
 }
