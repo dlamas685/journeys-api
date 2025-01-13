@@ -50,6 +50,7 @@ model User {
   fleets            Fleet[]
   vehicles          Vehicle[]
   drivers           Driver[]
+  trips             Trip[]
 
   @@map("users")
 }
@@ -189,4 +190,30 @@ model Driver {
 
   @@unique([userId, licenseNumber])
   @@map("drivers")
+}
+
+enum TripStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model Trip {
+  id            String     @id @default(uuid()) @db.Uuid
+  userId        String     @map("user_id") @db.Uuid
+  tripStatus    TripStatus @default(UPCOMING) @map("trip_status")
+  origin        String
+  destination   String
+  departureTime DateTime   @map("departure_time") @db.Timestamptz(6)
+  arrivalTime   DateTime   @map("arrival_time") @db.Timestamptz(6)
+  distance      Float?
+  duration      Int?
+  presets       Json?
+  createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("trips")
 }
