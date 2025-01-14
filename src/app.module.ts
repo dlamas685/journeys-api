@@ -20,6 +20,7 @@ import { OptionsModule } from './modules/options/options.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { UsersModule } from './modules/users/users.module'
 import { VehiclesModule } from './modules/vehicles/vehicles.module'
+import { TripsModule } from './modules/trips/trips.module';
 
 @Module({
 	imports: [
@@ -56,6 +57,7 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module'
 		FleetsModule,
 		VehiclesModule,
 		DriversModule,
+		TripsModule,
 	],
 	controllers: [],
 	providers: [],
