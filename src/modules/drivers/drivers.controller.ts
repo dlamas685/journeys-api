@@ -31,7 +31,7 @@ import { DriverEntity } from './entities/driver.entity'
 @ApiTags('Drivers')
 @ApiBearerAuth('JWT-auth')
 export class DriversController {
-	constructor(private readonly driversService: DriversService) {}
+	constructor(private readonly drivers: DriversService) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -41,7 +41,7 @@ export class DriversController {
 	})
 	@ApiOkResponse({ type: DriverEntity })
 	create(@UserId() userId: string, @Body() createDriverDto: CreateDriverDto) {
-		return this.driversService.create(userId, createDriverDto)
+		return this.drivers.create(userId, createDriverDto)
 	}
 
 	@Get()
@@ -55,7 +55,7 @@ export class DriversController {
 		@UserId() userId: string,
 		@Query() queryParamsDto: DriverQueryParamsDto
 	) {
-		return this.driversService.findAll(userId, queryParamsDto)
+		return this.drivers.findAll(userId, queryParamsDto)
 	}
 
 	@Get(':id')
@@ -66,7 +66,7 @@ export class DriversController {
 	})
 	@ApiOkResponse({ type: DriverEntity })
 	findOne(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
-		return this.driversService.findOne(userId, id)
+		return this.drivers.findOne(userId, id)
 	}
 
 	@Patch(':id')
@@ -81,7 +81,7 @@ export class DriversController {
 		@Param('id', ParseUUIDPipe) id: string,
 		@Body() updateDriverDto: UpdateDriverDto
 	) {
-		return this.driversService.update(userId, id, updateDriverDto)
+		return this.drivers.update(userId, id, updateDriverDto)
 	}
 
 	@Delete(':id')
@@ -90,6 +90,6 @@ export class DriversController {
 		description: 'Permite eliminar un conductor por su ID.',
 	})
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
-		return this.driversService.remove(userId, id)
+		return this.drivers.remove(userId, id)
 	}
 }

@@ -10,7 +10,7 @@ import {
 @Injectable()
 export class PlacesService {
 	private client: PlacesClient
-	private readonly logger = new Logger(PlacesService.name)
+	private readonly logger: Logger = new Logger(PlacesService.name)
 
 	constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {
 		this.client = new v1.PlacesClient()

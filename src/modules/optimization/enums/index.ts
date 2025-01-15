@@ -1,0 +1,6 @@
+export * from './polyline-encoding.enum'
+export * from './polyline-quality.enum'
+export * from './routing-preference.enum'
+export * from './traffic-model.enum'
+export * from './travel-mode.enum'
+export * from './units.enum'
