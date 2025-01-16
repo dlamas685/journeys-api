@@ -40,7 +40,7 @@ import { FleetsService } from './fleets.service'
 @ApiTags('Fleets')
 @ApiBearerAuth('JWT-auth')
 export class FleetsController {
-	constructor(private readonly fleetsService: FleetsService) {}
+	constructor(private readonly fleets: FleetsService) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -50,7 +50,7 @@ export class FleetsController {
 	})
 	@ApiOkResponse({ type: FleetEntity })
 	create(@UserId() userId: string, @Body() createFleetDto: CreateFleetDto) {
-		return this.fleetsService.create(userId, createFleetDto)
+		return this.fleets.create(userId, createFleetDto)
 	}
 
 	@Get()
@@ -63,7 +63,7 @@ export class FleetsController {
 		@UserId() userId: string,
 		@Query() queryParamsDto: FleetQueryParamsDto
 	) {
-		return this.fleetsService.findAll(userId, queryParamsDto)
+		return this.fleets.findAll(userId, queryParamsDto)
 	}
 
 	@Get(':id')
@@ -74,7 +74,7 @@ export class FleetsController {
 	})
 	@ApiOkResponse({ type: FleetEntity })
 	findOne(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
-		return this.fleetsService.findOne(userId, id)
+		return this.fleets.findOne(userId, id)
 	}
 
 	@Patch(':id')
@@ -89,7 +89,7 @@ export class FleetsController {
 		@Param('id', ParseUUIDPipe) id: string,
 		@Body() updateFleetDto: UpdateFleetDto
 	) {
-		return this.fleetsService.update(userId, id, updateFleetDto)
+		return this.fleets.update(userId, id, updateFleetDto)
 	}
 
 	@Delete(':id')
@@ -98,7 +98,7 @@ export class FleetsController {
 		description: 'Permite eliminar una flota por su ID.',
 	})
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
-		return this.fleetsService.remove(userId, id)
+		return this.fleets.remove(userId, id)
 	}
 
 	@Get(':id/vehicles')
@@ -113,7 +113,7 @@ export class FleetsController {
 		@Param('id', ParseUUIDPipe) id: string,
 		@Query() queryParamsDto: VehicleQueryParamsDto
 	) {
-		return this.fleetsService.findVehicles(userId, id, queryParamsDto)
+		return this.fleets.findVehicles(userId, id, queryParamsDto)
 	}
 
 	@Get(':id/drivers')
@@ -128,7 +128,7 @@ export class FleetsController {
 		@Param('id', ParseUUIDPipe) id: string,
 		@Query() queryParamsDto: DriverQueryParamsDto
 	) {
-		return this.fleetsService.findDrivers(userId, id, queryParamsDto)
+		return this.fleets.findDrivers(userId, id, queryParamsDto)
 	}
 
 	@Patch(':id/vehicle-relations')
@@ -144,14 +144,14 @@ export class FleetsController {
 		@Body() relateVehiclesToFleetDto: RelateVehiclesToFleetDto
 	) {
 		if (relateVehiclesToFleetDto.operation === RelationOperations.LINK) {
-			return this.fleetsService.linkVehiclesToFleet(
+			return this.fleets.linkVehiclesToFleet(
 				userId,
 				id,
 				relateVehiclesToFleetDto
 			)
 		}
 
-		return this.fleetsService.unlinkVehiclesFromFleet(
+		return this.fleets.unlinkVehiclesFromFleet(
 			userId,
 			id,
 			relateVehiclesToFleetDto
@@ -171,14 +171,10 @@ export class FleetsController {
 		@Body() relateDriversToFleetDto: RelateDriversToFleetDto
 	) {
 		if (relateDriversToFleetDto.operation === RelationOperations.LINK) {
-			return this.fleetsService.linkDriversToFleet(
-				userId,
-				id,
-				relateDriversToFleetDto
-			)
+			return this.fleets.linkDriversToFleet(userId, id, relateDriversToFleetDto)
 		}
 
-		return this.fleetsService.unlinkDriversFromFleet(
+		return this.fleets.unlinkDriversFromFleet(
 			userId,
 			id,
 			relateDriversToFleetDto

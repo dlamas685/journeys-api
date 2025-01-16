@@ -16,11 +16,12 @@ import { FilesModule } from './modules/files/files.module'
 import { FleetsModule } from './modules/fleets/fleets.module'
 import { GoogleMapsModule } from './modules/google-maps/google-maps.module'
 import { EmailsModule } from './modules/mails/emails.module'
+import { OptimizationModule } from './modules/optimization/optimization.module'
 import { OptionsModule } from './modules/options/options.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
+import { TripsModule } from './modules/trips/trips.module'
 import { UsersModule } from './modules/users/users.module'
 import { VehiclesModule } from './modules/vehicles/vehicles.module'
-import { TripsModule } from './modules/trips/trips.module';
 
 @Module({
 	imports: [
@@ -57,6 +58,7 @@ import { TripsModule } from './modules/trips/trips.module';
 		FleetsModule,
 		VehiclesModule,
 		DriversModule,
+		OptimizationModule,
 		TripsModule,
 	],
 	controllers: [],
