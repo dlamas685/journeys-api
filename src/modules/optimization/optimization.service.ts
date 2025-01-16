@@ -3,6 +3,7 @@ import { RoutesService } from '../google-maps/services/routes.service'
 import { BasicCriteriaDto } from './dto'
 import { BasicOptimizationEntity } from './entities'
 import { RoutingPreference } from './enums'
+import { toTimestamp } from './helpers'
 
 @Injectable()
 export class OptimizationService {
@@ -16,7 +17,10 @@ export class OptimizationService {
 					RoutingPreference.TRAFFIC_UNAWARE &&
 				basicCriteriaDto.routingPreference !==
 					RoutingPreference.ROUTING_PREFERENCE_UNSPECIFIED
-					? basicCriteriaDto.departureTime
+					? toTimestamp(
+							basicCriteriaDto.departure.date,
+							basicCriteriaDto.departure.time
+						)
 					: undefined,
 		})
 

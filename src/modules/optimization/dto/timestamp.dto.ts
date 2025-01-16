@@ -12,4 +12,8 @@ export class TimestampDto implements protos.google.protobuf.ITimestamp {
 	@IsNumber()
 	@ApiPropertyOptional()
 	seconds?: number | null
+
+	constructor(partial: Partial<TimestampDto>) {
+		Object.assign(this, partial)
+	}
 }

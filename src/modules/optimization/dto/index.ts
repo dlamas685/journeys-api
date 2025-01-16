@@ -1,4 +1,5 @@
 export * from './basic-criteria.dto'
+export * from './departure.dto'
 export * from './integer.dto'
 export * from './lat-lng.dto'
 export * from './location.dto'
