@@ -65,9 +65,14 @@ After setup `.env` with database connections
   ```
     npx prisma generate
   ```
-- For sync all migrations run
+- For sync all migrations and seeds run
   ```
     npx prisma migrate deploy
+  ```
+- For sync only migrations run
+  ```
+    npx prisma migrate dev
+    npx prisma generate
   ```
 - For seed database
   ```

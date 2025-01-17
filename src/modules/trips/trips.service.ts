@@ -23,14 +23,14 @@ export class TripsService {
 		userId: string,
 		createTripDto: CreateTripDto
 	): Promise<TripEntity> {
-		const newTest = await this.prisma.trip.create({
+		const newTrip = await this.prisma.trip.create({
 			data: {
 				userId,
 				...createTripDto,
 			},
 		})
 
-		return plainToInstance(TripEntity, newTest)
+		return new TripEntity(newTrip)
 	}
 
 	async findAll(
@@ -66,7 +66,7 @@ export class TripsService {
 			this.prisma.trip.count({ where: query.where }),
 		])
 
-		const trips = plainToInstance(TripEntity, records)
+		const trips = records.map(record => new TripEntity(record))
 
 		const metadata = plainToInstance(PaginationMetadataEntity, {
 			total: totalPages,
@@ -92,7 +92,7 @@ export class TripsService {
 			throw new NotFoundException('Viaje no encontrado')
 		}
 
-		return plainToInstance(TripEntity, foundTrip)
+		return new TripEntity(foundTrip)
 	}
 
 	async update(
@@ -110,7 +110,7 @@ export class TripsService {
 			},
 		})
 
-		return plainToInstance(TripEntity, updatedTrip)
+		return new TripEntity(updatedTrip)
 	}
 
 	async remove(userId: string, id: string) {
@@ -138,6 +138,6 @@ export class TripsService {
 			},
 		})
 
-		return plainToInstance(TripEntity, changedTripStatus)
+		return new TripEntity(changedTripStatus)
 	}
 }

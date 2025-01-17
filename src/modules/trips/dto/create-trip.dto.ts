@@ -5,7 +5,6 @@ import {
 	IsDateString,
 	IsInt,
 	IsNotEmpty,
-	IsNumber,
 	IsOptional,
 	IsString,
 	ValidateNested,
@@ -32,14 +31,14 @@ export class CreateTripDto {
 	arrivalTime: Date
 
 	@IsOptional()
-	@IsNumber()
+	@IsInt()
 	@ApiPropertyOptional()
-	distance?: number
+	totalDistance?: number
 
 	@IsOptional()
 	@IsInt()
 	@ApiPropertyOptional()
-	duration?: number
+	totalDuration?: number
 
 	@IsOptional()
 	@ValidateNested({ each: true })

@@ -207,8 +207,8 @@ model Trip {
   destination   String
   departureTime DateTime   @map("departure_time") @db.Timestamptz(6)
   arrivalTime   DateTime   @map("arrival_time") @db.Timestamptz(6)
-  distance      Float?
-  duration      Int?
+  totalDistance Int?       @map("total_distance")
+  totalDuration Int?       @map("total_duration")
   presets       Json?
   createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
