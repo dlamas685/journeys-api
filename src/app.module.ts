@@ -22,6 +22,7 @@ import { PrismaModule } from './modules/prisma/prisma.module'
 import { TripsModule } from './modules/trips/trips.module'
 import { UsersModule } from './modules/users/users.module'
 import { VehiclesModule } from './modules/vehicles/vehicles.module'
+import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
 	imports: [
@@ -60,6 +61,7 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module'
 		DriversModule,
 		OptimizationModule,
 		TripsModule,
+		PostsModule,
 	],
 	controllers: [],
 	providers: [],
