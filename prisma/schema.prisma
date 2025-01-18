@@ -51,6 +51,7 @@ model User {
   vehicles          Vehicle[]
   drivers           Driver[]
   trips             Trip[]
+  Post              Post[]
 
   @@map("users")
 }
@@ -213,7 +214,38 @@ model Trip {
   createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user User @relation(fields: [userId], references: [id])
+  user User   @relation(fields: [userId], references: [id])
+  Post Post[]
 
   @@map("trips")
+}
+
+enum PostStatus {
+  AVAILABLE
+  FULL
+  COMPLETED
+  CANCELLED
+}
+
+model Post {
+  id               String     @id @default(uuid()) @db.Uuid
+  userId           String     @map("user_id") @db.Uuid
+  tripId           String     @map("trip_id") @db.Uuid
+  postStatus       PostStatus @default(AVAILABLE) @map("post_status")
+  isPublic         Boolean    @default(true)
+  destination      String
+  cityTown         String     @map("city_town")
+  carrierName      String?    @map("carrier_name")
+  carrierPhone     String?    @map("carrier_phone")
+  pricePerKg       Decimal?   @map("price_per_kg")
+  pricePerPostal   Decimal?   @map("price_per_postal")
+  maxCapacityKg    Float?     @map("max_capacity_kg")
+  currentFillingKg Float?     @map("current_filling_kg")
+  createdAt        DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user  User @relation(fields: [userId], references: [id])
+  trips Trip @relation(fields: [tripId], references: [id])
+
+  @@map("posts")
 }
