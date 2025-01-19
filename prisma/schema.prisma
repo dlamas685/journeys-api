@@ -52,6 +52,7 @@ model User {
   drivers           Driver[]
   trips             Trip[]
   Post              Post[]
+  Order             Order[]
 
   @@map("users")
 }
@@ -244,8 +245,56 @@ model Post {
   createdAt        DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user  User @relation(fields: [userId], references: [id])
-  trips Trip @relation(fields: [tripId], references: [id])
+  user  User    @relation(fields: [userId], references: [id])
+  trips Trip    @relation(fields: [tripId], references: [id])
+  Order Order[]
 
   @@map("posts")
+}
+
+enum OrderStatus {
+  PENDING
+  PICKUP
+  DISPATCHED
+  DELIVERED
+}
+
+model Order {
+  id               String      @id @default(uuid()) @db.Uuid
+  postId           String      @map("post_id") @db.Uuid
+  userId           String?     @map("user_id") @db.Uuid
+  status           OrderStatus @default(PENDING)
+  amount           Decimal
+  totalWeightKg    Float       @map("total_weight_kg")
+  senderName       String      @map("sender_name")
+  senderAddress    String      @map("sender_address")
+  senderPhone      String      @map("sender_phone")
+  recipientName    String      @map("recipient_name")
+  recipientAddress String      @map("recipient_address")
+  recipientPhone   String      @map("recipient_phone")
+  createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  posts      Post        @relation(fields: [postId], references: [id])
+  user       User?       @relation(fields: [userId], references: [id])
+  OrderItems OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String    @id @default(uuid()) @db.Uuid
+  orderId   String    @map("order_id") @db.Uuid
+  isPostal  Boolean   @default(false) @map("isPostal")
+  price     Decimal
+  weight    Float
+  size      String
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // size => "length x width x height"
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("order_items")
 }
