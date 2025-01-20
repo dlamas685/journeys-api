@@ -1,3 +1,6 @@
+export * from './advanced-criteria.dto'
+export * from './advanced-waypoint-config.dto'
+export * from './advanced-waypoint.dto'
 export * from './basic-criteria.dto'
 export * from './departure.dto'
 export * from './integer.dto'

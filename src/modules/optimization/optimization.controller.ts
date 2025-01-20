@@ -6,15 +6,10 @@ import {
 	Post,
 	UseGuards,
 } from '@nestjs/common'
-import {
-	ApiBearerAuth,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-} from '@nestjs/swagger'
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { BasicCriteriaDto } from './dto'
+import { AdvancedCriteriaDto, BasicCriteriaDto } from './dto'
 import { BasicOptimizationEntity } from './entities'
 import { OptimizationService } from './optimization.service'
 
@@ -36,15 +31,19 @@ export class OptimizationController {
 		return this.optimization.computeBasicOptimization(basicCriteriaDto)
 	}
 
+	@Public()
 	@Post('/advanced')
 	@HttpCode(HttpStatus.OK)
-	@ApiBearerAuth('JWT-auth')
+
+	// @ApiBearerAuth('JWT-auth')
 	@ApiOperation({
 		summary: 'Optimización avanzada',
 		description:
 			'Permite optimizar una ruta siguiendo los criterios avanzados.',
 	})
-	computeAdvancedOptimization() {
-		return this.optimization.computeAdvancedOptimization()
+	computeAdvancedOptimization(
+		@Body() advancedCriteriaDto: AdvancedCriteriaDto
+	) {
+		return this.optimization.computeAdvancedOptimization(advancedCriteriaDto)
 	}
 }
