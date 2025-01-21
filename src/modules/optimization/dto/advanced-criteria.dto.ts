@@ -52,8 +52,8 @@ export class AdvancedCriteriaDto extends OmitType(BasicCriteriaDto, [
 
 	@IsArray()
 	@IsOptional()
-	@Type(() => AdvancedWaypointDto)
 	@ValidateNested({ each: true })
+	@Type(() => AdvancedWaypointDto)
 	@ApiPropertyOptional({ type: [AdvancedWaypointDto] })
 	intermediates?: AdvancedWaypointDto[]
 }

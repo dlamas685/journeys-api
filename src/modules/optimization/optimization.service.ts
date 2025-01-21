@@ -2,21 +2,21 @@ import { Injectable } from '@nestjs/common'
 import { RoutesService } from '../google-maps/services/routes.service'
 import { AdvancedCriteriaDto, BasicCriteriaDto } from './dto'
 import {
+	AdvancedOptimizationEntity,
 	BasicOptimizationEntity,
-	RouteEntity,
 	RouteEntityBuilder,
 } from './entities'
 import { RoutingPreference } from './enums'
-import { toTimestamp } from './helpers'
+import { toGoogleTimestamp } from './helpers'
 
 @Injectable()
 export class OptimizationService {
 	constructor(private readonly routes: RoutesService) {}
 
 	async computeBasicOptimization(basicCriteriaDto: BasicCriteriaDto) {
-		const { origin, destination } = basicCriteriaDto
+		const { origin, destination, intermediates, ...rest } = basicCriteriaDto
 
-		const { routes } = await this.routes.computeBasicRoute({
+		const computed = await this.routes.computeBasicRoute({
 			...basicCriteriaDto,
 			origin: {
 				placeId: origin.placeId,
@@ -26,25 +26,30 @@ export class OptimizationService {
 				placeId: destination.placeId,
 				sideOfRoad: destination.sideOfRoad,
 			},
+			intermediates: intermediates.map(({ placeId, vehicleStopover, via }) => ({
+				placeId,
+				vehicleStopover,
+				via,
+			})),
 			departureTime:
-				basicCriteriaDto.routingPreference !==
-					RoutingPreference.TRAFFIC_UNAWARE &&
-				basicCriteriaDto.routingPreference !==
+				rest.routingPreference !== RoutingPreference.TRAFFIC_UNAWARE &&
+				rest.routingPreference !==
 					RoutingPreference.ROUTING_PREFERENCE_UNSPECIFIED
-					? toTimestamp(
-							basicCriteriaDto.departure.date,
-							basicCriteriaDto.departure.time
-						)
+					? toGoogleTimestamp(rest.departure.date, rest.departure.time)
 					: undefined,
 		})
 
-		const defaultRoute = routes[0]
+		const defaultRoute = computed.routes.at(0)
 
-		const optimization = new BasicOptimizationEntity({
-			distance: defaultRoute.localizedValues.distance.text,
-			duration: defaultRoute.localizedValues.duration.text,
-			encodedPolyline: defaultRoute.polyline.encodedPolyline,
-		})
+		const route = new RouteEntityBuilder()
+			.setDistance(defaultRoute.distanceMeters)
+			.setDuration(defaultRoute.duration, defaultRoute.staticDuration)
+			.setPolyline(defaultRoute.polyline.encodedPolyline)
+			.setLocalizedValues(defaultRoute.localizedValues)
+			.setPassages(intermediates)
+			.build()
+
+		const optimization = new BasicOptimizationEntity({ route })
 
 		return optimization
 	}
@@ -52,7 +57,7 @@ export class OptimizationService {
 	async computeAdvancedOptimization(advancedCriteriaDto: AdvancedCriteriaDto) {
 		const { origin, destination, intermediates, ...rest } = advancedCriteriaDto
 
-		const { routes } = await this.routes.computeAdvancedRoute({
+		const computed = await this.routes.computeAdvancedRoute({
 			...rest,
 			origin: {
 				placeId: origin.placeId,
@@ -71,21 +76,12 @@ export class OptimizationService {
 				rest.routingPreference !== RoutingPreference.TRAFFIC_UNAWARE &&
 				rest.routingPreference !==
 					RoutingPreference.ROUTING_PREFERENCE_UNSPECIFIED
-					? toTimestamp(rest.departure.date, rest.departure.time)
+					? toGoogleTimestamp(rest.departure.date, rest.departure.time)
 					: undefined,
 		})
 
-		if (routes.length === 1) {
-			const computedDuration = intermediates.map(({ activities }) => ({
-				totalDuration: activities.reduce(
-					(acc, { duration }) => acc + duration,
-					0
-				),
-			}))
-
-			const route = routes[0]
-
-			const optimization: RouteEntity = new RouteEntityBuilder()
+		const routes = computed.routes.map(route => {
+			const routeBuilder = new RouteEntityBuilder()
 				.setDistance(route.distanceMeters)
 				.setDuration(route.duration, route.staticDuration)
 				.setPolyline(route.polyline.encodedPolyline)
@@ -93,12 +89,18 @@ export class OptimizationService {
 				.setTravelAdvisory(route.travelAdvisory)
 				.setLocalizedValues(route.localizedValues)
 				.setLegs(route.legs)
-				.build()
 
-			return optimization
-		}
+			if (intermediates && intermediates.length > 0) {
+				routeBuilder.setStops(intermediates)
+				routeBuilder.setPassages(intermediates)
+			}
 
-		return { routes }
+			return routeBuilder.build()
+		})
+
+		const optimization = new AdvancedOptimizationEntity({ routes })
+
+		return optimization
 	}
 }
 

@@ -98,6 +98,8 @@ export class LegEntityBuilder {
 	setTravelAdvisory(
 		travelAdvisory: protos.google.maps.routing.v2.IRouteTravelAdvisory
 	): LegEntityBuilder {
+		if (!travelAdvisory) return this
+
 		if (travelAdvisory.tollInfo) {
 			const estimatedPrice = travelAdvisory.tollInfo.estimatedPrice.map(
 				price =>
@@ -112,11 +114,13 @@ export class LegEntityBuilder {
 		}
 
 		this.leg.travelAdvisory.speedReadingIntervals =
-			travelAdvisory.speedReadingIntervals?.map(interval => ({
-				startPolylinePointIndex: interval.startPolylinePointIndex,
-				endPolylinePointIndex: interval.endPolylinePointIndex,
-				speed: interval.speed as Speed,
-			}))
+			travelAdvisory.speedReadingIntervals
+				? travelAdvisory.speedReadingIntervals.map(interval => ({
+						startPolylinePointIndex: interval.startPolylinePointIndex,
+						endPolylinePointIndex: interval.endPolylinePointIndex,
+						speed: interval.speed as Speed,
+					}))
+				: []
 
 		return this
 	}

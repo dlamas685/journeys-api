@@ -109,7 +109,7 @@ export class StepEntityBuilder {
 					endPolylinePointIndex: interval.endPolylinePointIndex,
 					speed: interval.speed as Speed,
 				}))
-			: null
+			: []
 
 		return this
 	}

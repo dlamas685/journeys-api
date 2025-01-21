@@ -13,6 +13,7 @@ export class AdvancedWaypointDto extends WaypointDto {
 	activities?: CreateActivityDto[]
 
 	@IsOptional()
+	@ValidateNested()
 	@Type(() => AdvancedWaypointConfigDto)
 	@ApiPropertyOptional({ type: AdvancedWaypointConfigDto })
 	config?: AdvancedWaypointConfigDto

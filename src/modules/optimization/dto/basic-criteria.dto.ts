@@ -17,11 +17,13 @@ export class BasicCriteriaDto
 	implements protos.google.maps.routing.v2.IComputeRoutesRequest
 {
 	@IsNotEmpty()
+	@ValidateNested()
 	@Type(() => WaypointDto)
 	@ApiProperty({ type: WaypointDto })
 	origin: WaypointDto
 
 	@IsNotEmpty()
+	@ValidateNested()
 	@Type(() => WaypointDto)
 	@ApiProperty({ type: WaypointDto })
 	destination: WaypointDto
@@ -39,6 +41,7 @@ export class BasicCriteriaDto
 	travelMode?: TravelMode = TravelMode.DRIVE
 
 	@IsOptional()
+	@ValidateNested()
 	@Type(() => DepartureDto)
 	@ApiPropertyOptional({ type: DepartureDto })
 	departure?: DepartureDto
@@ -50,6 +53,7 @@ export class BasicCriteriaDto
 		RoutingPreference.ROUTING_PREFERENCE_UNSPECIFIED
 
 	@IsOptional()
+	@ValidateNested()
 	@Type(() => RouteModifiersDto)
 	@ApiPropertyOptional({ type: RouteModifiersDto })
 	routeModifiers?: RouteModifiersDto

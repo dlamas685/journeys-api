@@ -1,7 +1,7 @@
 import { protos } from '@googlemaps/routing'
 import { ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsBoolean, IsEnum, IsOptional } from 'class-validator'
+import { IsBoolean, IsEnum, IsOptional, ValidateNested } from 'class-validator'
 import { TollPass } from '../enums'
 import { VehicleInfoDto } from './vehicle-info.dto'
 
@@ -24,6 +24,7 @@ export class RouteModifiersDto
 	avoidTolls?: boolean
 
 	@IsOptional()
+	@ValidateNested()
 	@Type(() => VehicleInfoDto)
 	@ApiPropertyOptional({ type: VehicleInfoDto })
 	vehicleInfo?: VehicleInfoDto

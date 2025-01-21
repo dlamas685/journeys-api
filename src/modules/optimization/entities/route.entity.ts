@@ -1,9 +1,13 @@
 import { protos } from '@googlemaps/routing'
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { convertToHHMM, formatTimeShort } from 'src/common/helpers'
+import { AdvancedWaypointDto } from '../dto'
 import { RouteLabel, Speed } from '../enums'
 import { LegEntity, LegEntityBuilder } from './leg.entity'
 import { LocalizedValuesEntity } from './localized-values.entity'
 import { MoneyEntity } from './money.entity'
+import { PassageEntity, PassageEntityBuilder } from './passage.entity'
+import { StopEntity, StopEntityBuilder } from './stop.entity'
 import { TravelAdvisoryEntity } from './travel-advisory.entity'
 
 export class RouteEntity {
@@ -34,11 +38,19 @@ export class RouteEntity {
 	@ApiProperty({ type: LocalizedValuesEntity })
 	localizedValues: LocalizedValuesEntity
 
+	@ApiPropertyOptional()
+	stops?: StopEntity[]
+
+	@ApiPropertyOptional()
+	passages?: PassageEntity[]
+
 	constructor() {
 		this.legs = []
 		this.routeLabels = []
 		this.travelAdvisory = new TravelAdvisoryEntity()
 		this.localizedValues = new LocalizedValuesEntity()
+		this.stops = []
+		this.passages = []
 	}
 }
 
@@ -132,6 +144,53 @@ export class RouteEntityBuilder {
 				.setSteps(leg.steps)
 				.build()
 		})
+
+		return this
+	}
+
+	setStops(intermediates: AdvancedWaypointDto[]): RouteEntityBuilder {
+		this.route.stops = intermediates
+			.filter(intermediate => intermediate.vehicleStopover)
+			.map(intermediate => {
+				return new StopEntityBuilder()
+					.setAddress(intermediate.address)
+					.setLocation(intermediate.location)
+					.setPlaceId(intermediate.placeId)
+					.setActivities(intermediate.activities)
+					.setDuration(intermediate.activities)
+					.build()
+			})
+
+		const stopsDuration = this.route.stops.reduce(
+			(acc, stop) => acc + stop.duration,
+			0
+		)
+
+		this.route.duration += stopsDuration
+
+		this.route.staticDuration += stopsDuration
+
+		this.route.localizedValues.duration = formatTimeShort(
+			convertToHHMM(this.route.duration)
+		)
+
+		this.route.localizedValues.staticDuration = formatTimeShort(
+			convertToHHMM(this.route.staticDuration)
+		)
+
+		return this
+	}
+
+	setPassages(intermediates: AdvancedWaypointDto[]): RouteEntityBuilder {
+		this.route.passages = intermediates
+			.filter(intermediate => !intermediate.vehicleStopover)
+			.map(intermediate => {
+				return new PassageEntityBuilder()
+					.setAddress(intermediate.address)
+					.setLocation(intermediate.location)
+					.setPlaceId(intermediate.placeId)
+					.build()
+			})
 
 		return this
 	}

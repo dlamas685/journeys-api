@@ -1,7 +1,12 @@
 import { protos } from '@googlemaps/routing'
 import { ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsBoolean, IsOptional, IsString } from 'class-validator'
+import {
+	IsBoolean,
+	IsOptional,
+	IsString,
+	ValidateNested,
+} from 'class-validator'
 import { LocationDto } from './location.dto'
 
 export class WaypointDto implements protos.google.maps.routing.v2.IWaypoint {
@@ -16,6 +21,7 @@ export class WaypointDto implements protos.google.maps.routing.v2.IWaypoint {
 	placeId?: string
 
 	@IsOptional()
+	@ValidateNested()
 	@Type(() => LocationDto)
 	@ApiPropertyOptional({ type: LocationDto })
 	location?: LocationDto
