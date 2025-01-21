@@ -35,7 +35,7 @@ export class RoutesService {
 						headers: {
 							'Content-Type': 'application/json',
 							'X-Goog-FieldMask':
-								'routes.duration,routes.distanceMeters,routes.polyline,routes.legs.polyline,routes.localized_values',
+								'routes.duration,routes.distanceMeters,routes.polyline,routes.staticDuration,routes.routeLabels,routes.localized_values',
 						},
 					},
 				}
@@ -81,7 +81,7 @@ export class RoutesService {
 						headers: {
 							'Content-Type': 'application/json',
 							'X-Goog-FieldMask':
-								'routes.duration,routes.distanceMeters,routes.polyline,routes.legs.polyline,routes.routeLabels,routes.localized_values,routes.travelAdvisory.tollInfo,routes.legs.travelAdvisory.tollInfo,routes.optimizedIntermediateWaypointIndex',
+								'routes.duration,routes.distanceMeters,routes.staticDuration,routes.routeLabels,routes.polyline,routes.legs.duration,routes.legs.distanceMeters,routes.legs.staticDuration,routes.legs.polyline,routes.legs.steps,routes.legs.localized_values,routes.legs.startLocation,routes.legs.endLocation,routes.travelAdvisory.tollInfo,routes.legs.travelAdvisory.tollInfo,routes.optimizedIntermediateWaypointIndex,routes.localized_values',
 						},
 					},
 				}

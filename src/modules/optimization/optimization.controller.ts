@@ -10,7 +10,7 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { AdvancedCriteriaDto, BasicCriteriaDto } from './dto'
-import { BasicOptimizationEntity } from './entities'
+import { AdvancedOptimizationEntity, BasicOptimizationEntity } from './entities'
 import { OptimizationService } from './optimization.service'
 
 @UseGuards(JwtAuthGuard)
@@ -41,6 +41,7 @@ export class OptimizationController {
 		description:
 			'Permite optimizar una ruta siguiendo los criterios avanzados.',
 	})
+	@ApiOkResponse({ type: AdvancedOptimizationEntity })
 	computeAdvancedOptimization(
 		@Body() advancedCriteriaDto: AdvancedCriteriaDto
 	) {
