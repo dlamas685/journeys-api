@@ -1,0 +1,36 @@
+{
+    "origin": {
+        "placeId": "ChIJRczTY3TDG5QRqBXmTtaQ2nM",
+        "address": "Talavera 4400, A4400 Salta",
+        "location": {
+            "latLng": {
+                "latitude": -24.797093885554183,
+                "longitude": -65.39502542003055
+            }
+        },
+        "sideOfRoad": true
+    },
+    "destination": {
+        "placeId": "ChIJB_A8rCjDG5QRqESOVRfgikg",
+        "address": "Lerma 751 Lerma, Pje. C. Gauna 751 y, A4400 Salta",
+        "location": {
+            "latLng": {
+                "latitude": -24.79971298546291,
+                "longitude": -65.40756011677297
+            }
+        },
+        "sideOfRoad": true
+    },
+    "intermediates": [],
+    "travelMode": "DRIVE",
+    "departure": {
+        "date": "2025-01-22",
+        "time": "16:00"
+    },
+    "routingPreference": "TRAFFIC_AWARE_OPTIMAL",
+    "routeModifiers": {
+        "avoidTolls": true,
+        "avoidHighways": true,
+        "avoidFerries": true
+    }
+}

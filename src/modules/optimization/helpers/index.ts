@@ -1,2 +1,2 @@
-export * from './from-timestamp.helper'
-export * from './to-timestamp.helper'
+export * from './from-google-timestamp.helper'
+export * from './to-google-timestamp.helper'
