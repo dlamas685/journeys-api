@@ -1,0 +1,80 @@
+{
+    "globalStartTime": "2023-01-13T16:00:00-08:00",
+    "globalEndTime": "2023-01-14T16:00:00-08:00",
+    "shipments": [
+        {
+            "deliveries": [
+                {
+                    "arrivalLocation": {
+                        "latitude": 37.789456,
+                        "longitude": -122.390192
+                    },
+                    "duration": "250s"
+                }
+            ],
+            "pickups": [
+                {
+                    "arrivalLocation": {
+                        "latitude": 37.794465,
+                        "longitude": -122.394839
+                    },
+                    "duration": "150s"
+                }
+            ]
+        },
+        {
+            "deliveries": [
+                {
+                    "arrivalLocation": {
+                        "latitude": 37.789116,
+                        "longitude": -122.395080
+                    },
+                    "duration": "250s"
+                }
+            ],
+            "pickups": [
+                {
+                    "arrivalLocation": {
+                        "latitude": 37.794465,
+                        "longitude": -122.394839
+                    },
+                    "duration": "150s"
+                }
+            ]
+        },
+        {
+            "deliveries": [
+                {
+                    "arrivalLocation": {
+                        "latitude": 37.795242,
+                        "longitude": -122.399347
+                    },
+                    "duration": "250s"
+                }
+            ],
+            "pickups": [
+                {
+                    "arrivalLocation": {
+                        "latitude": 37.794465,
+                        "longitude": -122.394839
+                    },
+                    "duration": "150s"
+                }
+            ]
+        }
+    ],
+    "vehicles": [
+        {
+            "endLocation": {
+                "latitude": 37.794465,
+                "longitude": -122.394839
+            },
+            "startLocation": {
+                "latitude": 37.794465,
+                "longitude": -122.394839
+            },
+            "costPerKilometer": 10.0,
+            "costPerHour": 40.0
+        }
+    ]
+}

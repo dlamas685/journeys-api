@@ -1,17 +1,22 @@
 import { Injectable } from '@nestjs/common'
+import { RouteOptimizationService } from '../google-maps/services/route-optimization.service'
 import { RoutesService } from '../google-maps/services/routes.service'
-import { AdvancedCriteriaDto, BasicCriteriaDto } from './dto'
+import { toGoogleTimestamp } from './helpers'
+import { ShipmentModelDto } from './routes-optimization/dto'
+import { AdvancedCriteriaDto, BasicCriteriaDto } from './routes/dto'
 import {
 	AdvancedOptimizationEntity,
 	BasicOptimizationEntity,
 	RouteEntityBuilder,
-} from './entities'
-import { RoutingPreference } from './enums'
-import { toGoogleTimestamp } from './helpers'
+} from './routes/entities'
+import { RoutingPreference } from './routes/enums'
 
 @Injectable()
 export class OptimizationService {
-	constructor(private readonly routes: RoutesService) {}
+	constructor(
+		private readonly routes: RoutesService,
+		private readonly routesOptimization: RouteOptimizationService
+	) {}
 
 	async computeBasicOptimization(basicCriteriaDto: BasicCriteriaDto) {
 		const { origin, destination, intermediates, ...rest } = basicCriteriaDto
@@ -101,6 +106,14 @@ export class OptimizationService {
 		const optimization = new AdvancedOptimizationEntity({ routes })
 
 		return optimization
+	}
+
+	async optimizeTours(shipmentModelDto: ShipmentModelDto) {
+		const computed = await this.routesOptimization.optimizeTours({
+			model: shipmentModelDto,
+		})
+
+		return computed
 	}
 }
 
