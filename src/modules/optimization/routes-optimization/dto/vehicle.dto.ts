@@ -11,6 +11,7 @@ import {
 	ValidateNested,
 } from 'class-validator'
 import { TravelMode } from '../enums/travel-mode.enum'
+import { BreakRuleDto } from './break-rule.dto'
 import { LatLngDto } from './lat-lng.dto'
 import { LoadLimitDto } from './load-limit.dto'
 import { RouteModifiersDto } from './route-modifiers.dto'
@@ -109,4 +110,10 @@ export class VehicleDto
 	@Type(() => RouteModifiersDto)
 	@ApiPropertyOptional()
 	routeModifiers?: RouteModifiersDto
+
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => BreakRuleDto)
+	@ApiPropertyOptional()
+	breakRule?: BreakRuleDto
 }
