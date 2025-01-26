@@ -9,8 +9,8 @@ import {
 	ValidateNested,
 } from 'class-validator'
 import { RoutingPreference, TravelMode } from '../enums'
-import { DepartureDto } from './departure.dto'
 import { RouteModifiersDto } from './route-modifiers.dto'
+import { TimestampDto } from './timestamp.dto'
 import { WaypointDto } from './waypoint.dto'
 
 export class BasicCriteriaDto
@@ -42,9 +42,9 @@ export class BasicCriteriaDto
 
 	@IsOptional()
 	@ValidateNested()
-	@Type(() => DepartureDto)
-	@ApiPropertyOptional({ type: DepartureDto })
-	departure?: DepartureDto
+	@Type(() => TimestampDto)
+	@ApiPropertyOptional({ type: TimestampDto })
+	departureTime?: TimestampDto
 
 	@IsOptional()
 	@IsEnum(RoutingPreference)

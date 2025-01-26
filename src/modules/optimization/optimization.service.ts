@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { RouteOptimizationService } from '../google-maps/services/route-optimization.service'
 import { RoutesService } from '../google-maps/services/routes.service'
-import { toGoogleTimestamp } from './helpers'
 import { ShipmentModelDto } from './routes-optimization/dto'
 import { AdvancedCriteriaDto, BasicCriteriaDto } from './routes/dto'
 import {
@@ -40,7 +39,7 @@ export class OptimizationService {
 				rest.routingPreference !== RoutingPreference.TRAFFIC_UNAWARE &&
 				rest.routingPreference !==
 					RoutingPreference.ROUTING_PREFERENCE_UNSPECIFIED
-					? toGoogleTimestamp(rest.departure.date, rest.departure.time)
+					? rest.departureTime
 					: undefined,
 		})
 
@@ -81,7 +80,7 @@ export class OptimizationService {
 				rest.routingPreference !== RoutingPreference.TRAFFIC_UNAWARE &&
 				rest.routingPreference !==
 					RoutingPreference.ROUTING_PREFERENCE_UNSPECIFIED
-					? toGoogleTimestamp(rest.departure.date, rest.departure.time)
+					? rest.departureTime
 					: undefined,
 		})
 

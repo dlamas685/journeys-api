@@ -3,7 +3,7 @@ import { getUnixTime } from 'date-fns/getUnixTime'
 import { parseISO } from 'date-fns/parseISO'
 import { set } from 'date-fns/set'
 
-export const toGoogleTimestamp = (
+export const toTimestamp = (
 	date: string,
 	time: string
 ): protos.google.protobuf.ITimestamp => {

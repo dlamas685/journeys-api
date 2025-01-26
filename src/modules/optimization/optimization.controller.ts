@@ -56,7 +56,7 @@ export class OptimizationController {
 	@Post('/tours')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
-		summary: 'Optimización de Recorridos',
+		summary: 'Optimización de recorridos',
 		description:
 			'Permite optimizar los recorridos en la gestión de flotas o cuando un viaje tiene criterios adicionales.',
 	})

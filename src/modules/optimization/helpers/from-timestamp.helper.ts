@@ -1,7 +1,7 @@
 import { protos } from '@googlemaps/routing'
 import { format } from 'date-fns'
 
-export const fromGoogleTimestamp = (
+export const fromTimestamp = (
 	timestamp: protos.google.protobuf.ITimestamp
 ): string[] => {
 	const milliseconds =
