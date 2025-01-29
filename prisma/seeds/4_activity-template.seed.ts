@@ -13,7 +13,7 @@ function createMockActivity(): MockActivity {
 		id: faker.string.uuid(),
 		name: faker.word.noun(),
 		description: faker.commerce.productDescription(),
-		duration: Math.floor(Math.random() * (60 - 10)) + 10, // between 10 and 60 min
+		duration: (Math.floor(Math.random() * (180 - 30 + 1)) + 30) * 60, // between [30min, 3hs] in seconds
 	}
 }
 

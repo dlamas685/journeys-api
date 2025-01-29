@@ -1,9 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, OmitType } from '@nestjs/swagger'
 import {
 	IsBoolean,
 	IsNotEmpty,
 	IsNumber,
+	IsOptional,
 	IsPhoneNumber,
+	IsPositive,
 	IsString,
 	IsUUID,
 } from 'class-validator'
@@ -14,9 +16,10 @@ export class CreatePostDto {
 	@ApiProperty()
 	tripId: string
 
+	@IsOptional()
 	@ApiProperty()
 	@IsBoolean()
-	isPublic: boolean
+	isPublic: boolean = true
 
 	@IsNotEmpty()
 	@IsString()
@@ -39,18 +42,26 @@ export class CreatePostDto {
 	carrierPhone: string
 
 	@IsNumber()
+	@IsPositive()
 	@ApiProperty()
 	pricePerKg: number
 
 	@IsNumber()
+	@IsPositive()
 	@ApiProperty()
 	pricePerPostal: number
 
 	@IsNumber()
+	@IsPositive()
 	@ApiProperty()
 	maxCapacityKg: number
 
+	@IsOptional()
 	@IsNumber()
 	@ApiProperty()
-	currentFillingKg: number
+	currentFillingKg: number = 0
 }
+
+export class CreatePostFromTripDto extends OmitType(CreatePostDto, [
+	'tripId',
+]) {}

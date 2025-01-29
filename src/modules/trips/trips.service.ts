@@ -23,10 +23,17 @@ export class TripsService {
 		userId: string,
 		createTripDto: CreateTripDto
 	): Promise<TripEntity> {
+		const { post: newPost, ...trip } = createTripDto
 		const newTrip = await this.prisma.trip.create({
 			data: {
 				userId,
-				...createTripDto,
+				...trip,
+				post: newPost && {
+					create: {
+						userId,
+						...newPost,
+					},
+				},
 			},
 		})
 

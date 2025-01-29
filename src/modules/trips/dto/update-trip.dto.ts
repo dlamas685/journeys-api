@@ -6,7 +6,7 @@ import { CreateTripDto } from './create-trip.dto'
 import { UpdateTripPresetDto } from './update-trip-preset.dto'
 
 export class UpdateTripDto extends PartialType(
-	OmitType(CreateTripDto, ['presets'])
+	OmitType(CreateTripDto, ['presets', 'post'])
 ) {
 	@IsOptional()
 	@ValidateNested({ each: true })

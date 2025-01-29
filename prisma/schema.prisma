@@ -51,8 +51,8 @@ model User {
   vehicles          Vehicle[]
   drivers           Driver[]
   trips             Trip[]
-  Post              Post[]
-  Order             Order[]
+  post              Post[]
+  order             Order[]
 
   @@map("users")
 }
@@ -216,7 +216,7 @@ model Trip {
   updatedAt     DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   user User   @relation(fields: [userId], references: [id])
-  Post Post[]
+  post Post[]
 
   @@map("trips")
 }
@@ -247,7 +247,7 @@ model Post {
 
   user  User    @relation(fields: [userId], references: [id])
   trips Trip    @relation(fields: [tripId], references: [id])
-  Order Order[]
+  order Order[]
 
   @@map("posts")
 }
@@ -277,7 +277,7 @@ model Order {
 
   posts      Post        @relation(fields: [postId], references: [id])
   user       User?       @relation(fields: [userId], references: [id])
-  OrderItems OrderItem[]
+  orderItems OrderItem[]
 
   @@map("orders")
 }

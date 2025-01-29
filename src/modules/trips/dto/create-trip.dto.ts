@@ -9,6 +9,7 @@ import {
 	IsString,
 	ValidateNested,
 } from 'class-validator'
+import { CreatePostFromTripDto } from 'src/modules/posts/dto'
 import { CreateTripPresetDto } from './create-trip-preset.dto'
 
 export class CreateTripDto {
@@ -45,4 +46,10 @@ export class CreateTripDto {
 	@Type(() => CreateTripPresetDto)
 	@ApiPropertyOptional({ type: CreateTripPresetDto })
 	presets?: JsonValue
+
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => CreatePostFromTripDto)
+	@ApiPropertyOptional({ type: CreatePostFromTripDto })
+	post?: CreatePostFromTripDto
 }
