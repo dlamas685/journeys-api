@@ -3,10 +3,8 @@
         "placeId": "ChIJRczTY3TDG5QRqBXmTtaQ2nM",
         "address": "Talavera 4400, A4400 Salta",
         "location": {
-            "latLng": {
-                "latitude": -24.797093885554183,
-                "longitude": -65.39502542003055
-            }
+            "latitude": -24.797093885554183,
+            "longitude": -65.39502542003055
         },
         "sideOfRoad": true
     },
@@ -14,22 +12,18 @@
         "placeId": "ChIJB_A8rCjDG5QRqESOVRfgikg",
         "address": "Lerma 751 Lerma, Pje. C. Gauna 751 y, A4400 Salta",
         "location": {
-            "latLng": {
-                "latitude": -24.79971298546291,
-                "longitude": -65.40756011677297
-            }
+            "latitude": -24.79971298546291,
+            "longitude": -65.40756011677297
         },
         "sideOfRoad": true
     },
-    "intermediates": [
+    "interestPoints": [
         {
             "placeId": "ChIJ_f7Do7vDG5QRyYWTsHIjfec",
             "address": "Balcarce 252, A4400 Salta",
             "location": {
-                "latLng": {
-                    "latitude": -24.786856,
-                    "longitude": -65.41195259999999
-                }
+                "latitude": -24.786856,
+                "longitude": -65.41195259999999
             },
             "via": false,
             "vehicleStopover": true,
@@ -46,7 +40,7 @@
                 }
             ],
             "config": {
-                "template": "",
+                "templateId": null,
                 "mode": "manual"
             }
         },
@@ -54,10 +48,8 @@
             "placeId": "ChIJBXF9X7BdIpQRzbAWjSrscKQ",
             "address": "Coronel Francisco de Uriondo 330, A4406BKQ Salta",
             "location": {
-                "latLng": {
-                    "latitude": -24.7855686,
-                    "longitude": -65.398382
-                }
+                "latitude": -24.7855686,
+                "longitude": -65.398382
             },
             "via": false,
             "vehicleStopover": true,
@@ -84,7 +76,7 @@
                 }
             ],
             "config": {
-                "template": "93946468-95fc-4033-843e-5d9711e34d80",
+                "templateId": "93946468-95fc-4033-843e-5d9711e34d80",
                 "mode": "template"
             }
         },
@@ -92,32 +84,22 @@
             "placeId": "ChIJw2kzW7nDG5QRF21dKCW_w_c",
             "address": "J. M. Leguizamon 669, A4400 BOM, Salta",
             "location": {
-                "latLng": {
-                    "latitude": -24.7837589,
-                    "longitude": -65.4112773
-                }
+                "latitude": -24.7837589,
+                "longitude": -65.4112773
             },
             "via": true,
             "activities": []
         }
     ],
     "travelMode": "DRIVE",
-    "departure": {
-        "date": "2025-01-22",
-        "time": "16:00"
-    },
-    "routingPreference": "TRAFFIC_AWARE_OPTIMAL",
-    "routeModifiers": {
+    "departureTime": "2025-01-28T16:00Z",
+    "trafficOption": "TRAFFIC_AWARE_OPTIMAL",
+    "modifiers": {
         "avoidTolls": false,
         "avoidHighways": true,
-        "avoidFerries": true,
-        "vehicleInfo": {
-            "emissionType": "GASOLINE"
-        },
-        "tollPasses": [
-            3
-        ]
+        "avoidFerries": true
     },
+    "emissionType": "GASOLINE",
     "extraComputations": [
         1,
         2,

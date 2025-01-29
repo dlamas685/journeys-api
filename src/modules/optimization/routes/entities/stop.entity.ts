@@ -1,8 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { CreateActivityDto } from 'src/modules/activity-templates/dto'
 import { ActivityEntity } from 'src/modules/activity-templates/entities'
 import { v4 as uuid } from 'uuid'
-import { LocationDto } from '../dto'
+import { AdvancedWaypointActivityDto, LocationDto } from '../dto'
 import { LocationEntity } from './location.entity'
 
 export class StopEntity {
@@ -40,8 +39,8 @@ export class StopEntityBuilder {
 	}
 
 	setLocation(location: LocationDto): StopEntityBuilder {
-		this.stop.location.latitude = location.latLng.latitude
-		this.stop.location.longitude = location.latLng.longitude
+		this.stop.location.latitude = location.latitude
+		this.stop.location.longitude = location.longitude
 		return this
 	}
 
@@ -50,7 +49,7 @@ export class StopEntityBuilder {
 		return this
 	}
 
-	setActivities(activities: CreateActivityDto[]): StopEntityBuilder {
+	setActivities(activities: AdvancedWaypointActivityDto[]): StopEntityBuilder {
 		this.stop.activities = activities.map(activity => ({
 			id: uuid(),
 			name: activity.name,
@@ -60,7 +59,7 @@ export class StopEntityBuilder {
 		return this
 	}
 
-	setDuration(activities: CreateActivityDto[]): StopEntityBuilder {
+	setDuration(activities: AdvancedWaypointActivityDto[]): StopEntityBuilder {
 		this.stop.duration = activities.reduce(
 			(acc, activity) => acc + activity.duration,
 			0

@@ -1,16 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { IsArray, IsOptional, ValidateNested } from 'class-validator'
-import { CreateActivityDto } from 'src/modules/activity-templates/dto'
+import { AdvancedWaypointActivityDto } from './advanced-waypoint-activity.dto'
 import { AdvancedWaypointConfigDto } from './advanced-waypoint-config.dto'
 import { WaypointDto } from './waypoint.dto'
 
 export class AdvancedWaypointDto extends WaypointDto {
 	@IsArray()
-	@Type(() => CreateActivityDto)
+	@IsOptional()
+	@Type(() => AdvancedWaypointActivityDto)
 	@ValidateNested({ each: true })
-	@ApiPropertyOptional({ type: [CreateActivityDto] })
-	activities?: CreateActivityDto[]
+	@ApiPropertyOptional({ type: [AdvancedWaypointActivityDto] })
+	activities?: AdvancedWaypointActivityDto[]
 
 	@IsOptional()
 	@ValidateNested()

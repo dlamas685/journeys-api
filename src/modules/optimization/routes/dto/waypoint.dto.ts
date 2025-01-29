@@ -1,47 +1,43 @@
-import { protos } from '@googlemaps/routing'
-import { ApiPropertyOptional } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import {
 	IsBoolean,
+	IsNotEmpty,
 	IsOptional,
 	IsString,
 	ValidateNested,
 } from 'class-validator'
 import { LocationDto } from './location.dto'
 
-export class WaypointDto implements protos.google.maps.routing.v2.IWaypoint {
+export class WaypointDto {
+	@IsNotEmpty()
 	@IsString()
-	@IsOptional()
-	@ApiPropertyOptional()
-	address?: string
+	@ApiProperty()
+	placeId: string
 
+	@IsNotEmpty()
 	@IsString()
-	@IsOptional()
-	@ApiPropertyOptional()
-	placeId?: string
+	@ApiProperty()
+	address: string
 
-	@IsOptional()
-	@ValidateNested()
+	@IsNotEmpty()
 	@Type(() => LocationDto)
-	@ApiPropertyOptional({ type: LocationDto })
-	location?: LocationDto
+	@ValidateNested()
+	@ApiProperty()
+	location: LocationDto
 
-	@IsBoolean()
 	@IsOptional()
-	@ApiPropertyOptional()
-	sideOfRoad?: boolean
-
 	@IsBoolean()
-	@IsOptional()
 	@ApiPropertyOptional()
-	vehicleStopover?: boolean
+	vehicleStopover?: boolean = false
 
+	@IsOptional()
 	@IsBoolean()
-	@IsOptional()
 	@ApiPropertyOptional()
-	via?: boolean
+	via?: boolean = false
 
-	constructor(partial: Partial<WaypointDto>) {
-		Object.assign(this, partial)
-	}
+	@IsOptional()
+	@IsBoolean()
+	@ApiPropertyOptional()
+	sideOfRoad?: boolean = false
 }

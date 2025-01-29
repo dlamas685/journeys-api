@@ -1,64 +1,53 @@
-import { protos } from '@googlemaps/routing'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import {
-	IsArray,
+	IsDateString,
 	IsEnum,
 	IsNotEmpty,
 	IsOptional,
 	ValidateNested,
 } from 'class-validator'
-import { RoutingPreference, TravelMode } from '../enums'
-import { RouteModifiersDto } from './route-modifiers.dto'
-import { TimestampDto } from './timestamp.dto'
+import { TrafficOption, TravelMode } from '../enums'
+import { ModifiersDto } from './modifiers.dto'
 import { WaypointDto } from './waypoint.dto'
 
-export class BasicCriteriaDto
-	implements protos.google.maps.routing.v2.IComputeRoutesRequest
-{
+export class BasicCriteriaDto {
 	@IsNotEmpty()
-	@ValidateNested()
 	@Type(() => WaypointDto)
-	@ApiProperty({ type: WaypointDto })
+	@ValidateNested()
+	@ApiProperty()
 	origin: WaypointDto
 
 	@IsNotEmpty()
-	@ValidateNested()
 	@Type(() => WaypointDto)
-	@ApiProperty({ type: WaypointDto })
+	@ValidateNested()
+	@ApiProperty()
 	destination: WaypointDto
 
+	@IsNotEmpty()
+	@IsDateString()
+	@ApiProperty()
+	departureTime: string
+
 	@IsOptional()
-	@IsArray()
-	@ValidateNested({ each: true })
 	@Type(() => WaypointDto)
-	@ApiPropertyOptional({ type: [WaypointDto] })
-	intermediates?: WaypointDto[]
+	@ValidateNested({ each: true })
+	@ApiPropertyOptional()
+	interestPoints: WaypointDto[]
 
-	@IsOptional()
+	@IsNotEmpty()
 	@IsEnum(TravelMode)
-	@ApiPropertyOptional({ enum: TravelMode })
-	travelMode?: TravelMode = TravelMode.DRIVE
+	@ApiProperty({ enum: TravelMode })
+	travelMode: TravelMode
 
 	@IsOptional()
+	@IsEnum(TrafficOption)
+	@ApiPropertyOptional({ enum: TrafficOption })
+	trafficOption?: TrafficOption = TrafficOption.TRAFFIC_UNAWARE
+
+	@IsOptional()
+	@Type(() => ModifiersDto)
 	@ValidateNested()
-	@Type(() => TimestampDto)
-	@ApiPropertyOptional({ type: TimestampDto })
-	departureTime?: TimestampDto
-
-	@IsOptional()
-	@IsEnum(RoutingPreference)
-	@ApiPropertyOptional({ enum: RoutingPreference })
-	routingPreference?: RoutingPreference =
-		RoutingPreference.ROUTING_PREFERENCE_UNSPECIFIED
-
-	@IsOptional()
-	@ValidateNested()
-	@Type(() => RouteModifiersDto)
-	@ApiPropertyOptional({ type: RouteModifiersDto })
-	routeModifiers?: RouteModifiersDto
-
-	constructor(partial: Partial<BasicCriteriaDto>) {
-		Object.assign(this, partial)
-	}
+	@ApiPropertyOptional()
+	modifiers?: ModifiersDto
 }

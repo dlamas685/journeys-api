@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { ComputeRoutesRequestBuilder } from '../google-maps/classes/compute-routes-request-builder.class'
 import { RouteOptimizationService } from '../google-maps/services/route-optimization.service'
 import { RoutesService } from '../google-maps/services/routes.service'
 import { ShipmentModelDto } from './routes-optimization/dto'
@@ -8,7 +9,6 @@ import {
 	BasicOptimizationEntity,
 	RouteEntityBuilder,
 } from './routes/entities'
-import { RoutingPreference } from './routes/enums'
 
 @Injectable()
 export class OptimizationService {
@@ -18,39 +18,26 @@ export class OptimizationService {
 	) {}
 
 	async computeBasicOptimization(basicCriteriaDto: BasicCriteriaDto) {
-		const { origin, destination, intermediates, ...rest } = basicCriteriaDto
+		const request = new ComputeRoutesRequestBuilder()
+			.setOrigin(basicCriteriaDto.origin)
+			.setDestination(basicCriteriaDto.destination)
+			.setDepartureTime(basicCriteriaDto.departureTime)
+			.setInterestPoints(basicCriteriaDto.interestPoints)
+			.setTravelMode(basicCriteriaDto.travelMode)
+			.setTrafficOption(basicCriteriaDto.trafficOption)
+			.setModifiers(basicCriteriaDto.modifiers)
+			.build()
 
-		const computed = await this.routes.computeBasicRoute({
-			...basicCriteriaDto,
-			origin: {
-				placeId: origin.placeId,
-				sideOfRoad: origin.sideOfRoad,
-			},
-			destination: {
-				placeId: destination.placeId,
-				sideOfRoad: destination.sideOfRoad,
-			},
-			intermediates: intermediates.map(({ placeId, vehicleStopover, via }) => ({
-				placeId,
-				vehicleStopover,
-				via,
-			})),
-			departureTime:
-				rest.routingPreference !== RoutingPreference.TRAFFIC_UNAWARE &&
-				rest.routingPreference !==
-					RoutingPreference.ROUTING_PREFERENCE_UNSPECIFIED
-					? rest.departureTime
-					: undefined,
-		})
+		const response = await this.routes.computeBasicRoute(request)
 
-		const defaultRoute = computed.routes.at(0)
+		const defaultRoute = response.routes.at(0)
 
 		const route = new RouteEntityBuilder()
 			.setDistance(defaultRoute.distanceMeters)
 			.setDuration(defaultRoute.duration, defaultRoute.staticDuration)
 			.setPolyline(defaultRoute.polyline.encodedPolyline)
 			.setLocalizedValues(defaultRoute.localizedValues)
-			.setPassages(intermediates)
+			.setPassages(basicCriteriaDto.interestPoints)
 			.build()
 
 		const optimization = new BasicOptimizationEntity({ route })
@@ -59,32 +46,20 @@ export class OptimizationService {
 	}
 
 	async computeAdvancedOptimization(advancedCriteriaDto: AdvancedCriteriaDto) {
-		const { origin, destination, intermediates, ...rest } = advancedCriteriaDto
+		const request = new ComputeRoutesRequestBuilder()
+			.setOrigin(advancedCriteriaDto.origin)
+			.setDestination(advancedCriteriaDto.destination)
+			.setInterestPoints(advancedCriteriaDto.interestPoints)
+			.setTravelMode(advancedCriteriaDto.travelMode)
+			.setDepartureTime(advancedCriteriaDto.departureTime)
+			.setTrafficOption(advancedCriteriaDto.trafficOption)
+			.setModifiers(advancedCriteriaDto.modifiers)
+			.setEmissionType(advancedCriteriaDto.emissionType)
+			.build()
 
-		const computed = await this.routes.computeAdvancedRoute({
-			...rest,
-			origin: {
-				placeId: origin.placeId,
-				sideOfRoad: origin.sideOfRoad,
-			},
-			destination: {
-				placeId: destination.placeId,
-				sideOfRoad: destination.sideOfRoad,
-			},
-			intermediates: intermediates.map(({ placeId, vehicleStopover, via }) => ({
-				placeId,
-				vehicleStopover,
-				via,
-			})),
-			departureTime:
-				rest.routingPreference !== RoutingPreference.TRAFFIC_UNAWARE &&
-				rest.routingPreference !==
-					RoutingPreference.ROUTING_PREFERENCE_UNSPECIFIED
-					? rest.departureTime
-					: undefined,
-		})
+		const response = await this.routes.computeAdvancedRoute(request)
 
-		const routes = computed.routes.map(route => {
+		const routes = response.routes.map(route => {
 			const routeBuilder = new RouteEntityBuilder()
 				.setDistance(route.distanceMeters)
 				.setDuration(route.duration, route.staticDuration)
@@ -94,9 +69,12 @@ export class OptimizationService {
 				.setLocalizedValues(route.localizedValues)
 				.setLegs(route.legs)
 
-			if (intermediates && intermediates.length > 0) {
-				routeBuilder.setStops(intermediates)
-				routeBuilder.setPassages(intermediates)
+			if (
+				advancedCriteriaDto.interestPoints &&
+				advancedCriteriaDto.interestPoints.length > 0
+			) {
+				routeBuilder.setStops(advancedCriteriaDto.interestPoints)
+				routeBuilder.setPassages(advancedCriteriaDto.interestPoints)
 			}
 
 			return routeBuilder.build()

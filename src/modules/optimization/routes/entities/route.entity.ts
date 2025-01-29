@@ -148,8 +148,8 @@ export class RouteEntityBuilder {
 		return this
 	}
 
-	setStops(intermediates: AdvancedWaypointDto[]): RouteEntityBuilder {
-		this.route.stops = intermediates
+	setStops(interestPoints: AdvancedWaypointDto[]): RouteEntityBuilder {
+		this.route.stops = interestPoints
 			.filter(intermediate => intermediate.vehicleStopover)
 			.map(intermediate => {
 				return new StopEntityBuilder()

@@ -1,24 +1,14 @@
-import { protos } from '@googlemaps/routing'
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { Type } from 'class-transformer'
-import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator'
-import { IntegerDto } from './integer.dto'
-import { LatLngDto } from './lat-lng.dto'
+import { ApiProperty } from '@nestjs/swagger'
+import { IsNotEmpty, IsNumber } from 'class-validator'
 
-export class LocationDto implements protos.google.maps.routing.v2.ILocation {
+export class LocationDto {
 	@IsNotEmpty()
-	@ValidateNested()
-	@Type(() => LatLngDto)
-	@ApiProperty({ type: LatLngDto })
-	latLng: LatLngDto
+	@IsNumber()
+	@ApiProperty()
+	latitude: number
 
-	@IsOptional()
-	@ValidateNested()
-	@Type(() => IntegerDto)
-	@ApiPropertyOptional({ type: IntegerDto })
-	heading?: IntegerDto
-
-	constructor(partial: Partial<LocationDto>) {
-		Object.assign(this, partial)
-	}
+	@IsNotEmpty()
+	@IsNumber()
+	@ApiProperty()
+	longitude: number
 }

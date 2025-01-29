@@ -30,8 +30,8 @@ export class PassageEntityBuilder {
 	}
 
 	setLocation(location: LocationDto): PassageEntityBuilder {
-		this.passage.location.latitude = location.latLng.latitude
-		this.passage.location.longitude = location.latLng.longitude
+		this.passage.location.latitude = location.latitude
+		this.passage.location.longitude = location.longitude
 		return this
 	}
 

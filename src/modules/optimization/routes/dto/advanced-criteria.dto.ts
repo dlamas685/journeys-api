@@ -5,16 +5,25 @@ import {
 	IsBoolean,
 	IsEnum,
 	IsOptional,
-	IsString,
 	ValidateNested,
 } from 'class-validator'
-import { ExtraComputation, ReferenceRoute, TrafficModel } from '../enums'
+import { ExtraComputation } from '../enums/extra-computation.enum'
+import { ReferenceRoute } from '../enums/reference-route.enum'
+import { TrafficModel } from '../enums/traffic-model.enum'
+import { VehicleEmissionType } from '../enums/vehicle-emission-type.enum'
 import { AdvancedWaypointDto } from './advanced-waypoint.dto'
 import { BasicCriteriaDto } from './basic-criteria.dto'
 
 export class AdvancedCriteriaDto extends OmitType(BasicCriteriaDto, [
-	'intermediates',
+	'interestPoints',
 ] as const) {
+	@IsOptional()
+	@IsArray()
+	@Type(() => AdvancedWaypointDto)
+	@ValidateNested({ each: true })
+	@ApiPropertyOptional({ type: [AdvancedWaypointDto] })
+	interestPoints?: AdvancedWaypointDto[]
+
 	@IsArray()
 	@IsEnum(ExtraComputation, { each: true })
 	@ApiPropertyOptional({
@@ -34,7 +43,6 @@ export class AdvancedCriteriaDto extends OmitType(BasicCriteriaDto, [
 	})
 	requestedReferenceRoutes?: ReferenceRoute[]
 
-	@IsString()
 	@IsOptional()
 	@IsEnum(TrafficModel)
 	@ApiPropertyOptional({ enum: TrafficModel })
@@ -50,10 +58,8 @@ export class AdvancedCriteriaDto extends OmitType(BasicCriteriaDto, [
 	@ApiPropertyOptional()
 	optimizeWaypointOrder?: boolean
 
-	@IsArray()
 	@IsOptional()
-	@ValidateNested({ each: true })
-	@Type(() => AdvancedWaypointDto)
-	@ApiPropertyOptional({ type: [AdvancedWaypointDto] })
-	intermediates?: AdvancedWaypointDto[]
+	@IsEnum(VehicleEmissionType)
+	@ApiPropertyOptional({ enum: VehicleEmissionType })
+	emissionType?: VehicleEmissionType
 }
