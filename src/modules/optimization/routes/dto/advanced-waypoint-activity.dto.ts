@@ -6,9 +6,15 @@ import {
 	IsOptional,
 	IsPositive,
 	IsString,
+	IsUUID,
 } from 'class-validator'
 
 export class AdvancedWaypointActivityDto {
+	@IsUUID()
+	@IsNotEmpty()
+	@ApiProperty()
+	id: string
+
 	@IsNotEmpty()
 	@IsString()
 	@ApiProperty()

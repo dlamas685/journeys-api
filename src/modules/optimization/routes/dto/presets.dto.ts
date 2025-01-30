@@ -9,11 +9,11 @@ export class PresetsDto {
 	@Type(() => BasicCriteriaDto)
 	@ValidateNested()
 	@ApiProperty({ type: BasicCriteriaDto })
-	basic: BasicCriteriaDto
+	basicCriteria: BasicCriteriaDto
 
 	@IsOptional()
 	@Type(() => AdvancedCriteriaDto)
 	@ValidateNested()
 	@ApiPropertyOptional({ type: AdvancedCriteriaDto })
-	advanced: AdvancedCriteriaDto
+	advancedCriteria: AdvancedCriteriaDto
 }

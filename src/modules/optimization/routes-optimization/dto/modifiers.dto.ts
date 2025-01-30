@@ -1,10 +1,7 @@
-import { protos } from '@googlemaps/routeoptimization'
 import { ApiPropertyOptional } from '@nestjs/swagger'
 import { IsBoolean, IsOptional } from 'class-validator'
 
-export class RouteModifiersDto
-	implements protos.google.maps.routeoptimization.v1.IRouteModifiers
-{
+export class ModifiersDto {
 	@IsOptional()
 	@IsBoolean()
 	@ApiPropertyOptional()
@@ -18,10 +15,10 @@ export class RouteModifiersDto
 	@IsOptional()
 	@IsBoolean()
 	@ApiPropertyOptional()
-	avoidIndoor?: boolean
+	avoidTolls?: boolean
 
 	@IsOptional()
 	@IsBoolean()
 	@ApiPropertyOptional()
-	avoidTolls?: boolean
+	considerRoadTraffic?: boolean
 }

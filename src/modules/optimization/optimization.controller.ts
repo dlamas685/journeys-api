@@ -10,12 +10,10 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { OptimizationService } from './optimization.service'
-import { ShipmentModelDto } from './routes-optimization/dto'
+import { PresetsDto } from './routes-optimization/dto'
+import { RoadmapsOptimizationEntity } from './routes-optimization/entities'
 import { AdvancedCriteriaDto, BasicCriteriaDto } from './routes/dto'
-import {
-	AdvancedOptimizationEntity,
-	BasicOptimizationEntity,
-} from './routes/entities'
+import { RouteEntity } from './routes/entities'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('Optimization')
@@ -30,7 +28,7 @@ export class OptimizationController {
 		summary: 'Optimización básica',
 		description: 'Permite optimizar una ruta siguiendo los criterios básicos.',
 	})
-	@ApiOkResponse({ type: BasicOptimizationEntity })
+	@ApiOkResponse({ type: RouteEntity })
 	computeBasicOptimization(@Body() basicCriteriaDto: BasicCriteriaDto) {
 		return this.optimization.computeBasicOptimization(basicCriteriaDto)
 	}
@@ -38,14 +36,12 @@ export class OptimizationController {
 	@Public()
 	@Post('/advanced')
 	@HttpCode(HttpStatus.OK)
-
-	// @ApiBearerAuth('JWT-auth')
 	@ApiOperation({
 		summary: 'Optimización avanzada',
 		description:
 			'Permite optimizar una ruta siguiendo los criterios avanzados.',
 	})
-	@ApiOkResponse({ type: AdvancedOptimizationEntity })
+	@ApiOkResponse({ type: [RouteEntity] })
 	computeAdvancedOptimization(
 		@Body() advancedCriteriaDto: AdvancedCriteriaDto
 	) {
@@ -57,11 +53,10 @@ export class OptimizationController {
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: 'Optimización de recorridos',
-		description:
-			'Permite optimizar los recorridos en la gestión de flotas o cuando un viaje tiene criterios adicionales.',
+		description: 'Permite optimizar los recorridos en la gestión de flotas',
 	})
-	@ApiOkResponse()
-	optimizeTours(@Body() shipmentModelDto: ShipmentModelDto) {
-		return this.optimization.optimizeTours(shipmentModelDto)
+	@ApiOkResponse({ type: [RoadmapsOptimizationEntity] })
+	optimizeTours(@Body() presetsDto: PresetsDto) {
+		return this.optimization.optimizeTours(presetsDto)
 	}
 }

@@ -1,80 +1,108 @@
 {
-    "globalStartTime": "2023-01-13T16:00:00-08:00",
-    "globalEndTime": "2023-01-14T16:00:00-08:00",
-    "shipments": [
-        {
-            "deliveries": [
-                {
-                    "arrivalLocation": {
-                        "latitude": 37.789456,
-                        "longitude": -122.390192
-                    },
-                    "duration": "250s"
-                }
-            ],
-            "pickups": [
-                {
-                    "arrivalLocation": {
-                        "latitude": 37.794465,
-                        "longitude": -122.394839
-                    },
-                    "duration": "150s"
-                }
-            ]
+    "firstStage": {
+        "startWaypoint": {
+            "placeId": "ChIJjcaTJKvDG5QROs_60rhgtgU",
+            "address": "Cnel. Moldes 945, A4404 Salta, Argentina",
+            "location": {
+                "latitude": -24.8003577,
+                "longitude": -65.4271816
+            }
         },
-        {
-            "deliveries": [
-                {
-                    "arrivalLocation": {
-                        "latitude": 37.789116,
-                        "longitude": -122.395080
-                    },
-                    "duration": "250s"
-                }
-            ],
-            "pickups": [
-                {
-                    "arrivalLocation": {
-                        "latitude": 37.794465,
-                        "longitude": -122.394839
-                    },
-                    "duration": "150s"
-                }
-            ]
+        "endWaypoint": {
+            "placeId": "ChIJIy73zQnDG5QRiznlJviqqDI",
+            "address": "Pje. Ceballos 964, A4400 Salta, Argentina",
+            "location": {
+                "latitude": -24.8019644,
+                "longitude": -65.41305659999999
+            }
         },
-        {
-            "deliveries": [
-                {
-                    "arrivalLocation": {
-                        "latitude": 37.795242,
-                        "longitude": -122.399347
-                    },
-                    "duration": "250s"
-                }
-            ],
-            "pickups": [
-                {
-                    "arrivalLocation": {
-                        "latitude": 37.794465,
-                        "longitude": -122.394839
-                    },
-                    "duration": "150s"
-                }
-            ]
+        "endTime": "2025-01-30T13:00Z",
+        "startTime": "2025-01-30T08:00Z",
+        "costModel": {
+            "fixedCost": 50.00,
+            "costPerHour": 20.25,
+            "costPerKilometer": 0.0,
+            "costPerTraveledHour": 0.0,
+            "travelDurationMultiple": 1.0
+        },
+        "modifiers": {
+            "avoidFerries": true,
+            "avoidHighways": true,
+            "avoidTolls": true
         }
-    ],
-    "vehicles": [
-        {
-            "endLocation": {
-                "latitude": 37.794465,
-                "longitude": -122.394839
+    },
+    "secondStage": {
+        "services": [
+            {
+                "id": "3e81ed4c-05bc-4c83-ade3-00b9a640ffab",
+                "name": "testing",
+                "description": "Carbonite web goalkeeper gloves are ergonomically designed to give easy fit",
+                "duration": 10800,
+                "waypoint": {
+                    "placeId": "ChIJjcaTJKvDG5QROs_60rhgtgU",
+                    "address": "Cnel. Moldes 945, A4404 Salta, Argentina",
+                    "location": {
+                        "latitude": -24.8003577,
+                        "longitude": -65.4271816
+                    }
+                }
             },
-            "startLocation": {
-                "latitude": 37.794465,
-                "longitude": -122.394839
+            {
+                "id": "6e81dcf3-21c4-4dcf-9fac-8e96bb014623",
+                "name": "marksman",
+                "description": "The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive",
+                "duration": 3600,
+                "waypoint": {
+                    "placeId": "ChIJjcaTJKvDG5QROs_60rhgtgU",
+                    "address": "Cnel. Moldes 945, A4404 Salta, Argentina",
+                    "location": {
+                        "latitude": -24.8003577,
+                        "longitude": -65.4271816
+                    }
+                }
             },
-            "costPerKilometer": 10.0,
-            "costPerHour": 40.0
-        }
-    ]
+            {
+                "id": "662c7ef3-a6c3-4f0e-b5d9-8d837071dada",
+                "name": "godfather",
+                "description": "Boston's most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+                "duration": 1800,
+                "waypoint": {
+                    "placeId": "ChIJKS0eW7vDG5QR4h4060m-vkI",
+                    "address": "Bartolomé Mitre 77, A4400 Salta, Argentina",
+                    "location": {
+                        "latitude": -24.7890355,
+                        "longitude": -65.4110295
+                    }
+                }
+            },
+            {
+                "id": "843039ec-a033-43d9-aed8-81cb28baffbb",
+                "name": "fat",
+                "description": "New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart",
+                "duration": 7200,
+                "waypoint": {
+                    "placeId": "ChIJx55UCk_CG5QR5N4EmEhpN74",
+                    "address": "Av. San Martín 2555, A4400 Salta, Argentina",
+                    "location": {
+                        "latitude": -24.7916199,
+                        "longitude": -65.4384105
+                    }
+                }
+            },
+            {
+                "id": "430c8e79-bdb2-4442-9ec0-343e36f9e1ff",
+                "name": "chapel",
+                "description": "The beautiful range of Apple Naturalé that has an exciting mix of natural ingredients. With the Goodness of 100% Natural Ingredients",
+                "duration": 7200,
+                "waypoint": {
+                    "placeId": "ChIJK7BVO6PDG5QRaakxVGzTX5g",
+                    "address": "Córdoba 33, A4400 Salta, Argentina",
+                    "location": {
+                        "latitude": -24.7903894,
+                        "longitude": -65.4082684
+                    }
+                }
+            }
+        ]
+    }
 }

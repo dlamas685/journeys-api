@@ -12,7 +12,7 @@ import {
 	VehicleEmissionType,
 } from 'src/modules/optimization/routes/enums'
 
-export class ComputeRoutesRequestBuilder {
+export class TravelPlanningBuilder {
 	private request: protos.google.maps.routing.v2.ComputeRoutesRequest
 
 	constructor() {

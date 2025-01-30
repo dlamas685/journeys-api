@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common'
-import { ComputeRoutesRequestBuilder } from '../google-maps/classes/compute-routes-request-builder.class'
 import { RouteOptimizationService } from '../google-maps/services/route-optimization.service'
 import { RoutesService } from '../google-maps/services/routes.service'
-import { ShipmentModelDto } from './routes-optimization/dto'
+import { FleetManagementBuilder, TravelPlanningBuilder } from './classes'
+import { PresetsDto } from './routes-optimization/dto'
+import { RoadmapsOptimizationBuilderEntity } from './routes-optimization/entities/roadmaps-optimization.entity'
 import { AdvancedCriteriaDto, BasicCriteriaDto } from './routes/dto'
-import {
-	AdvancedOptimizationEntity,
-	BasicOptimizationEntity,
-	RouteEntityBuilder,
-} from './routes/entities'
+import { RouteEntityBuilder } from './routes/entities'
 
 @Injectable()
 export class OptimizationService {
@@ -18,7 +15,7 @@ export class OptimizationService {
 	) {}
 
 	async computeBasicOptimization(basicCriteriaDto: BasicCriteriaDto) {
-		const request = new ComputeRoutesRequestBuilder()
+		const request = new TravelPlanningBuilder()
 			.setOrigin(basicCriteriaDto.origin)
 			.setDestination(basicCriteriaDto.destination)
 			.setDepartureTime(basicCriteriaDto.departureTime)
@@ -32,7 +29,7 @@ export class OptimizationService {
 
 		const defaultRoute = response.routes.at(0)
 
-		const route = new RouteEntityBuilder()
+		const optimization = new RouteEntityBuilder()
 			.setDistance(defaultRoute.distanceMeters)
 			.setDuration(defaultRoute.duration, defaultRoute.staticDuration)
 			.setPolyline(defaultRoute.polyline.encodedPolyline)
@@ -40,13 +37,11 @@ export class OptimizationService {
 			.setPassages(basicCriteriaDto.interestPoints)
 			.build()
 
-		const optimization = new BasicOptimizationEntity({ route })
-
 		return optimization
 	}
 
 	async computeAdvancedOptimization(advancedCriteriaDto: AdvancedCriteriaDto) {
-		const request = new ComputeRoutesRequestBuilder()
+		const request = new TravelPlanningBuilder()
 			.setOrigin(advancedCriteriaDto.origin)
 			.setDestination(advancedCriteriaDto.destination)
 			.setInterestPoints(advancedCriteriaDto.interestPoints)
@@ -59,7 +54,7 @@ export class OptimizationService {
 
 		const response = await this.routes.computeAdvancedRoute(request)
 
-		const routes = response.routes.map(route => {
+		const optimization = response.routes.map(route => {
 			const routeBuilder = new RouteEntityBuilder()
 				.setDistance(route.distanceMeters)
 				.setDuration(route.duration, route.staticDuration)
@@ -80,17 +75,39 @@ export class OptimizationService {
 			return routeBuilder.build()
 		})
 
-		const optimization = new AdvancedOptimizationEntity({ routes })
-
 		return optimization
 	}
 
-	async optimizeTours(shipmentModelDto: ShipmentModelDto) {
-		const computed = await this.routesOptimization.optimizeTours({
-			model: shipmentModelDto,
-		})
+	async optimizeTours(presetsDto: PresetsDto) {
+		const request = new FleetManagementBuilder('vehicle')
+			.setEndTime(presetsDto.firstStage.endTime)
+			.setStartTime(presetsDto.firstStage.startTime)
+			.setStartWaypoint(presetsDto.firstStage.startWaypoint)
+			.setEndWaypoint(presetsDto.firstStage.endWaypoint)
+			.setCostModel(presetsDto.firstStage.costModel)
+			.setModifiers(presetsDto.firstStage.modifiers)
+			.setDriving()
+			.setServices(presetsDto.secondStage.services)
+			.build()
 
-		return computed
+		const response = await this.routesOptimization.optimizeTours(request)
+
+		const route = response.routes.at(0)
+
+		const skipped = response.skippedShipments.map(s => s.label)
+
+		const optimization = new RoadmapsOptimizationBuilderEntity()
+			.setLabel(route.vehicleLabel)
+			.setStartTime(route.vehicleStartTime)
+			.setEndTime(route.vehicleEndTime)
+			.setPolyline(route.routePolyline)
+			.setMetrics(route.metrics, route.routeCosts, route.routeTotalCost)
+			.setVisits(route.visits, presetsDto.secondStage.services)
+			.setTransitions(route.transitions)
+			.setSkipped(skipped)
+			.build()
+
+		return optimization
 	}
 }
 

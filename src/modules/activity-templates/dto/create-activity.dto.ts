@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
+import {
+	IsNotEmpty,
+	IsNumber,
+	IsOptional,
+	IsPositive,
+	IsString,
+} from 'class-validator'
 
 export class CreateActivityDto {
 	@IsString()
@@ -13,6 +19,7 @@ export class CreateActivityDto {
 	description: string
 
 	@IsNumber()
+	@IsPositive()
 	@IsOptional()
 	@ApiPropertyOptional()
 	duration?: number
