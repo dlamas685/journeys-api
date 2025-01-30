@@ -1,5 +1,0 @@
-export enum ReferenceRoute {
-	REFERENCE_ROUTE_UNSPECIFIED = 0,
-	FUEL_EFFICIENT = 1,
-	SHORTER_DISTANCE = 2,
-}

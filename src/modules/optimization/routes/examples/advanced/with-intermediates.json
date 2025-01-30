@@ -1,0 +1,110 @@
+{
+    "origin": {
+        "placeId": "ChIJRczTY3TDG5QRqBXmTtaQ2nM",
+        "address": "Talavera 4400, A4400 Salta",
+        "location": {
+            "latitude": -24.797093885554183,
+            "longitude": -65.39502542003055
+        },
+        "sideOfRoad": true
+    },
+    "destination": {
+        "placeId": "ChIJB_A8rCjDG5QRqESOVRfgikg",
+        "address": "Lerma 751 Lerma, Pje. C. Gauna 751 y, A4400 Salta",
+        "location": {
+            "latitude": -24.79971298546291,
+            "longitude": -65.40756011677297
+        },
+        "sideOfRoad": true
+    },
+    "interestPoints": [
+        {
+            "placeId": "ChIJ_f7Do7vDG5QRyYWTsHIjfec",
+            "address": "Balcarce 252, A4400 Salta",
+            "location": {
+                "latitude": -24.786856,
+                "longitude": -65.41195259999999
+            },
+            "via": false,
+            "vehicleStopover": true,
+            "activities": [
+                {
+                    "name": "Dormir",
+                    "description": "hola 123",
+                    "duration": 7200
+                },
+                {
+                    "name": "Comer",
+                    "description": "hola 300",
+                    "duration": 10800
+                }
+            ],
+            "config": {
+                "templateId": null,
+                "mode": "manual"
+            }
+        },
+        {
+            "placeId": "ChIJBXF9X7BdIpQRzbAWjSrscKQ",
+            "address": "Coronel Francisco de Uriondo 330, A4406BKQ Salta",
+            "location": {
+                "latitude": -24.7855686,
+                "longitude": -65.398382
+            },
+            "via": false,
+            "vehicleStopover": true,
+            "activities": [
+                {
+                    "name": "guard",
+                    "description": "The Football Is Good For Training And Recreational Purposes",
+                    "duration": 3600
+                },
+                {
+                    "name": "impostor",
+                    "description": "The Apollotech B340 is an affordable wireless mouse with reliable connectivity, 12 months battery life and modern design",
+                    "duration": 7200
+                },
+                {
+                    "name": "digestive",
+                    "description": "New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart",
+                    "duration": 5400
+                },
+                {
+                    "name": "minion",
+                    "description": "The Football Is Good For Training And Recreational Purposes",
+                    "duration": 1800
+                }
+            ],
+            "config": {
+                "templateId": "93946468-95fc-4033-843e-5d9711e34d80",
+                "mode": "template"
+            }
+        },
+        {
+            "placeId": "ChIJw2kzW7nDG5QRF21dKCW_w_c",
+            "address": "J. M. Leguizamon 669, A4400 BOM, Salta",
+            "location": {
+                "latitude": -24.7837589,
+                "longitude": -65.4112773
+            },
+            "via": true,
+            "activities": []
+        }
+    ],
+    "travelMode": "DRIVE",
+    "departureTime": "2025-01-28T16:00Z",
+    "trafficOption": "TRAFFIC_AWARE_OPTIMAL",
+    "modifiers": {
+        "avoidTolls": false,
+        "avoidHighways": true,
+        "avoidFerries": true
+    },
+    "emissionType": "GASOLINE",
+    "extraComputations": [
+        1,
+        2,
+        3,
+        4
+    ],
+    "trafficModel": "BEST_GUESS"
+}

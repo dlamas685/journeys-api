@@ -1,26 +1,34 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import {
+	IsInt,
 	IsNotEmpty,
 	IsNumber,
 	IsOptional,
 	IsPositive,
 	IsString,
+	IsUUID,
 } from 'class-validator'
 
-export class CreateActivityDto {
-	@IsString()
+export class AdvancedWaypointActivityDto {
+	@IsUUID()
 	@IsNotEmpty()
+	@ApiProperty()
+	id: string
+
+	@IsNotEmpty()
+	@IsString()
 	@ApiProperty()
 	name: string
 
-	@IsString()
-	@IsNotEmpty()
-	@ApiProperty()
-	description: string
-
-	@IsNumber()
-	@IsPositive()
 	@IsOptional()
+	@IsString()
 	@ApiPropertyOptional()
-	duration?: number
+	description?: string
+
+	@IsNotEmpty()
+	@IsNumber()
+	@IsInt()
+	@IsPositive()
+	@ApiProperty()
+	duration: number
 }

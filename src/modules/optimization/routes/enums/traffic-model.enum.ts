@@ -1,0 +1,5 @@
+export enum TrafficModel {
+	BEST_GUESS = 'BEST_GUESS',
+	OPTIMISTIC = 'OPTIMISTIC',
+	PESSIMISTIC = 'PESSIMISTIC',
+}

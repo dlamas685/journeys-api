@@ -9,9 +9,11 @@ import {
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Public } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { AdvancedCriteriaDto, BasicCriteriaDto } from './dto'
-import { AdvancedOptimizationEntity, BasicOptimizationEntity } from './entities'
 import { OptimizationService } from './optimization.service'
+import { PresetsDto } from './routes-optimization/dto'
+import { RoadmapsOptimizationEntity } from './routes-optimization/entities'
+import { AdvancedCriteriaDto, BasicCriteriaDto } from './routes/dto'
+import { RouteEntity } from './routes/entities'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('Optimization')
@@ -26,7 +28,7 @@ export class OptimizationController {
 		summary: 'Optimización básica',
 		description: 'Permite optimizar una ruta siguiendo los criterios básicos.',
 	})
-	@ApiOkResponse({ type: BasicOptimizationEntity })
+	@ApiOkResponse({ type: RouteEntity })
 	computeBasicOptimization(@Body() basicCriteriaDto: BasicCriteriaDto) {
 		return this.optimization.computeBasicOptimization(basicCriteriaDto)
 	}
@@ -34,17 +36,27 @@ export class OptimizationController {
 	@Public()
 	@Post('/advanced')
 	@HttpCode(HttpStatus.OK)
-
-	// @ApiBearerAuth('JWT-auth')
 	@ApiOperation({
 		summary: 'Optimización avanzada',
 		description:
 			'Permite optimizar una ruta siguiendo los criterios avanzados.',
 	})
-	@ApiOkResponse({ type: AdvancedOptimizationEntity })
+	@ApiOkResponse({ type: [RouteEntity] })
 	computeAdvancedOptimization(
 		@Body() advancedCriteriaDto: AdvancedCriteriaDto
 	) {
 		return this.optimization.computeAdvancedOptimization(advancedCriteriaDto)
+	}
+
+	@Public()
+	@Post('/tours')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Optimización de recorridos',
+		description: 'Permite optimizar los recorridos en la gestión de flotas',
+	})
+	@ApiOkResponse({ type: [RoadmapsOptimizationEntity] })
+	optimizeTours(@Body() presetsDto: PresetsDto) {
+		return this.optimization.optimizeTours(presetsDto)
 	}
 }

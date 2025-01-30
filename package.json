@@ -29,6 +29,7 @@
 	"dependencies": {
 		"@googlemaps/google-maps-services-js": "^3.4.0",
 		"@googlemaps/places": "^1.8.0",
+		"@googlemaps/routeoptimization": "^0.3.0",
 		"@googlemaps/routing": "^1.4.0",
 		"@nestjs-modules/mailer": "^2.0.2",
 		"@nestjs/cache-manager": "^2.3.0",
@@ -52,6 +53,7 @@
 		"cloudinary": "^2.5.0",
 		"cookie-parser": "^1.4.6",
 		"date-fns": "^4.1.0",
+		"date-fns-tz": "^3.2.0",
 		"handlebars": "^4.7.8",
 		"joi": "^17.13.3",
 		"nodemailer": "^6.9.14",
