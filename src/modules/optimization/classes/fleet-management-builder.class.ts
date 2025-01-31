@@ -49,7 +49,6 @@ export class FleetManagementBuilder {
 	}
 
 	setEndTime(endTime: string) {
-		console.log(getUnixTime(parseISO(endTime)))
 		this.request.model.globalEndTime.nanos = 0
 		this.request.model.globalEndTime.seconds = getUnixTime(parseISO(endTime))
 		return this

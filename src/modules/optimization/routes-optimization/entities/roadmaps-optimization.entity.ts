@@ -78,8 +78,8 @@ export class RoadmapsOptimizationBuilderEntity {
 			)
 
 			return {
-				visitId: visit.visitLabel,
-				visitName: service?.name,
+				visitId: visit.shipmentLabel,
+				visitName: visit.visitLabel,
 				visitDescription: service?.description,
 				visitDuration: Number(service?.duration),
 				startTime: formatISO(fromUnixTime(Number(visit.startTime.seconds))),
