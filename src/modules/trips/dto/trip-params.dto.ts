@@ -11,6 +11,7 @@ import { TripEntity } from '../entities/trip.entity'
 type ValidFieldsType = keyof TripEntity
 
 const VALID_FIELDS: ValidFieldsType[] = [
+	'code',
 	'origin',
 	'destination',
 	'tripStatus',

@@ -1,17 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Prisma, Trip, TripStatus } from '@prisma/client'
+import { $Enums, Prisma, Roadmap } from '@prisma/client'
 
-export class TripEntity implements Trip {
+export class RoadmapEntity implements Roadmap {
 	@ApiProperty()
 	id: string
 
 	@ApiProperty()
 	userId: string
 
-	@ApiProperty({ enum: TripStatus, type: TripEntity })
-	tripStatus: TripStatus
+	@ApiProperty()
+	fleetId: string
 
-	@ApiProperty({ description: 'auto-generated value for easy search' })
+	@ApiProperty()
+	vehicleId: string
+
+	@ApiProperty()
+	driverId: string
+
+	@ApiProperty()
+	status: $Enums.RoadmapStatus
+
+	@ApiProperty()
 	code: string
 
 	@ApiProperty()
@@ -47,7 +56,7 @@ export class TripEntity implements Trip {
 	@ApiProperty()
 	formattedDistance: string | null
 
-	constructor(partial: Partial<TripEntity>) {
+	constructor(partial: Partial<RoadmapEntity>) {
 		Object.assign(this, partial)
 		this.formattedDuration = this.getFormattedDuration()
 		this.formattedDistance = this.getFormattedDistance()
