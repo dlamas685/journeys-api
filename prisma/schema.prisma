@@ -51,8 +51,9 @@ model User {
   vehicles          Vehicle[]
   drivers           Driver[]
   trips             Trip[]
-  post              Post[]
-  order             Order[]
+  posts             Post[]
+  orders            Order[]
+  roadmaps          Roadmap[]
 
   @@map("users")
 }
@@ -150,6 +151,7 @@ model Fleet {
   user     User      @relation(fields: [userId], references: [id])
   vehicles Vehicle[]
   drivers  Driver[]
+  roadmap  Roadmap[]
 
   @@unique([userId, name])
   @@map("fleets")
@@ -169,8 +171,9 @@ model Vehicle {
   createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user  User   @relation(fields: [userId], references: [id])
-  fleet Fleet? @relation(fields: [fleetId], references: [id])
+  user    User      @relation(fields: [userId], references: [id])
+  fleet   Fleet?    @relation(fields: [fleetId], references: [id])
+  roadmap Roadmap[]
 
   @@unique([userId, licensePlate])
   @@map("vehicles")
@@ -187,8 +190,9 @@ model Driver {
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user  User   @relation(fields: [userId], references: [id])
-  fleet Fleet? @relation(fields: [fleetId], references: [id])
+  user    User      @relation(fields: [userId], references: [id])
+  fleet   Fleet?    @relation(fields: [fleetId], references: [id])
+  roadmap Roadmap[]
 
   @@unique([userId, licenseNumber])
   @@map("drivers")
@@ -205,6 +209,7 @@ model Trip {
   id            String     @id @default(uuid()) @db.Uuid
   userId        String     @map("user_id") @db.Uuid
   tripStatus    TripStatus @default(UPCOMING) @map("trip_status")
+  code          String     @default(dbgenerated("upper(substr(md5(random()::text), 1, 10))"))
   origin        String
   destination   String
   departureTime DateTime   @map("departure_time") @db.Timestamptz(6)
@@ -297,4 +302,37 @@ model OrderItem {
   order Order @relation(fields: [orderId], references: [id])
 
   @@map("order_items")
+}
+
+enum RoadmapStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model Roadmap {
+  id            String        @id @default(uuid()) @db.Uuid
+  userId        String        @map("user_id") @db.Uuid
+  fleetId       String        @map("fleet_id") @db.Uuid
+  vehicleId     String        @map("vehicle_id") @db.Uuid
+  driverId      String        @map("driver_id") @db.Uuid
+  status        RoadmapStatus @default(UPCOMING)
+  code          String        @default(dbgenerated("upper(substr(md5(random()::text), 1, 10))"))
+  origin        String
+  destination   String
+  departureTime DateTime      @map("departure_time") @db.Timestamptz(6)
+  arrivalTime   DateTime?     @map("arrival_time") @db.Timestamptz(6)
+  totalDistance Int?          @map("total_distance")
+  totalDuration Int?          @map("total_duration")
+  presets       Json?
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user    User    @relation(fields: [userId], references: [id])
+  fleet   Fleet   @relation(fields: [fleetId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  driver  Driver  @relation(fields: [driverId], references: [id])
+
+  @@map("roadmaps")
 }
