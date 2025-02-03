@@ -16,6 +16,7 @@ import { FilesModule } from './modules/files/files.module'
 import { FleetsModule } from './modules/fleets/fleets.module'
 import { GoogleMapsModule } from './modules/google-maps/google-maps.module'
 import { EmailsModule } from './modules/mails/emails.module'
+import { NexusModule } from './modules/nexus/nexus.module'
 import { OptimizationModule } from './modules/optimization/optimization.module'
 import { OptionsModule } from './modules/options/options.module'
 import { PostsModule } from './modules/posts/posts.module'
@@ -24,7 +25,6 @@ import { RoadmapsModule } from './modules/roadmaps/roadmaps.module'
 import { TripsModule } from './modules/trips/trips.module'
 import { UsersModule } from './modules/users/users.module'
 import { VehiclesModule } from './modules/vehicles/vehicles.module'
-import { NexusModule } from './modules/nexus/nexus.module';
 
 @Module({
 	imports: [

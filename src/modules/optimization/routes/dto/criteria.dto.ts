@@ -4,7 +4,7 @@ import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator'
 import { AdvancedCriteriaDto } from './advanced-criteria.dto'
 import { BasicCriteriaDto } from './basic-criteria.dto'
 
-export class PresetsDto {
+export class CriteriaDto {
 	@IsNotEmpty()
 	@Type(() => BasicCriteriaDto)
 	@ValidateNested()
@@ -15,5 +15,5 @@ export class PresetsDto {
 	@Type(() => AdvancedCriteriaDto)
 	@ValidateNested()
 	@ApiPropertyOptional({ type: AdvancedCriteriaDto })
-	advancedCriteria: AdvancedCriteriaDto
+	advancedCriteria?: AdvancedCriteriaDto
 }

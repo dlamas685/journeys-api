@@ -2,6 +2,7 @@ import { protos } from '@googlemaps/routeoptimization'
 import { getUnixTime } from 'date-fns/getUnixTime'
 import { parseISO } from 'date-fns/parseISO'
 import {
+	BoundsDto,
 	CostModelDto,
 	ModifiersDto,
 	WaypointDto,
@@ -37,6 +38,12 @@ export class FleetManagementBuilder {
 				displayName: this.name,
 				startWaypoint: undefined,
 				endWaypoint: undefined,
+				routeDistanceLimit:
+					new protos.google.maps.routeoptimization.v1.DistanceLimit(),
+				routeDurationLimit:
+					new protos.google.maps.routeoptimization.v1.Vehicle.DurationLimit(),
+				travelDurationLimit:
+					new protos.google.maps.routeoptimization.v1.Vehicle.DurationLimit(),
 				fixedCost: 0,
 				costPerHour: 0,
 				costPerKilometer: 0,
@@ -80,25 +87,25 @@ export class FleetManagementBuilder {
 		return this
 	}
 
-	setCostModel(costModel?: CostModelDto) {
+	setCostModel(costModel: CostModelDto) {
 		this.ensureVehicleExists()
 		const vehicle = this.request.model.vehicles[0]
-		vehicle.fixedCost = costModel?.fixedCost
-		vehicle.costPerHour = costModel?.costPerHour
-		vehicle.costPerKilometer = costModel?.costPerKilometer
-		vehicle.costPerTraveledHour = costModel?.costPerTraveledHour
-		vehicle.travelDurationMultiple = costModel?.travelDurationMultiple
+		vehicle.fixedCost = costModel.fixedCost
+		vehicle.costPerHour = costModel.costPerHour
+		vehicle.costPerKilometer = costModel.costPerKilometer
+		vehicle.costPerTraveledHour = costModel.costPerTraveledHour
+		vehicle.travelDurationMultiple = costModel.travelDurationMultiple
 		return this
 	}
 
-	setModifiers(modifiers?: ModifiersDto) {
+	setModifiers(modifiers: ModifiersDto) {
 		this.ensureVehicleExists()
 		const vehicle = this.request.model.vehicles[0]
 
-		vehicle.routeModifiers.avoidFerries = modifiers?.avoidFerries
-		vehicle.routeModifiers.avoidHighways = modifiers?.avoidHighways
-		vehicle.routeModifiers.avoidTolls = modifiers?.avoidTolls
-		this.request.considerRoadTraffic = modifiers?.considerRoadTraffic
+		vehicle.routeModifiers.avoidFerries = modifiers.avoidFerries
+		vehicle.routeModifiers.avoidHighways = modifiers.avoidHighways
+		vehicle.routeModifiers.avoidTolls = modifiers.avoidTolls
+		this.request.considerRoadTraffic = modifiers.considerRoadTraffic
 
 		return this
 	}
@@ -114,6 +121,20 @@ export class FleetManagementBuilder {
 		this.ensureVehicleExists()
 		const vehicle = this.request.model.vehicles[0]
 		vehicle.travelMode = 'WALKING'
+		return this
+	}
+
+	setBounds(bounds: BoundsDto) {
+		this.ensureVehicleExists()
+
+		const vehicle = this.request.model.vehicles[0]
+
+		vehicle.routeDurationLimit.maxDuration.seconds = bounds.routeDurationLimit
+
+		vehicle.travelDurationLimit.maxDuration.seconds = bounds.travelDurationLimit
+
+		vehicle.routeDistanceLimit.maxMeters = bounds.routeDistanceLimit
+
 		return this
 	}
 

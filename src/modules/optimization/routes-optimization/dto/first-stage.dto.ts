@@ -6,7 +6,6 @@ import {
 	IsOptional,
 	ValidateNested,
 } from 'class-validator'
-import { CostModelDto } from './cost-model.dto'
 import { ModifiersDto } from './modifiers.dto'
 import { WaypointDto } from './waypoint.dto'
 
@@ -32,12 +31,6 @@ export class FirstStageDto {
 	@IsDateString()
 	@ApiProperty()
 	startTime: string
-
-	@IsOptional()
-	@ValidateNested()
-	@Type(() => CostModelDto)
-	@ApiPropertyOptional()
-	costModel?: CostModelDto
 
 	@IsOptional()
 	@ValidateNested()
