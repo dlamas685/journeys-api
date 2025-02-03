@@ -42,7 +42,7 @@ export class RoadmapEntity implements Roadmap {
 	totalDuration: number | null
 
 	@ApiProperty()
-	presets: Prisma.JsonValue | null
+	setting: Prisma.JsonValue | null
 
 	@ApiProperty()
 	createdAt: Date

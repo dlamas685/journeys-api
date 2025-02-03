@@ -9,8 +9,8 @@ import {
 	IsString,
 	ValidateNested,
 } from 'class-validator'
+import { CriteriaDto } from 'src/modules/optimization/routes/dto'
 import { CreatePostFromTripDto } from 'src/modules/posts/dto'
-import { CreateTripPresetDto } from './create-trip-preset.dto'
 
 export class CreateTripDto {
 	@IsString()
@@ -43,9 +43,9 @@ export class CreateTripDto {
 
 	@IsOptional()
 	@ValidateNested({ each: true })
-	@Type(() => CreateTripPresetDto)
-	@ApiPropertyOptional({ type: CreateTripPresetDto })
-	presets?: JsonValue
+	@Type(() => CriteriaDto)
+	@ApiPropertyOptional({ type: CriteriaDto })
+	criteria?: JsonValue
 
 	@IsOptional()
 	@ValidateNested()

@@ -216,7 +216,7 @@ model Trip {
   arrivalTime   DateTime   @map("arrival_time") @db.Timestamptz(6)
   totalDistance Int?       @map("total_distance")
   totalDuration Int?       @map("total_duration")
-  presets       Json?
+  criteria      Json?
   createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
@@ -325,7 +325,7 @@ model Roadmap {
   arrivalTime   DateTime?     @map("arrival_time") @db.Timestamptz(6)
   totalDistance Int?          @map("total_distance")
   totalDuration Int?          @map("total_duration")
-  presets       Json?
+  setting       Json?
   createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?     @updatedAt @map("updated_at") @db.Timestamptz(6)
 

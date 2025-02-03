@@ -33,7 +33,7 @@ export class TripEntity implements Trip {
 	totalDuration: number | null
 
 	@ApiProperty()
-	presets: Prisma.JsonValue | null
+	criteria: Prisma.JsonValue | null
 
 	@ApiProperty()
 	createdAt: Date

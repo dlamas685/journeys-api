@@ -2,15 +2,15 @@ import { ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger'
 import { JsonValue } from '@prisma/client/runtime/library'
 import { Type } from 'class-transformer'
 import { IsOptional, ValidateNested } from 'class-validator'
+import { CriteriaDto } from 'src/modules/optimization/routes/dto'
 import { CreateTripDto } from './create-trip.dto'
-import { UpdateTripPresetDto } from './update-trip-preset.dto'
 
 export class UpdateTripDto extends PartialType(
-	OmitType(CreateTripDto, ['presets', 'post'])
+	OmitType(CreateTripDto, ['criteria', 'post'])
 ) {
 	@IsOptional()
 	@ValidateNested({ each: true })
-	@Type(() => UpdateTripPresetDto)
-	@ApiPropertyOptional({ type: UpdateTripPresetDto })
-	presets?: JsonValue
+	@Type(() => CriteriaDto)
+	@ApiPropertyOptional({ type: CriteriaDto })
+	criteria?: JsonValue
 }

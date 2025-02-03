@@ -10,7 +10,7 @@ import {
 	IsUUID,
 	ValidateNested,
 } from 'class-validator'
-import { PresetsDto } from 'src/modules/optimization/routes-optimization/dto'
+import { SettingDto } from 'src/modules/optimization/routes-optimization/dto'
 
 export class CreateRoadmapDto {
 	@IsUUID()
@@ -55,7 +55,7 @@ export class CreateRoadmapDto {
 
 	@IsOptional()
 	@ValidateNested({ each: true })
-	@Type(() => PresetsDto)
-	@ApiPropertyOptional({ type: PresetsDto })
-	presets?: JsonValue
+	@Type(() => SettingDto)
+	@ApiPropertyOptional({ type: SettingDto })
+	setting?: JsonValue
 }
