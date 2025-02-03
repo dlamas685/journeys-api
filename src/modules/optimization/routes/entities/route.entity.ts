@@ -38,10 +38,10 @@ export class RouteEntity {
 	@ApiProperty({ type: LocalizedValuesEntity })
 	localizedValues: LocalizedValuesEntity
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ type: [StopEntity] })
 	stops?: StopEntity[]
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ type: [PassageEntity] })
 	passages?: PassageEntity[]
 
 	constructor() {

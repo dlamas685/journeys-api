@@ -1,10 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsNotEmpty, ValidateNested } from 'class-validator'
+import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator'
 import { FirstStageDto } from './first-stage.dto'
 import { SecondStageDto } from './second-stage.dto'
+import { ThirdStageDto } from './third-stage.dto'
 
-export class PresetsDto {
+export class SettingDto {
 	@IsNotEmpty()
 	@Type(() => FirstStageDto)
 	@ValidateNested()
@@ -16,4 +17,10 @@ export class PresetsDto {
 	@ValidateNested()
 	@ApiProperty({ type: SecondStageDto })
 	secondStage: SecondStageDto
+
+	@IsOptional()
+	@Type(() => ThirdStageDto)
+	@ValidateNested()
+	@ApiPropertyOptional({ type: ThirdStageDto })
+	thirdStage?: ThirdStageDto
 }

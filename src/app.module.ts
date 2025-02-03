@@ -18,11 +18,11 @@ import { GoogleMapsModule } from './modules/google-maps/google-maps.module'
 import { EmailsModule } from './modules/mails/emails.module'
 import { OptimizationModule } from './modules/optimization/optimization.module'
 import { OptionsModule } from './modules/options/options.module'
+import { PostsModule } from './modules/posts/posts.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { TripsModule } from './modules/trips/trips.module'
 import { UsersModule } from './modules/users/users.module'
 import { VehiclesModule } from './modules/vehicles/vehicles.module'
-import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
 	imports: [

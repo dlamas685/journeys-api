@@ -1,4 +1,4 @@
-import { ApiPropertyOptional, OmitType } from '@nestjs/swagger'
+import { ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import {
 	IsArray,
@@ -12,11 +12,8 @@ import { ReferenceRoute } from '../enums/reference-route.enum'
 import { TrafficModel } from '../enums/traffic-model.enum'
 import { VehicleEmissionType } from '../enums/vehicle-emission-type.enum'
 import { AdvancedWaypointDto } from './advanced-waypoint.dto'
-import { BasicCriteriaDto } from './basic-criteria.dto'
 
-export class AdvancedCriteriaDto extends OmitType(BasicCriteriaDto, [
-	'interestPoints',
-] as const) {
+export class AdvancedCriteriaDto {
 	@IsOptional()
 	@IsArray()
 	@Type(() => AdvancedWaypointDto)

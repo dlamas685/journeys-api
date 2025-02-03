@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { RouteOptimizationService } from '../google-maps/services/route-optimization.service'
 import { RoutesService } from '../google-maps/services/routes.service'
 import { FleetManagementBuilder, TravelPlanningBuilder } from './classes'
-import { PresetsDto } from './routes-optimization/dto'
+import { COST_PROFILES } from './routes-optimization/constants/cost-profiles.constant'
+import { SettingDto } from './routes-optimization/dto'
 import { RoadmapsOptimizationBuilderEntity } from './routes-optimization/entities/roadmaps-optimization.entity'
-import { AdvancedCriteriaDto, BasicCriteriaDto } from './routes/dto'
+import { CostProfile } from './routes-optimization/enums/cost-profile.enum'
+import { BasicCriteriaDto, CriteriaDto } from './routes/dto'
 import { RouteEntityBuilder } from './routes/entities'
 
 @Injectable()
@@ -14,18 +16,22 @@ export class OptimizationService {
 		private readonly routesOptimization: RouteOptimizationService
 	) {}
 
-	async computeBasicOptimization(basicCriteriaDto: BasicCriteriaDto) {
+	async computeBasicOptimization(basicCriteria: BasicCriteriaDto) {
 		const request = new TravelPlanningBuilder()
-			.setOrigin(basicCriteriaDto.origin)
-			.setDestination(basicCriteriaDto.destination)
-			.setDepartureTime(basicCriteriaDto.departureTime)
-			.setInterestPoints(basicCriteriaDto.interestPoints)
-			.setTravelMode(basicCriteriaDto.travelMode)
-			.setTrafficOption(basicCriteriaDto.trafficOption)
-			.setModifiers(basicCriteriaDto.modifiers)
-			.build()
+			.setOrigin(basicCriteria.origin)
+			.setDestination(basicCriteria.destination)
+			.setDepartureTime(basicCriteria.departureTime)
+			.setInterestPoints(basicCriteria.interestPoints)
+			.setTravelMode(basicCriteria.travelMode)
+			.setTrafficOption(basicCriteria.trafficOption)
 
-		const response = await this.routes.computeBasicRoute(request)
+		if (basicCriteria.modifiers) {
+			request.setModifiers(basicCriteria.modifiers)
+		}
+
+		const build = request.build()
+
+		const response = await this.routes.computeBasicRoute(build)
 
 		const defaultRoute = response.routes.at(0)
 
@@ -34,25 +40,32 @@ export class OptimizationService {
 			.setDuration(defaultRoute.duration, defaultRoute.staticDuration)
 			.setPolyline(defaultRoute.polyline.encodedPolyline)
 			.setLocalizedValues(defaultRoute.localizedValues)
-			.setPassages(basicCriteriaDto.interestPoints)
+			.setPassages(basicCriteria.interestPoints)
 			.build()
 
 		return optimization
 	}
 
-	async computeAdvancedOptimization(advancedCriteriaDto: AdvancedCriteriaDto) {
+	async computeAdvancedOptimization(criteriaDto: CriteriaDto) {
 		const request = new TravelPlanningBuilder()
-			.setOrigin(advancedCriteriaDto.origin)
-			.setDestination(advancedCriteriaDto.destination)
-			.setInterestPoints(advancedCriteriaDto.interestPoints)
-			.setTravelMode(advancedCriteriaDto.travelMode)
-			.setDepartureTime(advancedCriteriaDto.departureTime)
-			.setTrafficOption(advancedCriteriaDto.trafficOption)
-			.setModifiers(advancedCriteriaDto.modifiers)
-			.setEmissionType(advancedCriteriaDto.emissionType)
-			.build()
+			.setOrigin(criteriaDto.basicCriteria.origin)
+			.setDestination(criteriaDto.basicCriteria.destination)
+			.setTravelMode(criteriaDto.basicCriteria.travelMode)
+			.setDepartureTime(criteriaDto.basicCriteria.departureTime)
+			.setTrafficOption(criteriaDto.basicCriteria.trafficOption)
 
-		const response = await this.routes.computeAdvancedRoute(request)
+		if (criteriaDto.basicCriteria.modifiers) {
+			request.setModifiers(criteriaDto.basicCriteria.modifiers)
+		}
+
+		if (criteriaDto.advancedCriteria) {
+			request.setEmissionType(criteriaDto.advancedCriteria.emissionType)
+			request.setInterestPoints(criteriaDto.advancedCriteria.interestPoints)
+		}
+
+		const build = request.build()
+
+		const response = await this.routes.computeAdvancedRoute(build)
 
 		const optimization = response.routes.map(route => {
 			const routeBuilder = new RouteEntityBuilder()
@@ -65,11 +78,11 @@ export class OptimizationService {
 				.setLegs(route.legs)
 
 			if (
-				advancedCriteriaDto.interestPoints &&
-				advancedCriteriaDto.interestPoints.length > 0
+				criteriaDto.advancedCriteria.interestPoints &&
+				criteriaDto.advancedCriteria.interestPoints.length > 0
 			) {
-				routeBuilder.setStops(advancedCriteriaDto.interestPoints)
-				routeBuilder.setPassages(advancedCriteriaDto.interestPoints)
+				routeBuilder.setStops(criteriaDto.advancedCriteria.interestPoints)
+				routeBuilder.setPassages(criteriaDto.advancedCriteria.interestPoints)
 			}
 
 			return routeBuilder.build()
@@ -78,19 +91,30 @@ export class OptimizationService {
 		return optimization
 	}
 
-	async optimizeTours(presetsDto: PresetsDto) {
+	async optimizeTours(settingDto: SettingDto) {
 		const request = new FleetManagementBuilder('vehicle')
-			.setEndTime(presetsDto.firstStage.endTime)
-			.setStartTime(presetsDto.firstStage.startTime)
-			.setStartWaypoint(presetsDto.firstStage.startWaypoint)
-			.setEndWaypoint(presetsDto.firstStage.endWaypoint)
-			.setCostModel(presetsDto.firstStage.costModel)
-			.setModifiers(presetsDto.firstStage.modifiers)
+			.setEndTime(settingDto.firstStage.endTime)
+			.setStartTime(settingDto.firstStage.startTime)
+			.setStartWaypoint(settingDto.firstStage.startWaypoint)
+			.setEndWaypoint(settingDto.firstStage.endWaypoint)
 			.setDriving()
-			.setServices(presetsDto.secondStage.services)
-			.build()
+			.setServices(settingDto.secondStage.services)
 
-		const response = await this.routesOptimization.optimizeTours(request)
+		if (settingDto.thirdStage.costModel) {
+			request.setCostModel(settingDto.thirdStage.costModel)
+		}
+
+		if (settingDto.firstStage.modifiers) {
+			request.setModifiers(settingDto.firstStage.modifiers)
+		}
+
+		if (settingDto.thirdStage.bounds) {
+			request.setBounds(settingDto.thirdStage.bounds)
+		}
+
+		const build = request.build()
+
+		const response = await this.routesOptimization.optimizeTours(build)
 
 		const route = response.routes.at(0)
 
@@ -102,12 +126,20 @@ export class OptimizationService {
 			.setEndTime(route.vehicleEndTime)
 			.setPolyline(route.routePolyline)
 			.setMetrics(route.metrics, route.routeCosts, route.routeTotalCost)
-			.setVisits(route.visits, presetsDto.secondStage.services)
+			.setVisits(route.visits, settingDto.secondStage.services)
 			.setTransitions(route.transitions)
 			.setSkipped(skipped)
 			.build()
 
 		return optimization
+	}
+
+	findAllCostProfiles() {
+		return Object.values(COST_PROFILES)
+	}
+
+	findCostProfile(profile: CostProfile) {
+		return COST_PROFILES[profile]
 	}
 }
 
