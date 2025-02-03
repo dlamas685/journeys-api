@@ -24,6 +24,7 @@ import { RoadmapsModule } from './modules/roadmaps/roadmaps.module'
 import { TripsModule } from './modules/trips/trips.module'
 import { UsersModule } from './modules/users/users.module'
 import { VehiclesModule } from './modules/vehicles/vehicles.module'
+import { NexusModule } from './modules/nexus/nexus.module';
 
 @Module({
 	imports: [
@@ -64,6 +65,7 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module'
 		TripsModule,
 		PostsModule,
 		RoadmapsModule,
+		NexusModule,
 	],
 	controllers: [],
 	providers: [],
