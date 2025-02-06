@@ -15,11 +15,11 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger'
-import { Public } from 'src/common/decorators'
+import { Public, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { OptimizationService } from './optimization.service'
 import { SettingDto } from './routes-optimization/dto'
-import { RoadmapsOptimizationEntity } from './routes-optimization/entities'
+import { RoadmapOptimizationEntity } from './routes-optimization/entities'
 import { CostProfileEntity } from './routes-optimization/entities/cost-profile.entity'
 import { CostProfile } from './routes-optimization/enums/cost-profile.enum'
 import { BasicCriteriaDto, CriteriaDto } from './routes/dto'
@@ -56,16 +56,16 @@ export class OptimizationController {
 		return this.optimization.computeAdvancedOptimization(criteriaDto)
 	}
 
-	@Public()
 	@Post('/tours')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: 'Optimización de recorridos',
 		description: 'Permite optimizar los recorridos en la gestión de flotas',
 	})
-	@ApiOkResponse({ type: [RoadmapsOptimizationEntity] })
-	optimizeTours(@Body() settingDto: SettingDto) {
-		return this.optimization.optimizeTours(settingDto)
+	@ApiOkResponse({ type: [RoadmapOptimizationEntity] })
+	@ApiBearerAuth('JWT-auth')
+	optimizeTours(@UserId() userId: string, @Body() settingDto: SettingDto) {
+		return this.optimization.optimizeTours(userId, settingDto)
 	}
 
 	@Get('/cost-profiles')

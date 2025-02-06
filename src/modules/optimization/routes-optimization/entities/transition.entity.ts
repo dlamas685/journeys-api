@@ -11,7 +11,7 @@ export class TransitionEntity {
 	totalDuration: number
 
 	@ApiProperty()
-	startTime: string
+	startDateTime: string
 
 	@ApiPropertyOptional()
 	encodedPolyline: string

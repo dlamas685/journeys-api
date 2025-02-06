@@ -35,4 +35,15 @@ export const COST_PROFILES: Record<CostProfile, CostProfileEntity> = {
 		fixedCost: 30,
 		travelDurationMultiple: 0.8,
 	},
+	optimized_custom: {
+		id: CostProfile.optimized_custom,
+		name: 'Optimización personalizada',
+		description:
+			'Configura manualmente los costos para ajustar el modelo de optimización a tus necesidades específicas.',
+		costPerKilometer: 0,
+		costPerHour: 0,
+		costPerTraveledHour: 0,
+		fixedCost: 0,
+		travelDurationMultiple: 1,
+	},
 }

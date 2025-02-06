@@ -7,15 +7,15 @@ import { MetricsEntity } from './metrics.entity'
 import { TransitionEntity } from './transition.entity'
 import { VisitEntity } from './visit.entity'
 
-export class RoadmapsOptimizationEntity {
+export class RoadmapOptimizationEntity {
 	@ApiProperty()
 	label: string
 
 	@ApiProperty()
-	startTime: string
+	startDateTime: string
 
 	@ApiProperty()
-	endTime: string
+	endDateTime: string
 
 	@ApiProperty()
 	encodedPolyline: string
@@ -39,11 +39,11 @@ export class RoadmapsOptimizationEntity {
 	}
 }
 
-export class RoadmapsOptimizationBuilderEntity {
-	private roadmaps: RoadmapsOptimizationEntity
+export class RoadmapOptimizationBuilderEntity {
+	private roadmaps: RoadmapOptimizationEntity
 
 	constructor() {
-		this.roadmaps = new RoadmapsOptimizationEntity()
+		this.roadmaps = new RoadmapOptimizationEntity()
 	}
 
 	setLabel(label: string) {
@@ -52,12 +52,14 @@ export class RoadmapsOptimizationBuilderEntity {
 	}
 
 	setStartTime(startTime: protos.google.protobuf.ITimestamp) {
-		this.roadmaps.startTime = formatISO(fromUnixTime(Number(startTime.seconds)))
+		this.roadmaps.startDateTime = formatISO(
+			fromUnixTime(Number(startTime.seconds))
+		)
 		return this
 	}
 
 	setEndTime(endTime: protos.google.protobuf.ITimestamp) {
-		this.roadmaps.endTime = formatISO(fromUnixTime(Number(endTime.seconds)))
+		this.roadmaps.endDateTime = formatISO(fromUnixTime(Number(endTime.seconds)))
 		return this
 	}
 
@@ -82,7 +84,7 @@ export class RoadmapsOptimizationBuilderEntity {
 				visitName: visit.visitLabel,
 				visitDescription: service?.description,
 				visitDuration: Number(service?.duration),
-				startTime: formatISO(fromUnixTime(Number(visit.startTime.seconds))),
+				startDateTime: formatISO(fromUnixTime(Number(visit.startTime.seconds))),
 				detour: Number(visit.detour.seconds),
 			}
 		})
@@ -94,7 +96,9 @@ export class RoadmapsOptimizationBuilderEntity {
 		transitions: protos.google.maps.routeoptimization.v1.ShipmentRoute.ITransition[]
 	) {
 		this.roadmaps.transitions = transitions.map(transition => ({
-			startTime: formatISO(fromUnixTime(Number(transition.startTime.seconds))),
+			startDateTime: formatISO(
+				fromUnixTime(Number(transition.startTime.seconds))
+			),
 			travelDistanceMeters: transition.travelDistanceMeters,
 			travelDuration: Number(transition.travelDuration.seconds),
 			totalDuration: Number(transition.totalDuration.seconds),

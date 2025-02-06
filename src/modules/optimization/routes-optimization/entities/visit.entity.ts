@@ -14,7 +14,7 @@ export class VisitEntity {
 	visitDuration: number
 
 	@ApiProperty()
-	startTime: string
+	startDateTime: string
 
 	@ApiProperty()
 	detour: number

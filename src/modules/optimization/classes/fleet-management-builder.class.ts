@@ -36,32 +36,30 @@ export class FleetManagementBuilder {
 		if (this.request.model.vehicles.length === 0) {
 			this.request.model.vehicles.push({
 				displayName: this.name,
+				label: this.name,
 				startWaypoint: undefined,
 				endWaypoint: undefined,
-				routeDistanceLimit:
-					new protos.google.maps.routeoptimization.v1.DistanceLimit(),
-				routeDurationLimit:
-					new protos.google.maps.routeoptimization.v1.Vehicle.DurationLimit(),
-				travelDurationLimit:
-					new protos.google.maps.routeoptimization.v1.Vehicle.DurationLimit(),
 				fixedCost: 0,
 				costPerHour: 0,
 				costPerKilometer: 0,
 				costPerTraveledHour: 0,
 				travelDurationMultiple: 1,
-				routeModifiers:
-					new protos.google.maps.routeoptimization.v1.RouteModifiers(),
+				routeModifiers: {
+					avoidFerries: false,
+					avoidHighways: false,
+					avoidTolls: false,
+				},
 			})
 		}
 	}
 
-	setEndTime(endTime: string) {
+	setEndDateTime(endTime: string) {
 		this.request.model.globalEndTime.nanos = 0
 		this.request.model.globalEndTime.seconds = getUnixTime(parseISO(endTime))
 		return this
 	}
 
-	setStartTime(startTime: string) {
+	setStartDateTime(startTime: string) {
 		this.request.model.globalStartTime.nanos = 0
 		this.request.model.globalStartTime.seconds = getUnixTime(
 			parseISO(startTime)
@@ -129,11 +127,32 @@ export class FleetManagementBuilder {
 
 		const vehicle = this.request.model.vehicles[0]
 
-		vehicle.routeDurationLimit.maxDuration.seconds = bounds.routeDurationLimit
+		if (bounds.routeDurationLimit) {
+			vehicle.routeDurationLimit =
+				new protos.google.maps.routeoptimization.v1.Vehicle.DurationLimit()
 
-		vehicle.travelDurationLimit.maxDuration.seconds = bounds.travelDurationLimit
+			vehicle.routeDurationLimit.maxDuration =
+				new protos.google.protobuf.Duration()
 
-		vehicle.routeDistanceLimit.maxMeters = bounds.routeDistanceLimit
+			vehicle.routeDurationLimit.maxDuration.seconds = bounds.routeDurationLimit
+		}
+
+		if (bounds.travelDurationLimit) {
+			vehicle.travelDurationLimit =
+				new protos.google.maps.routeoptimization.v1.Vehicle.DurationLimit()
+
+			vehicle.travelDurationLimit.maxDuration =
+				new protos.google.protobuf.Duration()
+
+			vehicle.travelDurationLimit.maxDuration.seconds =
+				bounds.travelDurationLimit
+		}
+
+		if (bounds.routeDistanceLimit) {
+			vehicle.routeDistanceLimit =
+				new protos.google.maps.routeoptimization.v1.DistanceLimit()
+			vehicle.routeDistanceLimit.maxMeters = bounds.routeDistanceLimit
+		}
 
 		return this
 	}

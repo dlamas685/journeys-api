@@ -15,10 +15,20 @@ export class NexusService {
 			select: { vehicleId: true, driverId: true },
 			where: {
 				userId,
-				departureTime: {
-					gte: dateRange.fromDate,
-					lte: dateRange.toDate,
-				},
+				OR: [
+					{
+						departureTime: {
+							gte: dateRange.fromDate,
+							lte: dateRange.toDate,
+						},
+					},
+					{
+						arrivalTime: {
+							gte: dateRange.fromDate,
+							lte: dateRange.toDate,
+						},
+					},
+				],
 			},
 		})
 

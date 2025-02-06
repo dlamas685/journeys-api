@@ -4,8 +4,10 @@ import {
 	IsDateString,
 	IsNotEmpty,
 	IsOptional,
+	IsUUID,
 	ValidateNested,
 } from 'class-validator'
+import { IsAfter } from 'src/common/decorators'
 import { ModifiersDto } from './modifiers.dto'
 import { WaypointDto } from './waypoint.dto'
 
@@ -25,12 +27,28 @@ export class FirstStageDto {
 	@IsNotEmpty()
 	@IsDateString()
 	@ApiProperty()
-	endTime: string
+	startDateTime: string
 
 	@IsNotEmpty()
 	@IsDateString()
+	@IsAfter('startDateTime', { message: 'endTime must be after startTime' })
 	@ApiProperty()
-	startTime: string
+	endDateTime: string
+
+	@IsNotEmpty()
+	@IsUUID()
+	@ApiProperty()
+	fleetId: string
+
+	@IsNotEmpty()
+	@IsUUID()
+	@ApiProperty()
+	driverId: string
+
+	@IsNotEmpty()
+	@IsUUID()
+	@ApiProperty()
+	vehicleId: string
 
 	@IsOptional()
 	@ValidateNested()

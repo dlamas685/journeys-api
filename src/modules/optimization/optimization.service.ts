@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { DriversService } from '../drivers/drivers.service'
+import { FleetsService } from '../fleets/fleets.service'
 import { RouteOptimizationService } from '../google-maps/services/route-optimization.service'
 import { RoutesService } from '../google-maps/services/routes.service'
+import { VehiclesService } from '../vehicles/vehicles.service'
 import { FleetManagementBuilder, TravelPlanningBuilder } from './classes'
 import { COST_PROFILES } from './routes-optimization/constants/cost-profiles.constant'
 import { SettingDto } from './routes-optimization/dto'
-import { RoadmapsOptimizationBuilderEntity } from './routes-optimization/entities/roadmaps-optimization.entity'
+import { RoadmapOptimizationBuilderEntity } from './routes-optimization/entities'
 import { CostProfile } from './routes-optimization/enums/cost-profile.enum'
 import { BasicCriteriaDto, CriteriaDto } from './routes/dto'
 import { RouteEntityBuilder } from './routes/entities'
@@ -13,7 +16,10 @@ import { RouteEntityBuilder } from './routes/entities'
 export class OptimizationService {
 	constructor(
 		private readonly routes: RoutesService,
-		private readonly routesOptimization: RouteOptimizationService
+		private readonly routesOptimization: RouteOptimizationService,
+		private readonly fleets: FleetsService,
+		private readonly drivers: DriversService,
+		private readonly vehicles: VehiclesService
 	) {}
 
 	async computeBasicOptimization(basicCriteria: BasicCriteriaDto) {
@@ -91,25 +97,53 @@ export class OptimizationService {
 		return optimization
 	}
 
-	async optimizeTours(settingDto: SettingDto) {
-		const request = new FleetManagementBuilder('vehicle')
-			.setEndTime(settingDto.firstStage.endTime)
-			.setStartTime(settingDto.firstStage.startTime)
+	async optimizeTours(userId: string, settingDto: SettingDto) {
+		const fleet = await this.fleets.findOne(
+			userId,
+			settingDto.firstStage.fleetId
+		)
+
+		const driver = await this.drivers.findOne(
+			userId,
+			settingDto.firstStage.driverId
+		)
+
+		const vehicle = await this.vehicles.findOne(
+			userId,
+			settingDto.firstStage.vehicleId
+		)
+
+		const request = new FleetManagementBuilder(
+			`Flota: ${fleet.name} - Vehículo: ${vehicle.licensePlate} - Conductor: ${driver.name}`
+		)
+			.setStartDateTime(settingDto.firstStage.startDateTime)
+			.setEndDateTime(settingDto.firstStage.endDateTime)
 			.setStartWaypoint(settingDto.firstStage.startWaypoint)
 			.setEndWaypoint(settingDto.firstStage.endWaypoint)
 			.setDriving()
 			.setServices(settingDto.secondStage.services)
 
-		if (settingDto.thirdStage.costModel) {
-			request.setCostModel(settingDto.thirdStage.costModel)
-		}
-
 		if (settingDto.firstStage.modifiers) {
 			request.setModifiers(settingDto.firstStage.modifiers)
 		}
 
-		if (settingDto.thirdStage.bounds) {
-			request.setBounds(settingDto.thirdStage.bounds)
+		if (settingDto.thirdStage) {
+			const costsProfile = this.findCostProfile(
+				settingDto.thirdStage.costProfile
+			)
+
+			costsProfile && costsProfile.id !== CostProfile.optimized_custom
+				? request.setCostModel({
+						costPerHour: costsProfile.costPerHour,
+						costPerKilometer: costsProfile.costPerKilometer,
+						costPerTraveledHour: costsProfile.costPerTraveledHour,
+						fixedCost: costsProfile.fixedCost,
+						travelDurationMultiple: costsProfile.travelDurationMultiple,
+					})
+				: request.setCostModel(settingDto.thirdStage.costModel)
+
+			settingDto.thirdStage.bounds &&
+				request.setBounds(settingDto.thirdStage.bounds)
 		}
 
 		const build = request.build()
@@ -120,7 +154,13 @@ export class OptimizationService {
 
 		const skipped = response.skippedShipments.map(s => s.label)
 
-		const optimization = new RoadmapsOptimizationBuilderEntity()
+		if (skipped.length === settingDto.secondStage.services.length) {
+			throw new NotFoundException(
+				'No se encontró una ruta optima, verifica la duración de los servicios o los límites de la ruta'
+			)
+		}
+
+		const optimization = new RoadmapOptimizationBuilderEntity()
 			.setLabel(route.vehicleLabel)
 			.setStartTime(route.vehicleStartTime)
 			.setEndTime(route.vehicleEndTime)
