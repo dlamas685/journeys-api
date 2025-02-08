@@ -33,7 +33,7 @@ export class BasicCriteriaDto {
 	@Type(() => WaypointDto)
 	@ValidateNested({ each: true })
 	@ApiPropertyOptional()
-	interestPoints: WaypointDto[]
+	interestPoints?: WaypointDto[]
 
 	@IsNotEmpty()
 	@IsEnum(TravelMode)

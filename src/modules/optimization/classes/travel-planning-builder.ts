@@ -46,14 +46,17 @@ export class TravelPlanningBuilder {
 	}
 
 	setInterestPoints(interestPoints: WaypointDto[]) {
-		this.request.intermediates = interestPoints.map(
-			({ placeId, sideOfRoad, vehicleStopover, via }) => ({
-				placeId,
-				sideOfRoad,
-				vehicleStopover,
-				via,
-			})
-		)
+		this.request.intermediates =
+			interestPoints.length > 0
+				? interestPoints.map(
+						({ placeId, sideOfRoad, vehicleStopover, via }) => ({
+							placeId,
+							sideOfRoad,
+							vehicleStopover,
+							via,
+						})
+					)
+				: undefined
 
 		return this
 	}

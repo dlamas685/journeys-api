@@ -27,9 +27,12 @@ export class OptimizationService {
 			.setOrigin(basicCriteria.origin)
 			.setDestination(basicCriteria.destination)
 			.setDepartureTime(basicCriteria.departureTime)
-			.setInterestPoints(basicCriteria.interestPoints)
 			.setTravelMode(basicCriteria.travelMode)
 			.setTrafficOption(basicCriteria.trafficOption)
+
+		if (basicCriteria.interestPoints) {
+			request.setInterestPoints(basicCriteria.interestPoints)
+		}
 
 		if (basicCriteria.modifiers) {
 			request.setModifiers(basicCriteria.modifiers)
@@ -64,9 +67,61 @@ export class OptimizationService {
 			request.setModifiers(criteriaDto.basicCriteria.modifiers)
 		}
 
-		if (criteriaDto.advancedCriteria) {
+		if (
+			criteriaDto.advancedCriteria &&
+			criteriaDto.advancedCriteria.emissionType
+		) {
 			request.setEmissionType(criteriaDto.advancedCriteria.emissionType)
+		}
+
+		if (
+			criteriaDto.advancedCriteria &&
+			criteriaDto.advancedCriteria.interestPoints
+		) {
 			request.setInterestPoints(criteriaDto.advancedCriteria.interestPoints)
+		}
+
+		if (
+			criteriaDto.advancedCriteria &&
+			criteriaDto.advancedCriteria.computeAlternativeRoutes
+		) {
+			request.setComputeAlternativeRoutes(
+				criteriaDto.advancedCriteria.computeAlternativeRoutes
+			)
+		}
+
+		if (
+			criteriaDto.advancedCriteria &&
+			criteriaDto.advancedCriteria.trafficModel
+		) {
+			request.setTrafficModel(criteriaDto.advancedCriteria.trafficModel)
+		}
+
+		if (
+			criteriaDto.advancedCriteria &&
+			criteriaDto.advancedCriteria.requestedReferenceRoutes
+		) {
+			request.setRequestedReferenceRoutes(
+				criteriaDto.advancedCriteria.requestedReferenceRoutes
+			)
+		}
+
+		if (
+			criteriaDto.advancedCriteria &&
+			criteriaDto.advancedCriteria.extraComputations
+		) {
+			request.setExtraComputations(
+				criteriaDto.advancedCriteria.extraComputations
+			)
+		}
+
+		if (
+			criteriaDto.advancedCriteria &&
+			criteriaDto.advancedCriteria.optimizeWaypointOrder
+		) {
+			request.setOptimizeWaypointOrder(
+				criteriaDto.advancedCriteria.optimizeWaypointOrder
+			)
 		}
 
 		const build = request.build()
@@ -84,6 +139,7 @@ export class OptimizationService {
 				.setLegs(route.legs)
 
 			if (
+				criteriaDto.advancedCriteria &&
 				criteriaDto.advancedCriteria.interestPoints &&
 				criteriaDto.advancedCriteria.interestPoints.length > 0
 			) {

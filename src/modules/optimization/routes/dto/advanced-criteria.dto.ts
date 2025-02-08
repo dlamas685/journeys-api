@@ -1,9 +1,10 @@
-import { ApiPropertyOptional } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import {
 	IsArray,
 	IsBoolean,
 	IsEnum,
+	IsNotEmpty,
 	IsOptional,
 	ValidateNested,
 } from 'class-validator'
@@ -14,21 +15,15 @@ import { VehicleEmissionType } from '../enums/vehicle-emission-type.enum'
 import { AdvancedWaypointDto } from './advanced-waypoint.dto'
 
 export class AdvancedCriteriaDto {
-	@IsOptional()
-	@IsArray()
-	@Type(() => AdvancedWaypointDto)
-	@ValidateNested({ each: true })
-	@ApiPropertyOptional({ type: [AdvancedWaypointDto] })
-	interestPoints?: AdvancedWaypointDto[]
-
+	@IsNotEmpty()
 	@IsArray()
 	@IsEnum(ExtraComputation, { each: true })
-	@ApiPropertyOptional({
+	@ApiProperty({
 		type: [Number],
 		enum: ExtraComputation,
 		isArray: true,
 	})
-	extraComputations?: ExtraComputation[]
+	extraComputations: ExtraComputation[]
 
 	@IsArray()
 	@IsOptional()
@@ -59,4 +54,11 @@ export class AdvancedCriteriaDto {
 	@IsEnum(VehicleEmissionType)
 	@ApiPropertyOptional({ enum: VehicleEmissionType })
 	emissionType?: VehicleEmissionType
+
+	@IsOptional()
+	@IsArray()
+	@Type(() => AdvancedWaypointDto)
+	@ValidateNested({ each: true })
+	@ApiPropertyOptional({ type: [AdvancedWaypointDto] })
+	interestPoints?: AdvancedWaypointDto[]
 }

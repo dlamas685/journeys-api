@@ -15,7 +15,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger'
-import { Public, UserId } from 'src/common/decorators'
+import { UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { OptimizationService } from './optimization.service'
 import { SettingDto } from './routes-optimization/dto'
@@ -27,11 +27,11 @@ import { RouteEntity } from './routes/entities'
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('Optimization')
+@ApiBearerAuth('JWT-auth')
 @Controller('optimization')
 export class OptimizationController {
 	constructor(private readonly optimization: OptimizationService) {}
 
-	@Public()
 	@Post('/basic')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
@@ -43,7 +43,6 @@ export class OptimizationController {
 		return this.optimization.computeBasicOptimization(basicCriteria)
 	}
 
-	@Public()
 	@Post('/advanced')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
@@ -63,7 +62,6 @@ export class OptimizationController {
 		description: 'Permite optimizar los recorridos en la gestión de flotas',
 	})
 	@ApiOkResponse({ type: [RoadmapOptimizationEntity] })
-	@ApiBearerAuth('JWT-auth')
 	optimizeTours(@UserId() userId: string, @Body() settingDto: SettingDto) {
 		return this.optimization.optimizeTours(userId, settingDto)
 	}
@@ -74,7 +72,6 @@ export class OptimizationController {
 		summary: 'Listado de perfiles de costos',
 		description: 'Obtiene los perfiles de costos disponibles.',
 	})
-	@ApiBearerAuth('JWT-auth')
 	@ApiOkResponse({ type: [CostProfileEntity] })
 	findAllCostProfiles() {
 		return this.optimization.findAllCostProfiles()
@@ -86,7 +83,6 @@ export class OptimizationController {
 		summary: 'Búsqueda de un perfil de costo',
 		description: 'Obtiene un perfil de costo específico.',
 	})
-	@ApiBearerAuth('JWT-auth')
 	@ApiOkResponse({ type: CostProfileEntity })
 	findCostProfile(
 		@Param('profile', new ParseEnumPipe(CostProfile)) profile: CostProfile

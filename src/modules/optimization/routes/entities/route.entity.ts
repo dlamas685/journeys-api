@@ -1,6 +1,7 @@
 import { protos } from '@googlemaps/routing'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { convertToHHMM, formatTimeShort } from 'src/common/helpers'
+import { formatTime } from 'src/common/helpers'
+import { v4 as uuid } from 'uuid'
 import { AdvancedWaypointDto } from '../dto'
 import { RouteLabel, Speed } from '../enums'
 import { LegEntity, LegEntityBuilder } from './leg.entity'
@@ -11,6 +12,9 @@ import { StopEntity, StopEntityBuilder } from './stop.entity'
 import { TravelAdvisoryEntity } from './travel-advisory.entity'
 
 export class RouteEntity {
+	@ApiProperty()
+	id: string
+
 	@ApiProperty({ type: [LegEntity] })
 	legs: LegEntity[]
 
@@ -59,6 +63,7 @@ export class RouteEntityBuilder {
 
 	constructor() {
 		this.route = new RouteEntity()
+		this.route.id = uuid()
 	}
 
 	setDistance(distance: number): RouteEntityBuilder {
@@ -170,13 +175,9 @@ export class RouteEntityBuilder {
 
 		this.route.staticDuration += stopsDuration
 
-		this.route.localizedValues.duration = formatTimeShort(
-			convertToHHMM(this.route.duration)
-		)
+		this.route.localizedValues.duration = formatTime(this.route.duration)
 
-		this.route.localizedValues.staticDuration = formatTimeShort(
-			convertToHHMM(this.route.staticDuration)
-		)
+		this.route.localizedValues.staticDuration = formatTime(this.route.duration)
 
 		return this
 	}
