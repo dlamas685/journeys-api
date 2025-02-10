@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { JsonArray, JsonObject } from '@prisma/client/runtime/library'
+import { JsonObject } from '@prisma/client/runtime/library'
 import { Type } from 'class-transformer'
 import {
 	IsDateString,
@@ -30,31 +30,28 @@ export class CreateTripDto {
 	@ApiProperty({ type: Date })
 	departureTime: Date
 
+	@IsOptional()
 	@IsDateString()
-	@ApiProperty({ type: Date })
+	@ApiPropertyOptional({ type: Date })
 	arrivalTime: Date
 
+	@IsOptional()
 	@IsNumber({ maxDecimalPlaces: 2 })
 	@IsPositive()
-	@ApiProperty()
-	totalDistance: number
+	@ApiPropertyOptional()
+	totalDistance?: number
 
+	@IsOptional()
 	@IsInt()
 	@IsPositive()
-	@ApiProperty()
-	totalDuration: number
+	@ApiPropertyOptional()
+	totalDuration?: number
 
 	@IsNotEmpty()
 	@ValidateNested({ each: true })
 	@Type(() => CriteriaDto)
 	@ApiProperty({ type: CriteriaDto })
 	criteria: JsonObject
-
-	@IsNotEmpty()
-	@ValidateNested({ each: true })
-	@Type(() => Object)
-	@ApiProperty({ type: [Object] })
-	results: JsonArray
 
 	@IsOptional()
 	@ValidateNested()

@@ -42,15 +42,15 @@ export class OptimizationService {
 
 		const response = await this.routes.computeBasicRoute(build)
 
-		const defaultRoute = response.routes.at(0)
-
-		const optimization = new RouteEntityBuilder()
-			.setDistance(defaultRoute.distanceMeters)
-			.setDuration(defaultRoute.duration, defaultRoute.staticDuration)
-			.setPolyline(defaultRoute.polyline.encodedPolyline)
-			.setLocalizedValues(defaultRoute.localizedValues)
-			.setPassages(basicCriteria.interestPoints)
-			.build()
+		const optimization = response.routes.map(route =>
+			new RouteEntityBuilder()
+				.setDistance(route.distanceMeters)
+				.setDuration(route.duration, route.staticDuration)
+				.setPolyline(route.polyline.encodedPolyline)
+				.setLocalizedValues(route.localizedValues)
+				.setPassages(basicCriteria.interestPoints)
+				.build()
+		)
 
 		return optimization
 	}

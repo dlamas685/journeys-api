@@ -36,8 +36,8 @@ export class TripEntity implements Trip {
 	@ApiProperty()
 	criteria: Prisma.JsonValue
 
-	@ApiPropertyOptional()
-	results: RouteEntity
+	@ApiPropertyOptional({ type: RouteEntity, isArray: true })
+	results: RouteEntity[]
 
 	@ApiProperty()
 	createdAt: Date

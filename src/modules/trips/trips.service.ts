@@ -11,7 +11,8 @@ import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
-import { RouteEntity } from '../optimization/routes/entities'
+import { OptimizationService } from '../optimization/optimization.service'
+import { CriteriaDto } from '../optimization/routes/dto'
 import { PrismaService } from '../prisma/prisma.service'
 import { ChangeTripStatusDto, CreateTripDto, UpdateTripDto } from './dto'
 import { TripQueryParamsDto } from './dto/trip-params.dto'
@@ -21,38 +22,28 @@ import { TripEntity } from './entities/trip.entity'
 export class TripsService {
 	constructor(
 		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-		private readonly prisma: PrismaService
+		private readonly prisma: PrismaService,
+		private readonly optimization: OptimizationService
 	) {}
 
 	async create(
 		userId: string,
 		createTripDto: CreateTripDto
 	): Promise<TripEntity> {
-		const { post, results, criteria, ...data } = createTripDto
+		const { post, criteria, ...data } = createTripDto
 
-		const createdTrip = await this.prisma.$transaction(async prisma => {
-			const createdTrip = await prisma.trip.create({
-				data: {
-					userId,
-					...data,
-					criteria,
-					post: post && {
-						create: {
-							userId,
-							...post,
-						},
+		const createdTrip = await this.prisma.trip.create({
+			data: {
+				userId,
+				...data,
+				criteria,
+				post: post && {
+					create: {
+						userId,
+						...post,
 					},
 				},
-			})
-
-			const tripResultsKey = `trip-results-${createdTrip.id}`
-
-			await this.cacheManager.set(
-				tripResultsKey,
-				plainToInstance(RouteEntity, results)
-			)
-
-			return createdTrip
+			},
 		})
 
 		return new TripEntity(createdTrip)
@@ -113,13 +104,15 @@ export class TripsService {
 			},
 		})
 
-		const results = await this.cacheManager.get<RouteEntity>(
-			`trip-results-${id}`
-		)
-
 		if (!foundTrip) {
 			throw new NotFoundException('Viaje no encontrado')
 		}
+
+		const criteria = plainToInstance(CriteriaDto, foundTrip.criteria)
+
+		const results = criteria.advancedCriteria
+			? await this.optimization.computeAdvancedOptimization(criteria)
+			: await this.optimization.computeBasicOptimization(criteria.basicCriteria)
 
 		return new TripEntity({ ...foundTrip, results })
 	}

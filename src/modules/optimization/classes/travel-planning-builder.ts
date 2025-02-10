@@ -9,7 +9,6 @@ import {
 	TrafficModel,
 	TrafficOption,
 	TravelMode,
-	VehicleEmissionType,
 } from 'src/modules/optimization/routes/enums'
 
 export class TravelPlanningBuilder {
@@ -127,11 +126,6 @@ export class TravelPlanningBuilder {
 
 	setOptimizeWaypointOrder(optimizeWaypointOrder: boolean) {
 		this.request.optimizeWaypointOrder = optimizeWaypointOrder
-		return this
-	}
-
-	setEmissionType(emissionType: VehicleEmissionType) {
-		this.request.routeModifiers.vehicleInfo.emissionType = emissionType
 		return this
 	}
 

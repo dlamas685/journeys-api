@@ -10,5 +10,6 @@ import { OptimizationService } from './optimization.service'
 	imports: [GoogleMapsModule, FleetsModule, DriversModule, VehiclesModule],
 	controllers: [OptimizationController],
 	providers: [OptimizationService],
+	exports: [OptimizationService],
 })
 export class OptimizationModule {}

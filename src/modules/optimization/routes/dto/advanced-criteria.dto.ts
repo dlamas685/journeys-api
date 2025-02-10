@@ -11,7 +11,6 @@ import {
 import { ExtraComputation } from '../enums/extra-computation.enum'
 import { ReferenceRoute } from '../enums/reference-route.enum'
 import { TrafficModel } from '../enums/traffic-model.enum'
-import { VehicleEmissionType } from '../enums/vehicle-emission-type.enum'
 import { AdvancedWaypointDto } from './advanced-waypoint.dto'
 
 export class AdvancedCriteriaDto {
@@ -49,11 +48,6 @@ export class AdvancedCriteriaDto {
 	@IsBoolean()
 	@ApiPropertyOptional()
 	optimizeWaypointOrder?: boolean
-
-	@IsOptional()
-	@IsEnum(VehicleEmissionType)
-	@ApiPropertyOptional({ enum: VehicleEmissionType })
-	emissionType?: VehicleEmissionType
 
 	@IsOptional()
 	@IsArray()
