@@ -1,8 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { FavoriteAddress } from '@prisma/client'
-import { Decimal } from '@prisma/client/runtime/library'
-import { Transform } from 'class-transformer'
-import { transformToNumber } from 'src/common/helpers'
 
 export class FavoriteAddressEntity implements FavoriteAddress {
 	@ApiProperty()
@@ -17,13 +14,11 @@ export class FavoriteAddressEntity implements FavoriteAddress {
 	@ApiProperty()
 	placeId: string
 
-	@ApiProperty({ type: Number })
-	@Transform(transformToNumber)
-	latitude: Decimal
+	@ApiProperty()
+	latitude: number
 
-	@ApiProperty({ type: Number })
-	@Transform(transformToNumber)
-	longitude: Decimal
+	@ApiProperty()
+	longitude: number
 
 	@ApiProperty()
 	createdAt: Date

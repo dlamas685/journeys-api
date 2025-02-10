@@ -1,4 +1,4 @@
-import { FavoritePlace, Prisma, type PrismaClient } from '@prisma/client'
+import { FavoritePlace, type PrismaClient } from '@prisma/client'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -33,8 +33,6 @@ const seedFavoritePlace = async (
 				data: {
 					userId,
 					placeId: mockPlace.placeId,
-					latitude: new Prisma.Decimal(mockPlace.latitude),
-					longitude: new Prisma.Decimal(mockPlace.longitude),
 				},
 			})
 			records.push(newFavoritePlace)

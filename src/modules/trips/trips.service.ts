@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
+import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 import {
@@ -10,6 +11,7 @@ import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
+import { RouteEntity } from '../optimization/routes/entities'
 import { PrismaService } from '../prisma/prisma.service'
 import { ChangeTripStatusDto, CreateTripDto, UpdateTripDto } from './dto'
 import { TripQueryParamsDto } from './dto/trip-params.dto'
@@ -17,27 +19,43 @@ import { TripEntity } from './entities/trip.entity'
 
 @Injectable()
 export class TripsService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+		private readonly prisma: PrismaService
+	) {}
 
 	async create(
 		userId: string,
 		createTripDto: CreateTripDto
 	): Promise<TripEntity> {
-		const { post: newPost, ...trip } = createTripDto
-		const newTrip = await this.prisma.trip.create({
-			data: {
-				userId,
-				...trip,
-				post: newPost && {
-					create: {
-						userId,
-						...newPost,
+		const { post, results, criteria, ...data } = createTripDto
+
+		const createdTrip = await this.prisma.$transaction(async prisma => {
+			const createdTrip = await prisma.trip.create({
+				data: {
+					userId,
+					...data,
+					criteria,
+					post: post && {
+						create: {
+							userId,
+							...post,
+						},
 					},
 				},
-			},
+			})
+
+			const tripResultsKey = `trip-results-${createdTrip.id}`
+
+			await this.cacheManager.set(
+				tripResultsKey,
+				plainToInstance(RouteEntity, results)
+			)
+
+			return createdTrip
 		})
 
-		return new TripEntity(newTrip)
+		return new TripEntity(createdTrip)
 	}
 
 	async findAll(
@@ -95,11 +113,15 @@ export class TripsService {
 			},
 		})
 
+		const results = await this.cacheManager.get<RouteEntity>(
+			`trip-results-${id}`
+		)
+
 		if (!foundTrip) {
 			throw new NotFoundException('Viaje no encontrado')
 		}
 
-		return new TripEntity(foundTrip)
+		return new TripEntity({ ...foundTrip, results })
 	}
 
 	async update(

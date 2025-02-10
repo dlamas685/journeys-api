@@ -6,8 +6,8 @@ import { AdvancedWaypointConfigDto } from './advanced-waypoint-config.dto'
 import { WaypointDto } from './waypoint.dto'
 
 export class AdvancedWaypointDto extends WaypointDto {
-	@IsArray()
 	@IsOptional()
+	@IsArray()
 	@Type(() => AdvancedWaypointActivityDto)
 	@ValidateNested({ each: true })
 	@ApiPropertyOptional({ type: [AdvancedWaypointActivityDto] })

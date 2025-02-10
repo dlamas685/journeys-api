@@ -2,7 +2,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import {
 	IsInt,
 	IsNotEmpty,
-	IsNumber,
 	IsOptional,
 	IsPositive,
 	IsString,
@@ -11,12 +10,10 @@ import {
 
 export class AdvancedWaypointActivityDto {
 	@IsUUID()
-	@IsNotEmpty()
 	@ApiProperty()
 	id: string
 
 	@IsNotEmpty()
-	@IsString()
 	@ApiProperty()
 	name: string
 
@@ -25,8 +22,6 @@ export class AdvancedWaypointActivityDto {
 	@ApiPropertyOptional()
 	description?: string
 
-	@IsNotEmpty()
-	@IsNumber()
 	@IsInt()
 	@IsPositive()
 	@ApiProperty()

@@ -1,24 +1,27 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { JsonValue } from '@prisma/client/runtime/library'
+import { JsonArray, JsonObject } from '@prisma/client/runtime/library'
 import { Type } from 'class-transformer'
 import {
 	IsDateString,
 	IsInt,
 	IsNotEmpty,
+	IsNumber,
 	IsOptional,
-	IsString,
+	IsPositive,
 	ValidateNested,
 } from 'class-validator'
 import { CriteriaDto } from 'src/modules/optimization/routes/dto'
 import { CreatePostFromTripDto } from 'src/modules/posts/dto'
 
 export class CreateTripDto {
-	@IsString()
+	@IsNotEmpty()
+	@ApiProperty()
+	code: string
+
 	@IsNotEmpty()
 	@ApiProperty()
 	origin: string
 
-	@IsString()
 	@IsNotEmpty()
 	@ApiProperty()
 	destination: string
@@ -31,21 +34,27 @@ export class CreateTripDto {
 	@ApiProperty({ type: Date })
 	arrivalTime: Date
 
-	@IsOptional()
-	@IsInt()
-	@ApiPropertyOptional()
-	totalDistance?: number
+	@IsNumber({ maxDecimalPlaces: 2 })
+	@IsPositive()
+	@ApiProperty()
+	totalDistance: number
 
-	@IsOptional()
 	@IsInt()
-	@ApiPropertyOptional()
-	totalDuration?: number
+	@IsPositive()
+	@ApiProperty()
+	totalDuration: number
 
-	@IsOptional()
+	@IsNotEmpty()
 	@ValidateNested({ each: true })
 	@Type(() => CriteriaDto)
-	@ApiPropertyOptional({ type: CriteriaDto })
-	criteria?: JsonValue
+	@ApiProperty({ type: CriteriaDto })
+	criteria: JsonObject
+
+	@IsNotEmpty()
+	@ValidateNested({ each: true })
+	@Type(() => Object)
+	@ApiProperty({ type: [Object] })
+	results: JsonArray
 
 	@IsOptional()
 	@ValidateNested()

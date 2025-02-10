@@ -25,8 +25,8 @@ export class AdvancedCriteriaDto {
 	})
 	extraComputations: ExtraComputation[]
 
-	@IsArray()
 	@IsOptional()
+	@IsArray()
 	@IsEnum(ReferenceRoute, { each: true })
 	@ApiPropertyOptional({
 		type: [Number],
@@ -40,13 +40,13 @@ export class AdvancedCriteriaDto {
 	@ApiPropertyOptional({ enum: TrafficModel })
 	trafficModel?: TrafficModel
 
-	@IsBoolean()
 	@IsOptional()
+	@IsBoolean()
 	@ApiPropertyOptional()
 	computeAlternativeRoutes?: boolean
 
-	@IsBoolean()
 	@IsOptional()
+	@IsBoolean()
 	@ApiPropertyOptional()
 	optimizeWaypointOrder?: boolean
 

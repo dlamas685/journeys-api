@@ -16,7 +16,6 @@ const VALID_FIELDS: ValidFieldsType[] = [
 	'destination',
 	'tripStatus',
 	'departureTime',
-	'arrivalTime',
 	'createdAt',
 ]
 

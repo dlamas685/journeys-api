@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator'
+import { IsNotEmpty, IsOptional, IsUUID } from 'class-validator'
 
 export class AdvancedWaypointConfigDto {
 	@IsOptional()
@@ -8,7 +8,6 @@ export class AdvancedWaypointConfigDto {
 	templateId?: string
 
 	@IsNotEmpty()
-	@IsString()
 	@ApiProperty()
 	mode: string
 }

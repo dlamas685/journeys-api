@@ -22,6 +22,8 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 		exception: Prisma.PrismaClientKnownRequestError
 	): string {
 		switch (exception.code) {
+			case 'P2002':
+				return `El valor proporcionado para uno de los campos ya existe.`
 			case 'P2023':
 				return `El valor proporcionado para uno de los campos no es válido.`
 			case 'P2000':

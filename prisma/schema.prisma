@@ -99,8 +99,6 @@ model FavoriteAddress {
   userId    String    @map("user_id") @db.Uuid
   alias     String
   placeId   String    @map("place_id")
-  latitude  Decimal
-  longitude Decimal
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
   user      User      @relation(fields: [userId], references: [id])
@@ -113,8 +111,6 @@ model FavoritePlace {
   id        String    @id @default(uuid()) @db.Uuid
   userId    String    @map("user_id") @db.Uuid
   placeId   String    @map("place_id")
-  latitude  Decimal
-  longitude Decimal
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
   user      User      @relation(fields: [userId], references: [id])
@@ -214,9 +210,9 @@ model Trip {
   destination   String
   departureTime DateTime   @map("departure_time") @db.Timestamptz(6)
   arrivalTime   DateTime   @map("arrival_time") @db.Timestamptz(6)
-  totalDistance Int?       @map("total_distance")
-  totalDuration Int?       @map("total_duration")
-  criteria      Json?
+  totalDistance Float      @map("total_distance")
+  totalDuration Int        @map("total_duration")
+  criteria      Json
   createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
@@ -322,10 +318,10 @@ model Roadmap {
   origin        String
   destination   String
   departureTime DateTime      @map("departure_time") @db.Timestamptz(6)
-  arrivalTime   DateTime?     @map("arrival_time") @db.Timestamptz(6)
-  totalDistance Int?          @map("total_distance")
-  totalDuration Int?          @map("total_duration")
-  setting       Json?
+  arrivalTime   DateTime      @map("arrival_time") @db.Timestamptz(6)
+  totalDistance Float         @map("total_distance")
+  totalDuration Int           @map("total_duration")
+  setting       Json
   createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?     @updatedAt @map("updated_at") @db.Timestamptz(6)
 

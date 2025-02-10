@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
-import { Decimal } from '@prisma/client/runtime/library'
 import { plainToClass } from 'class-transformer'
 import {
 	PaginatedResponseEntity,
@@ -33,8 +32,6 @@ export class FavoriteAddressesService {
 			data: {
 				userId,
 				...createFavoriteAddressDto,
-				latitude: new Decimal(createFavoriteAddressDto.latitude),
-				longitude: new Decimal(createFavoriteAddressDto.longitude),
 			},
 		})
 
@@ -91,6 +88,8 @@ export class FavoriteAddressesService {
 				return new FavoriteAddressEntity({
 					...record,
 					address: placeDetails.formattedAddress,
+					latitude: placeDetails.location.latitude,
+					longitude: placeDetails.location.longitude,
 				})
 			})
 		)
@@ -139,12 +138,6 @@ export class FavoriteAddressesService {
 			},
 			data: {
 				...updateFavoriteAddressDto,
-				latitude: updateFavoriteAddressDto.latitude
-					? new Decimal(updateFavoriteAddressDto.latitude)
-					: undefined,
-				longitude: updateFavoriteAddressDto.longitude
-					? new Decimal(updateFavoriteAddressDto.longitude)
-					: undefined,
 			},
 		})
 
