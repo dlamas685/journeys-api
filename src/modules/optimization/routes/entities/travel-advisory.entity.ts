@@ -6,9 +6,6 @@ export class TravelAdvisoryEntity {
 	@ApiProperty({ type: TollInfoEntity, nullable: true })
 	tollInfo: TollInfoEntity | null
 
-	@ApiProperty()
-	fuelConsumptionMicroliters: string
-
 	@ApiProperty({ type: [SpeedReadingIntervalEntity] })
 	speedReadingIntervals: SpeedReadingIntervalEntity[]
 

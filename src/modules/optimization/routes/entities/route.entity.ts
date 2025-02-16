@@ -108,9 +108,6 @@ export class RouteEntityBuilder {
 			this.route.travelAdvisory.tollInfo.estimatedPrice = estimatedPrice
 		}
 
-		this.route.travelAdvisory.fuelConsumptionMicroliters =
-			travelAdvisory.fuelConsumptionMicroliters.toString()
-
 		this.route.travelAdvisory.routeRestrictionsPartiallyIgnored =
 			travelAdvisory.routeRestrictionsPartiallyIgnored
 
