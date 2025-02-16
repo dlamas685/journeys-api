@@ -69,13 +69,6 @@ export class OptimizationService {
 
 		if (
 			criteriaDto.advancedCriteria &&
-			criteriaDto.advancedCriteria.emissionType
-		) {
-			request.setEmissionType(criteriaDto.advancedCriteria.emissionType)
-		}
-
-		if (
-			criteriaDto.advancedCriteria &&
 			criteriaDto.advancedCriteria.interestPoints
 		) {
 			request.setInterestPoints(criteriaDto.advancedCriteria.interestPoints)
