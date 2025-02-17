@@ -1,47 +1,44 @@
 {
-    "origin": {
-        "placeId": "ChIJRczTY3TDG5QRqBXmTtaQ2nM",
-        "address": "Talavera 4400, A4400 Salta",
-        "location": {
-            "latLng": {
-                "latitude": -24.797093885554183,
-                "longitude": -65.39502542003055
-            }
+    "basicCriteria": {
+        "origin": {
+            "placeId": "ChIJjcaTJKvDG5QROs_60rhgtgU",
+            "address": "Cnel. Moldes 945, A4404 Salta, Argentina",
+            "location": {
+                "latitude": -24.8003577,
+                "longitude": -65.4271816
+            },
+            "sideOfRoad": true
         },
-        "sideOfRoad": true
-    },
-    "destination": {
-        "placeId": "ChIJB_A8rCjDG5QRqESOVRfgikg",
-        "address": "Lerma 751 Lerma, Pje. C. Gauna 751 y, A4400 Salta",
-        "location": {
-            "latLng": {
-                "latitude": -24.79971298546291,
-                "longitude": -65.40756011677297
-            }
+        "destination": {
+            "placeId": "ChIJvQz5TjvKvJURh47oiC6Bs6A",
+            "address": "Buenos Aires, Cdad. Autónoma de Buenos Aires, Argentina",
+            "location": {
+                "latitude": -34.6036844,
+                "longitude": -58.3815591
+            },
+            "sideOfRoad": true
         },
-        "sideOfRoad": true
+        "departureTime": "2025-02-28T19:00:00Z",
+        "travelMode": "DRIVE",
+        "modifiers": {
+            "avoidTolls": false,
+            "avoidHighways": true,
+            "avoidFerries": true
+        },
+        "trafficOption": "TRAFFIC_AWARE_OPTIMAL",
+        "interestPoints": []
     },
-    "intermediates": [],
-    "travelMode": "DRIVE",
-    "departure": {
-        "date": "2025-01-22",
-        "time": "16:00"
-    },
-    "routingPreference": "TRAFFIC_AWARE_OPTIMAL",
-    "routeModifiers": {
-        "avoidTolls": true,
-        "avoidHighways": true,
-        "avoidFerries": true,
-        "vehicleInfo": {
-            "emissionType": "DIESEL"
-        }
-    },
-    "extraComputations": [
-        2
-    ],
-    "requestedReferenceRoutes": [
-        2
-    ],
-    "trafficModel": "BEST_GUESS",
-    "computeAlternativeRoutes": true
+    "advancedCriteria": {
+        "extraComputations": [
+            4,
+            1,
+            3
+        ],
+        "trafficModel": "BEST_GUESS",
+        "computeAlternativeRoutes": true,
+        "requestedReferenceRoutes": [
+            2
+        ],
+        "interestPoints": []
+    }
 }

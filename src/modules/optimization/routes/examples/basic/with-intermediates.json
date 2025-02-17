@@ -1,29 +1,77 @@
 {
-    "origin": {
-        "placeId": "ChIJRczTY3TDG5QRqBXmTtaQ2nM",
-        "address": "Talavera 4400, A4400 Salta",
-        "location": {
-            "latitude": -24.797093885554183,
-            "longitude": -65.39502542003055
+    "basicCriteria": {
+        "origin": {
+            "placeId": "ChIJwdGzU5jDG5QRX4fcmBF7NkA",
+            "address": "Av. Belgrano 600, A4400 Salta",
+            "location": {
+                "latitude": -24.7875022,
+                "longitude": -65.4110936
+            },
+            "sideOfRoad": true
         },
-        "sideOfRoad": true
-    },
-    "destination": {
-        "placeId": "ChIJB_A8rCjDG5QRqESOVRfgikg",
-        "address": "Lerma 751 Lerma, Pje. C. Gauna 751 y, A4400 Salta",
-        "location": {
-            "latitude": -24.79971298546291,
-            "longitude": -65.40756011677297
+        "destination": {
+            "placeId": "ChIJvQz5TjvKvJURh47oiC6Bs6A",
+            "address": "Buenos Aires, Cdad. Autónoma de Buenos Aires, Argentina",
+            "location": {
+                "latitude": -34.6036844,
+                "longitude": -58.3815591
+            },
+            "sideOfRoad": true
         },
-        "sideOfRoad": true
-    },
-    "interestPoints": [],
-    "travelMode": "DRIVE",
-    "departureTime": "2025-01-28T16:00:00Z",
-    "trafficOption": "TRAFFIC_AWARE_OPTIMAL",
-    "modifiers": {
-        "avoidTolls": true,
-        "avoidHighways": true,
-        "avoidFerries": true
+        "departureTime": "2025-02-28T19:00:00Z",
+        "travelMode": "DRIVE",
+        "modifiers": {
+            "avoidTolls": true,
+            "avoidHighways": true,
+            "avoidFerries": true
+        },
+        "trafficOption": "TRAFFIC_UNAWARE",
+        "interestPoints": [
+            {
+                "placeId": "ChIJw2kzW7nDG5QRF21dKCW_w_c",
+                "address": "J. M. Leguizamon 669, A4400 BOM, Salta",
+                "location": {
+                    "latitude": -24.783758900000002,
+                    "longitude": -65.4112773
+                },
+                "via": true
+            },
+            {
+                "placeId": "ChIJs4Sgq7vDG5QRAxtfbshIPjY",
+                "address": "Pje. M. Castro 215, A4400 Salta",
+                "location": {
+                    "latitude": -24.786876,
+                    "longitude": -65.4130508
+                },
+                "via": true
+            },
+            {
+                "placeId": "ChIJY3IceaPDG5QRXgPOAcH7ZYA",
+                "address": "Buenos Aires 176, A4400 Salta",
+                "location": {
+                    "latitude": -24.791961999999998,
+                    "longitude": -65.4099336
+                },
+                "via": true
+            },
+            {
+                "placeId": "ChIJXUpqKb8xH5QRnPG_w7jUpkU",
+                "address": "A4417 Cachi, Salta",
+                "location": {
+                    "latitude": -25.119893899999997,
+                    "longitude": -66.161867
+                },
+                "via": true
+            },
+            {
+                "placeId": "ChIJR6QSh2geHJQRtXPxCX7XyKw",
+                "address": "4417, A4417 Cachi, Salta",
+                "location": {
+                    "latitude": -25.1197092,
+                    "longitude": -66.162258
+                },
+                "via": true
+            }
+        ]
     }
 }
