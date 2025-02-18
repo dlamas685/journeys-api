@@ -1,5 +1,4 @@
-import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
-import { Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 import {
@@ -11,6 +10,7 @@ import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
+import { PlacesService } from '../google-maps/services/places.service'
 import { OptimizationService } from '../optimization/optimization.service'
 import { CriteriaDto } from '../optimization/routes/dto'
 import { PrismaService } from '../prisma/prisma.service'
@@ -21,9 +21,9 @@ import { TripEntity } from './entities/trip.entity'
 @Injectable()
 export class TripsService {
 	constructor(
-		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
 		private readonly prisma: PrismaService,
-		private readonly optimization: OptimizationService
+		private readonly optimization: OptimizationService,
+		private readonly places: PlacesService
 	) {}
 
 	async create(
@@ -82,7 +82,20 @@ export class TripsService {
 			this.prisma.trip.count({ where: query.where }),
 		])
 
-		const trips = records.map(record => new TripEntity(record))
+		const trips = await Promise.all(
+			records.map(async record => {
+				const [origin, destination] = await Promise.all([
+					this.places.getPlaceDetails(record.origin),
+					this.places.getPlaceDetails(record.destination),
+				])
+
+				return new TripEntity({
+					...record,
+					origin: origin.formattedAddress,
+					destination: destination.formattedAddress,
+				})
+			})
+		)
 
 		const metadata = plainToInstance(PaginationMetadataEntity, {
 			total: totalPages,
@@ -97,24 +110,34 @@ export class TripsService {
 	}
 
 	async findOne(userId: string, id: string) {
-		const foundTrip = await this.prisma.trip.findFirst({
+		const found = await this.prisma.trip.findFirst({
 			where: {
 				id,
 				userId,
 			},
 		})
 
-		if (!foundTrip) {
+		if (!found) {
 			throw new NotFoundException('Viaje no encontrado')
 		}
 
-		const criteria = plainToInstance(CriteriaDto, foundTrip.criteria)
+		const [origin, destination] = await Promise.all([
+			this.places.getPlaceDetails(found.origin),
+			this.places.getPlaceDetails(found.destination),
+		])
+
+		const criteria = plainToInstance(CriteriaDto, found.criteria)
 
 		const results = criteria.advancedCriteria
 			? await this.optimization.computeAdvancedOptimization(criteria)
 			: await this.optimization.computeBasicOptimization(criteria.basicCriteria)
 
-		return new TripEntity({ ...foundTrip, results })
+		return new TripEntity({
+			...found,
+			origin: origin.formattedAddress,
+			destination: destination.formattedAddress,
+			results,
+		})
 	}
 
 	async update(
