@@ -2,10 +2,12 @@ import { ApiProperty } from '@nestjs/swagger'
 import { JsonValue } from '@prisma/client/runtime/library'
 import { Type } from 'class-transformer'
 import {
+	IsBoolean,
 	IsDateString,
 	IsInt,
 	IsNotEmpty,
 	IsNumber,
+	IsOptional,
 	IsPositive,
 	IsUUID,
 	ValidateNested,
@@ -24,6 +26,10 @@ export class CreateRoadmapDto {
 	@IsUUID()
 	@ApiProperty()
 	vehicleId: string
+
+	@IsBoolean()
+	@IsOptional()
+	isArchived?: boolean
 
 	@IsNotEmpty()
 	@ApiProperty()

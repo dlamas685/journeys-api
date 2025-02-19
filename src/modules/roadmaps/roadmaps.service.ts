@@ -11,7 +11,6 @@ import {
 	fromSortsToOrderby,
 } from 'src/common/helpers'
 import { PrismaService } from '../prisma/prisma.service'
-import { ChangeRoadmapStatusDto } from './dto'
 import { CreateRoadmapDto } from './dto/create-roadmap.dto'
 import { RoadmapQueryParamsDto } from './dto/roadmap-params.dto'
 import { UpdateRoadmapDto } from './dto/update-roadmap.dto'
@@ -124,22 +123,5 @@ export class RoadmapsService {
 		})
 
 		return `Eliminación completa!`
-	}
-
-	async changeStatus(
-		userId: string,
-		changeRoadmapStatusDto: ChangeRoadmapStatusDto
-	): Promise<RoadmapEntity> {
-		const changedRoadmapStatus = await this.prisma.roadmap.update({
-			where: {
-				userId,
-				id: changeRoadmapStatusDto.id,
-			},
-			data: {
-				status: changeRoadmapStatusDto.status,
-			},
-		})
-
-		return new RoadmapEntity(changedRoadmapStatus)
 	}
 }

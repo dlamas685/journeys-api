@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { JsonObject } from '@prisma/client/runtime/library'
 import { Type } from 'class-transformer'
 import {
+	IsBoolean,
 	IsDateString,
 	IsInt,
 	IsNotEmpty,
@@ -14,6 +15,10 @@ import { CriteriaDto } from 'src/modules/optimization/routes/dto'
 import { CreatePostFromTripDto } from 'src/modules/posts/dto'
 
 export class CreateTripDto {
+	@IsBoolean()
+	@IsOptional()
+	isArchived?: boolean
+
 	@IsNotEmpty()
 	@ApiProperty()
 	code: string

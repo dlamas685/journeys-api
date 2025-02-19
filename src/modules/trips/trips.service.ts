@@ -14,7 +14,7 @@ import { PlacesService } from '../google-maps/services/places.service'
 import { OptimizationService } from '../optimization/optimization.service'
 import { CriteriaDto } from '../optimization/routes/dto'
 import { PrismaService } from '../prisma/prisma.service'
-import { ChangeTripStatusDto, CreateTripDto, UpdateTripDto } from './dto'
+import { CreateTripDto, UpdateTripDto } from './dto'
 import { TripQueryParamsDto } from './dto/trip-params.dto'
 import { TripEntity } from './entities/trip.entity'
 
@@ -167,22 +167,5 @@ export class TripsService {
 		})
 
 		return `Eliminación completa!`
-	}
-
-	async changeStatus(
-		userId: string,
-		changeTripStatusDto: ChangeTripStatusDto
-	): Promise<TripEntity> {
-		const changedTripStatus = await this.prisma.trip.update({
-			where: {
-				userId,
-				id: changeTripStatusDto.id,
-			},
-			data: {
-				tripStatus: changeTripStatusDto.tripStatus,
-			},
-		})
-
-		return new TripEntity(changedTripStatus)
 	}
 }

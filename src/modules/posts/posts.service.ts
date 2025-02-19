@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { PostStatus, Prisma, TripStatus } from '@prisma/client'
+import { PostStatus, Prisma } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import { plainToInstance } from 'class-transformer'
 import {
@@ -100,7 +100,7 @@ export class PostsService {
 				postStatus: PostStatus.AVAILABLE,
 				trips: {
 					is: {
-						tripStatus: TripStatus.UPCOMING,
+						isArchived: false,
 					},
 				},
 			},

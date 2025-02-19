@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { $Enums, Prisma, Roadmap } from '@prisma/client'
+import { Prisma, Roadmap } from '@prisma/client'
 
 export class RoadmapEntity implements Roadmap {
 	@ApiProperty()
@@ -18,7 +18,7 @@ export class RoadmapEntity implements Roadmap {
 	driverId: string
 
 	@ApiProperty()
-	status: $Enums.RoadmapStatus
+	isArchived: boolean = false
 
 	@ApiProperty()
 	code: string

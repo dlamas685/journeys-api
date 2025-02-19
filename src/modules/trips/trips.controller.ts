@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { ChangeTripStatusDto, CreateTripDto, UpdateTripDto } from './dto'
+import { CreateTripDto, UpdateTripDto } from './dto'
 import { TripQueryParamsDto } from './dto/trip-params.dto'
 import { TripEntity } from './entities/trip.entity'
 import { TripsService } from './trips.service'
@@ -91,18 +91,5 @@ export class TripsController {
 	})
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.tripsService.remove(userId, id)
-	}
-
-	@Post('change-status')
-	@HttpCode(HttpStatus.OK)
-	@ApiOperation({
-		summary: 'Cambia el estado de un viaje',
-	})
-	@ApiOkResponse({ type: TripEntity })
-	changeStatus(
-		@UserId() userId: string,
-		@Body() changeTripStatusDto: ChangeTripStatusDto
-	) {
-		return this.tripsService.changeStatus(userId, changeTripStatusDto)
 	}
 }

@@ -20,11 +20,7 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import {
-	ChangeRoadmapStatusDto,
-	CreateRoadmapDto,
-	UpdateRoadmapDto,
-} from './dto'
+import { CreateRoadmapDto, UpdateRoadmapDto } from './dto'
 import { RoadmapQueryParamsDto } from './dto/roadmap-params.dto'
 import { RoadmapEntity } from './entities/roadmap.entity'
 import { RoadmapsService } from './roadmaps.service'
@@ -95,18 +91,5 @@ export class RoadmapsController {
 	})
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.roadmapsService.remove(userId, id)
-	}
-
-	@Post('change-status')
-	@HttpCode(HttpStatus.OK)
-	@ApiOperation({
-		summary: 'Cambia el estado de un viaje',
-	})
-	@ApiOkResponse({ type: RoadmapEntity })
-	changeStatus(
-		@UserId() userId: string,
-		@Body() changeRoadmapStatusDto: ChangeRoadmapStatusDto
-	) {
-		return this.roadmapsService.changeStatus(userId, changeRoadmapStatusDto)
 	}
 }

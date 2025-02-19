@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { Prisma, Trip, TripStatus } from '@prisma/client'
+import { Prisma, Trip } from '@prisma/client'
 import { RouteEntity } from 'src/modules/optimization/routes/entities'
 
 export class TripEntity implements Trip {
@@ -9,8 +9,8 @@ export class TripEntity implements Trip {
 	@ApiProperty()
 	userId: string
 
-	@ApiProperty({ enum: TripStatus, type: TripEntity })
-	tripStatus: TripStatus
+	@ApiProperty()
+	isArchived: boolean = false
 
 	@ApiProperty({ description: 'auto-generated value for easy search' })
 	code: string

@@ -14,7 +14,7 @@ const VALID_FIELDS: ValidFieldsType[] = [
 	'code',
 	'origin',
 	'destination',
-	'tripStatus',
+	'isArchived',
 	'departureTime',
 	'createdAt',
 ]
