@@ -20,8 +20,8 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateTripDto, UpdateTripDto } from './dto'
-import { TripQueryParamsDto } from './dto/trip-params.dto'
+import { CreateTripDto, UpdateTripDto } from './dtos'
+import { TripQueryParamsDto } from './dtos/trip-params.dto'
 import { TripEntity } from './entities/trip.entity'
 import { TripsService } from './trips.service'
 

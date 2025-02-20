@@ -18,7 +18,7 @@ import {
 import { UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { OptimizationService } from './optimization.service'
-import { SettingDto } from './routes-optimization/dto'
+import { SettingDto } from './routes-optimization/dtos'
 import { RoadmapOptimizationEntity } from './routes-optimization/entities'
 import { CostProfileEntity } from './routes-optimization/entities/cost-profile.entity'
 import { CostProfile } from './routes-optimization/enums/cost-profile.enum'
@@ -38,7 +38,7 @@ export class OptimizationController {
 		summary: 'Optimización básica',
 		description: 'Permite optimizar una ruta siguiendo los criterios básicos.',
 	})
-	@ApiOkResponse({ type: RouteEntity })
+	@ApiOkResponse({ type: RouteEntity, isArray: true })
 	computeBasicOptimization(@Body() basicCriteria: BasicCriteriaDto) {
 		return this.optimization.computeBasicOptimization(basicCriteria)
 	}
@@ -50,9 +50,20 @@ export class OptimizationController {
 		description:
 			'Permite optimizar una ruta siguiendo los criterios avanzados.',
 	})
-	@ApiOkResponse({ type: [RouteEntity] })
+	@ApiOkResponse({ type: RouteEntity, isArray: true })
 	computeAdvancedOptimization(@Body() criteriaDto: CriteriaDto) {
 		return this.optimization.computeAdvancedOptimization(criteriaDto)
+	}
+
+	@Post('/refinement')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Refinamiento de optimización',
+		description: 'Permite refinar una optimización previa.',
+	})
+	@ApiOkResponse({ type: RouteEntity })
+	refineOptimization(@Body() criteriaDto: CriteriaDto) {
+		return this.optimization.refineOptimization(criteriaDto)
 	}
 
 	@Post('/tours')

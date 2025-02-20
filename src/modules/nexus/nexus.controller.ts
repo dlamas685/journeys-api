@@ -9,7 +9,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { AvailableRoadmapAssetQueryParamsDto } from './dto/available-roadmap-asset-query'
+import { AvailableRoadmapAssetQueryParamsDto } from './dtos/available-roadmap-asset-query'
 import { NexusService } from './nexus.service'
 
 @Controller()

@@ -4,13 +4,14 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { TIME_ZONES } from 'src/common/constants'
 import { DriversService } from '../drivers/drivers.service'
 import { FleetsService } from '../fleets/fleets.service'
+import { PlacesService } from '../google-maps/services/places.service'
 import { RouteOptimizationService } from '../google-maps/services/route-optimization.service'
 import { RoutesService } from '../google-maps/services/routes.service'
 import { VehiclesService } from '../vehicles/vehicles.service'
 import { FleetManagementBuilder, TravelPlanningBuilder } from './classes'
-import { isNearby } from './helpers'
+import { isNearby, isPlaceOpenAtTime } from './helpers'
 import { COST_PROFILES } from './routes-optimization/constants/cost-profiles.constant'
-import { SettingDto } from './routes-optimization/dto'
+import { SettingDto } from './routes-optimization/dtos'
 import { RoadmapOptimizationBuilderEntity } from './routes-optimization/entities'
 import { CostProfile } from './routes-optimization/enums/cost-profile.enum'
 import { BasicCriteriaDto, CriteriaDto } from './routes/dtos'
@@ -19,6 +20,7 @@ import {
 	PassageEntityBuilder,
 	RouteEntityBuilder,
 	StepEntityBuilder,
+	StopEntity,
 	StopEntityBuilder,
 } from './routes/entities'
 import { Maneuver, Speed } from './routes/enums'
@@ -30,7 +32,8 @@ export class OptimizationService {
 		private readonly routesOptimization: RouteOptimizationService,
 		private readonly fleets: FleetsService,
 		private readonly drivers: DriversService,
-		private readonly vehicles: VehiclesService
+		private readonly vehicles: VehiclesService,
+		private readonly places: PlacesService
 	) {}
 
 	async computeBasicOptimization(basicCriteria: BasicCriteriaDto) {
@@ -305,6 +308,58 @@ export class OptimizationService {
 		})
 
 		return optimization
+	}
+
+	async refineOptimization(criteriaDto: CriteriaDto) {
+		const routes = criteriaDto.advancedCriteria
+			? await this.computeAdvancedOptimization(criteriaDto)
+			: await this.computeBasicOptimization(criteriaDto.basicCriteria)
+
+		if (routes.length > 1) {
+			return ''
+		}
+
+		const route = routes.at(0)
+		const closedStops: Array<{ stop: StopEntity; alternatives: any[] }> = []
+
+		await Promise.all(
+			route.stops.map(async stop => {
+				const place = await this.places.getPlaceDetails(stop.placeId, [
+					'regularOpeningHours',
+				])
+
+				const arrivalDate = new Date(stop.estimatedArrivalDateTimeWithTraffic)
+				const dayOfWeek = arrivalDate.getUTCDay()
+				const arrivalHour = arrivalDate.getUTCHours()
+				const arrivalMinutes = arrivalDate.getUTCMinutes()
+
+				const openingPeriods =
+					place.regularOpeningHours?.periods.filter(
+						period => period.open.day === dayOfWeek
+					) || []
+
+				const isOpen = openingPeriods.some(period => {
+					return isPlaceOpenAtTime(period, arrivalHour, arrivalMinutes)
+				})
+
+				if (!isOpen) {
+					console.log(
+						`Stop at ${place.id}: Closed on arrival. Finding alternatives...`
+					)
+
+					const alternatives = await this.places.nearbySearch(
+						stop.location,
+						place.types
+					)
+
+					closedStops.push({ stop, alternatives })
+				} else {
+					console.log(`Stop at ${stop.placeId}: Open on arrival.`)
+				}
+			})
+		)
+
+		return { routes, closedStops }
 	}
 
 	async optimizeTours(userId: string, settingDto: SettingDto) {

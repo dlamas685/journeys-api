@@ -4,16 +4,16 @@ import { plainToInstance } from 'class-transformer'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+} from 'src/common/entities'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateRoadmapDto } from './dto/create-roadmap.dto'
-import { RoadmapQueryParamsDto } from './dto/roadmap-params.dto'
-import { UpdateRoadmapDto } from './dto/update-roadmap.dto'
+import { CreateRoadmapDto } from './dtos/create-roadmap.dto'
+import { RoadmapQueryParamsDto } from './dtos/roadmap-params.dto'
+import { UpdateRoadmapDto } from './dtos/update-roadmap.dto'
 import { RoadmapEntity } from './entities/roadmap.entity'
 
 @Injectable()

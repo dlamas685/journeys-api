@@ -5,7 +5,7 @@ import { plainToInstance } from 'class-transformer'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+} from 'src/common/entities'
 import { v4 as uuid } from 'uuid'
 import {
 	fromFiltersToWhere,
@@ -19,7 +19,7 @@ import {
 	CreateActivityTemplateDto,
 	UpdateActivityDto,
 	UpdateActivityTemplateDto,
-} from './dto'
+} from './dtos'
 import { ActivityTemplateEntity } from './entities/activity-template.entity'
 @Injectable()
 export class ActivityTemplatesService {

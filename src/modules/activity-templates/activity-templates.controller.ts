@@ -28,7 +28,7 @@ import {
 	CreateActivityTemplateDto,
 	UpdateActivityDto,
 	UpdateActivityTemplateDto,
-} from './dto'
+} from './dtos'
 import { ActivityTemplateEntity } from './entities/activity-template.entity'
 
 @Controller('activity-templates')

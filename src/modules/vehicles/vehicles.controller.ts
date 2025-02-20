@@ -20,9 +20,9 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { VehicleQueryParamsDto } from './dto'
-import { CreateVehicleDto } from './dto/create-vehicle.dto'
-import { UpdateVehicleDto } from './dto/update-vehicle.dto'
+import { VehicleQueryParamsDto } from './dtos'
+import { CreateVehicleDto } from './dtos/create-vehicle.dto'
+import { UpdateVehicleDto } from './dtos/update-vehicle.dto'
 import { VehicleEntity } from './entities/vehicle.entity'
 import { VehiclesService } from './vehicles.service'
 

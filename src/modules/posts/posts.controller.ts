@@ -20,9 +20,9 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, Public, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { ChangePostStatusDto, PostQueryParamsDto } from './dto'
-import { CreatePostDto } from './dto/create-post.dto'
-import { UpdatePostDto } from './dto/update-post.dto'
+import { ChangePostStatusDto, PostQueryParamsDto } from './dtos'
+import { CreatePostDto } from './dtos/create-post.dto'
+import { UpdatePostDto } from './dtos/update-post.dto'
 import { PostEntity } from './entities/post.entity'
 import { PostsService } from './posts.service'
 

@@ -24,12 +24,21 @@ export class PlacesService {
 				detailCacheKey
 			)
 
-		if (cachedPlaceDetails) {
+		const defaultFields = ['id', 'displayName', 'location', 'formattedAddress']
+
+		const requestedFields = [...new Set([...defaultFields, ...otherFields])]
+
+		if (
+			cachedPlaceDetails &&
+			!requestedFields.some(field => !(field in cachedPlaceDetails))
+		) {
 			this.logger.log('Using cached place details')
 			return cachedPlaceDetails
 		}
 
-		this.logger.log('Fetching place details from Google Places API')
+		this.logger.log(
+			`Fetching place details from Google Places API${cachedPlaceDetails ? ' (missing fields detected)' : ''}`
+		)
 
 		try {
 			const [result] = await this.client.getPlace(
@@ -42,18 +51,18 @@ export class PlacesService {
 					otherArgs: {
 						headers: {
 							'Content-Type': 'application/json',
-							'X-Goog-FieldMask': `id,displayName,location,formattedAddress,${otherFields.join(',')}`,
+							'X-Goog-FieldMask': requestedFields.join(','),
 						},
 					},
 				}
 			)
 
 			await this.cacheManager.set(detailCacheKey, result)
-
 			return result
 		} catch (error) {
 			this.logger.error(
-				`Error fetching place details for placeId: ${placeId}` + error
+				`Error fetching place details for placeId: ${placeId}`,
+				error
 			)
 			throw new InternalServerErrorException('Error fetching place details')
 		}
@@ -149,6 +158,43 @@ export class PlacesService {
 			this.logger.error(`Error fetching places for input: ${textQuery}` + error)
 
 			throw new InternalServerErrorException('Error fetching places')
+		}
+	}
+
+	async nearbySearch(
+		center: protos.google.type.ILatLng,
+		includedTypes: string[]
+	) {
+		try {
+			const [result] = await this.client.searchNearby(
+				{
+					regionCode: 'ar',
+					languageCode: 'es',
+					locationRestriction: {
+						circle: {
+							center,
+							radius: 1000,
+						},
+					},
+					maxResultCount: 10,
+					includedTypes,
+				},
+				{
+					otherArgs: {
+						headers: {
+							'Content-Type': 'application/json',
+							'X-Goog-FieldMask':
+								'places.id,places.displayName,places.formattedAddress,places.location,places.currentOpeningHours,places.currentSecondaryOpeningHours,places.rating,places.regularOpeningHours,places.regularSecondaryOpeningHours',
+						},
+					},
+				}
+			)
+
+			return result.places
+		} catch (error) {
+			this.logger.error(`Error fetching nearby places` + error)
+
+			throw new InternalServerErrorException('Error fetching nearby places')
 		}
 	}
 }

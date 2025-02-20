@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common'
 import { plainToClass } from 'class-transformer'
-import { SortFieldDto } from '../dto'
+import { SortFieldDto } from '../dtos'
 
 export const transformToSortFieldArray = value =>
 	value.map(filter => {

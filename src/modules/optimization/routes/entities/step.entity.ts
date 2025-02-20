@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { LocationEntity } from './location.entity'
+import { LocationEntity } from 'src/common/entities'
 import { NavigationInstructionEntity } from './navigation-instruction.entity'
 import { RouteLegStepLocalizedValues } from './route-leg-step-localized-values.entity'
 import { RouteLegStepTravelAdvisory } from './route-leg-step-travel-advisory.entity'

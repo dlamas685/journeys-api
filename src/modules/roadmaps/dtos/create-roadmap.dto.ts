@@ -12,7 +12,7 @@ import {
 	IsUUID,
 	ValidateNested,
 } from 'class-validator'
-import { SettingDto } from 'src/modules/optimization/routes-optimization/dto'
+import { SettingDto } from 'src/modules/optimization/routes-optimization/dtos'
 
 export class CreateRoadmapDto {
 	@IsUUID()

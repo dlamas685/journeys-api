@@ -24,7 +24,7 @@ import {
 	CreateFavoriteAddressDto,
 	FavoriteAddressQueryParamsDto,
 	UpdateFavoriteAddressDto,
-} from './dto'
+} from './dtos'
 import { FavoriteAddressEntity } from './entities/favorite-address.entity'
 import { FavoriteAddressesService } from './favorite-addresses.service'
 

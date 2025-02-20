@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { LocationEntity } from 'src/common/entities'
 import { LocationDto } from '../dtos'
-import { LocationEntity } from './location.entity'
 
 export class PassageEntity {
 	@ApiProperty()

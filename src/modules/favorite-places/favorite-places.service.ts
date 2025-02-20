@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
+import { QueryParamsDto } from 'src/common/dtos'
 
-import { QueryParamsDto } from 'src/common/dto'
 import {
+	LocationEntity,
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+} from 'src/common/entities'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
@@ -15,8 +16,8 @@ import {
 import { translatePlacesType } from '../google-maps/helpers/translate-places-types.helper'
 import { PlacesService } from '../google-maps/services/places.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateFavoritePlaceDto } from './dto/create-favorite-place.dto'
-import { UpdateFavoritePlaceDto } from './dto/update-favorite-place.dto'
+import { CreateFavoritePlaceDto } from './dtos/create-favorite-place.dto'
+import { UpdateFavoritePlaceDto } from './dtos/update-favorite-place.dto'
 import { FavoritePlaceEntity } from './entities/favorite-place.entity'
 
 @Injectable()
@@ -111,8 +112,7 @@ export class FavoritePlacesService {
 					name: placeDetails.displayName.text,
 					types: translatePlacesType(placeDetails.types),
 					address: placeDetails.formattedAddress,
-					latitude: placeDetails.location.latitude,
-					longitude: placeDetails.location.longitude,
+					location: plainToInstance(LocationEntity, placeDetails.location),
 				})
 			})
 		)

@@ -1,6 +1,5 @@
 export * from './leg.entity'
 export * from './localized-values.entity'
-export * from './location.entity'
 export * from './money.entity'
 export * from './navigation-instruction.entity'
 export * from './passage.entity'

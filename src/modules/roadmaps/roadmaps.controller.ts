@@ -20,8 +20,8 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateRoadmapDto, UpdateRoadmapDto } from './dto'
-import { RoadmapQueryParamsDto } from './dto/roadmap-params.dto'
+import { CreateRoadmapDto, UpdateRoadmapDto } from './dtos'
+import { RoadmapQueryParamsDto } from './dtos/roadmap-params.dto'
 import { RoadmapEntity } from './entities/roadmap.entity'
 import { RoadmapsService } from './roadmaps.service'
 

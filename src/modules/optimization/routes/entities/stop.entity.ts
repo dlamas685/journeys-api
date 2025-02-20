@@ -2,10 +2,10 @@ import { TZDate } from '@date-fns/tz'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { addSeconds } from 'date-fns/addSeconds'
 import { TIME_ZONES } from 'src/common/constants'
+import { LocationEntity } from 'src/common/entities'
 import { ActivityEntity } from 'src/modules/activity-templates/entities'
 import { v4 as uuid } from 'uuid'
 import { AdvancedWaypointActivityDto, LocationDto } from '../dtos'
-import { LocationEntity } from './location.entity'
 
 export class StopEntity {
 	@ApiProperty()
@@ -17,7 +17,7 @@ export class StopEntity {
 	@ApiProperty()
 	placeId: string
 
-	@ApiPropertyOptional({ type: [ActivityEntity] })
+	@ApiPropertyOptional({ type: ActivityEntity, isArray: true })
 	activities: ActivityEntity[]
 
 	@ApiProperty()
@@ -54,8 +54,7 @@ export class StopEntityBuilder {
 	}
 
 	setLocation(location: LocationDto): StopEntityBuilder {
-		this.stop.location.latitude = location.latitude
-		this.stop.location.longitude = location.longitude
+		this.stop.location = location
 		return this
 	}
 
@@ -76,6 +75,11 @@ export class StopEntityBuilder {
 			(acc, activity) => acc + activity.duration,
 			0
 		)
+		return this
+	}
+
+	setDuration(duration: number): StopEntityBuilder {
+		this.stop.duration = duration
 		return this
 	}
 

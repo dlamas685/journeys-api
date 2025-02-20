@@ -5,7 +5,7 @@ import {
 	LogicalFilterDto,
 	QueryParamsDto,
 	SortFieldDto,
-} from '../../../common/dto'
+} from '../../../common/dtos'
 import { TripEntity } from '../entities/trip.entity'
 
 type ValidFieldsType = keyof TripEntity

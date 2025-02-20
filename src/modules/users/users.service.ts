@@ -3,11 +3,11 @@ import { ConfigService } from '@nestjs/config'
 import { Prisma } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
 import { plainToClass } from 'class-transformer'
-import { QueryParamsDto } from 'src/common/dto'
+import { QueryParamsDto } from 'src/common/dtos'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+} from 'src/common/entities'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
@@ -15,7 +15,7 @@ import {
 } from 'src/common/helpers'
 import { CreateAccountDto } from '../auth/dto'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateUserDto, UpdateUserDto } from './dto'
+import { CreateUserDto, UpdateUserDto } from './dtos'
 import {
 	CompanyProfileEntity,
 	PersonalProfileEntity,

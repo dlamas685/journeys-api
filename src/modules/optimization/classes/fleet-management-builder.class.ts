@@ -6,8 +6,8 @@ import {
 	CostModelDto,
 	ModifiersDto,
 	WaypointDto,
-} from 'src/modules/optimization/routes-optimization/dto'
-import { ServiceDto } from '../routes-optimization/dto/service.dto'
+} from 'src/modules/optimization/routes-optimization/dtos'
+import { ServiceDto } from '../routes-optimization/dtos/service.dto'
 
 export class FleetManagementBuilder {
 	private request: protos.google.maps.routeoptimization.v1.OptimizeToursRequest

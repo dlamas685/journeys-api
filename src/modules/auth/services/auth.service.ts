@@ -7,7 +7,7 @@ import { EmailsService } from 'src/modules/mails/mails.service'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { UserEntity } from 'src/modules/users/entities'
 import { v4 as uuid } from 'uuid'
-import { CreateUserDto } from '../../users/dto'
+import { CreateUserDto } from '../../users/dtos'
 import { UsersService } from '../../users/users.service'
 import {
 	CreateAccountDto,

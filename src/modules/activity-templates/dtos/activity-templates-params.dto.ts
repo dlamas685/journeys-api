@@ -5,7 +5,7 @@ import {
 	LogicalFilterDto,
 	QueryParamsDto,
 	SortFieldDto,
-} from '../../../common/dto'
+} from '../../../common/dtos'
 import { ActivityTemplateEntity } from '../entities/activity-template.entity'
 
 type ValidFieldsType = keyof ActivityTemplateEntity

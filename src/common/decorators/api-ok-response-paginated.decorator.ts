@@ -1,9 +1,6 @@
 import { applyDecorators, Type } from '@nestjs/common'
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger'
-import {
-	PaginatedResponseEntity,
-	PaginationMetadataEntity,
-} from '../entities/paginated-response.entity'
+import { PaginatedResponseEntity, PaginationMetadataEntity } from '../entities'
 
 export const ApiOkResponsePaginated = <Entity extends Type<unknown>>(
 	entity: Entity

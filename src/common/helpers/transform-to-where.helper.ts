@@ -1,5 +1,5 @@
 import { TransformFnParams } from 'class-transformer'
-import { FilterFieldDto } from '../dto'
+import { FilterFieldDto } from '../dtos'
 import { fromFiltersToWhere } from './from-filters-to-where.helper'
 import { fromLogicalFiltersToWhere } from './from-logical-filters-to-where.helper'
 

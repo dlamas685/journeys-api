@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { FavoritePlace } from '@prisma/client'
+import { LocationEntity } from 'src/common/entities'
 
 export class FavoritePlaceEntity implements FavoritePlace {
 	@ApiProperty()
@@ -12,12 +13,6 @@ export class FavoritePlaceEntity implements FavoritePlace {
 	placeId: string
 
 	@ApiProperty()
-	latitude: number
-
-	@ApiProperty()
-	longitude: number
-
-	@ApiProperty()
 	createdAt: Date
 
 	@ApiProperty()
@@ -25,6 +20,9 @@ export class FavoritePlaceEntity implements FavoritePlace {
 
 	@ApiProperty()
 	name: string
+
+	@ApiProperty({ type: LocationEntity })
+	location: LocationEntity
 
 	@ApiProperty()
 	address: string

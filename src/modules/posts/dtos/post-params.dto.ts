@@ -5,7 +5,7 @@ import {
 	LogicalFilterDto,
 	QueryParamsDto,
 	SortFieldDto,
-} from '../../../common/dto'
+} from '../../../common/dtos'
 import { PostEntity } from '../entities/post.entity'
 
 type ValidFieldsType = keyof PostEntity

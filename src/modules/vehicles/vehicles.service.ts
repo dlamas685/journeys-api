@@ -5,10 +5,11 @@ import {
 } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
+
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+} from 'src/common/entities'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
@@ -17,9 +18,9 @@ import {
 } from 'src/common/helpers'
 import { CloudinaryService } from '../cloudinary/cloudinary.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { VehicleQueryParamsDto } from './dto'
-import { CreateVehicleDto } from './dto/create-vehicle.dto'
-import { UpdateVehicleDto } from './dto/update-vehicle.dto'
+import { VehicleQueryParamsDto } from './dtos'
+import { CreateVehicleDto } from './dtos/create-vehicle.dto'
+import { UpdateVehicleDto } from './dtos/update-vehicle.dto'
 import { VehicleEntity } from './entities/vehicle.entity'
 
 @Injectable()

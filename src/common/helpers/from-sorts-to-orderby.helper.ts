@@ -1,4 +1,4 @@
-import { SortFieldDto } from '../dto'
+import { SortFieldDto } from '../dtos'
 
 export const fromSortsToOrderby = <T extends object>(
 	sorts?: SortFieldDto[]

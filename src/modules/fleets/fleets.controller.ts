@@ -20,9 +20,9 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { DriverQueryParamsDto } from '../drivers/dto'
+import { DriverQueryParamsDto } from '../drivers/dtos'
 import { DriverEntity } from '../drivers/entities/driver.entity'
-import { VehicleQueryParamsDto } from '../vehicles/dto'
+import { VehicleQueryParamsDto } from '../vehicles/dtos'
 import { VehicleEntity } from '../vehicles/entities/vehicle.entity'
 import {
 	CreateFleetDto,
@@ -30,7 +30,7 @@ import {
 	RelateDriversToFleetDto,
 	RelateVehiclesToFleetDto,
 	UpdateFleetDto,
-} from './dto'
+} from './dtos'
 import { FleetEntity } from './entities/fleet.entity'
 import { RelationOperations } from './enums/relation-operations.enum'
 import { FleetsService } from './fleets.service'

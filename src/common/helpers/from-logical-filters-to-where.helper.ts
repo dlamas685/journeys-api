@@ -1,4 +1,4 @@
-import { LogicalFilterDto } from '../dto'
+import { LogicalFilterDto } from '../dtos'
 import { fromFiltersToWhere } from './from-filters-to-where.helper'
 
 export const fromLogicalFiltersToWhere = <T extends object>(

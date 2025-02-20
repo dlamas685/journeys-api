@@ -1,15 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-
-export class PaginationMetadataEntity {
-	@ApiProperty()
-	total: number
-
-	@ApiProperty()
-	page: number
-
-	@ApiProperty()
-	lastPage: number
-}
+import { PaginationMetadataEntity } from './pagination-metadata.entity'
 
 export class PaginatedResponseEntity<T = any> {
 	@ApiProperty()

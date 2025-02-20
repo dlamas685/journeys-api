@@ -16,10 +16,10 @@ import {
 } from '@nestjs/swagger'
 import { UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { UpdateUserDto } from '../users/dto'
+import { UpdateUserDto } from '../users/dtos'
 import { UserEntity } from '../users/entities'
 import { UsersService } from '../users/users.service'
-import { ChangePasswordDto } from './dto/change-password.dto'
+import { ChangePasswordDto } from './dtos/change-password.dto'
 import { OptionsService } from './options.service'
 
 @ApiTags('Options')

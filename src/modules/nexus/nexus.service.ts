@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { AvailableRoadmapAssetQueryParamsDto } from './dto/available-roadmap-asset-query'
+import { AvailableRoadmapAssetQueryParamsDto } from './dtos/available-roadmap-asset-query'
 
 @Injectable()
 export class NexusService {

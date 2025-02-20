@@ -5,7 +5,7 @@ import {
 	LogicalFilterDto,
 	QueryParamsDto,
 	SortFieldDto,
-} from 'src/common/dto'
+} from 'src/common/dtos'
 import { DriverEntity } from '../entities/driver.entity'
 
 type ValidFieldsType = keyof DriverEntity

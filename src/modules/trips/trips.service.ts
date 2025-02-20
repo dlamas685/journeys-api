@@ -4,7 +4,7 @@ import { plainToInstance } from 'class-transformer'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+} from 'src/common/entities'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
@@ -14,8 +14,8 @@ import { PlacesService } from '../google-maps/services/places.service'
 import { OptimizationService } from '../optimization/optimization.service'
 import { CriteriaDto } from '../optimization/routes/dtos'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateTripDto, UpdateTripDto } from './dto'
-import { TripQueryParamsDto } from './dto/trip-params.dto'
+import { CreateTripDto, UpdateTripDto } from './dtos'
+import { TripQueryParamsDto } from './dtos/trip-params.dto'
 import { TripEntity } from './entities/trip.entity'
 
 @Injectable()

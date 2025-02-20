@@ -1,5 +1,5 @@
 import { TransformFnParams } from 'class-transformer'
-import { SortFieldDto } from '../dto'
+import { SortFieldDto } from '../dtos'
 import { fromSortsToOrderby } from './from-sorts-to-orderby.helper'
 
 export const transformToOrderby = ({ value }: TransformFnParams) => {

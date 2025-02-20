@@ -7,6 +7,7 @@ import { redisStore } from 'cache-manager-redis-store'
 import { join } from 'path'
 import { envConfig } from './config'
 import { ActivityTemplatesModule } from './modules/activity-templates/activity-templates.module'
+import { AssistantModule } from './modules/assistant/assistant.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module'
 import { DriversModule } from './modules/drivers/drivers.module'
@@ -66,6 +67,7 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module'
 		PostsModule,
 		RoadmapsModule,
 		NexusModule,
+		AssistantModule,
 	],
 	controllers: [],
 	providers: [],

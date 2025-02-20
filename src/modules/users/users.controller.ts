@@ -21,7 +21,7 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateUserDto, UpdateUserDto, UsersQueryParamsDto } from './dto'
+import { CreateUserDto, UpdateUserDto, UsersQueryParamsDto } from './dtos'
 import { UserEntity } from './entities'
 import { UsersService } from './users.service'
 

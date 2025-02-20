@@ -5,7 +5,7 @@ import {
 	LogicalFilterDto,
 	QueryParamsDto,
 	SortFieldDto,
-} from 'src/common/dto'
+} from 'src/common/dtos'
 import { FavoritePlaceEntity } from '../entities/favorite-place.entity'
 
 type ValidFieldsType = keyof FavoritePlaceEntity

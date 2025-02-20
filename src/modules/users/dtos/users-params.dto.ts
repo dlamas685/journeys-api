@@ -5,7 +5,7 @@ import {
 	LogicalFilterDto,
 	QueryParamsDto,
 	SortFieldDto,
-} from 'src/common/dto'
+} from 'src/common/dtos'
 
 const VALID_FIELDS = ['id', 'email', 'userType', 'personalProfile.firstName']
 

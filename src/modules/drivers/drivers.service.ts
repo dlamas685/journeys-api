@@ -8,7 +8,7 @@ import { plainToInstance } from 'class-transformer'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+} from 'src/common/entities'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
@@ -17,9 +17,9 @@ import {
 } from 'src/common/helpers'
 import { CloudinaryService } from '../cloudinary/cloudinary.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateDriverDto } from './dto/create-driver.dto'
-import { DriverQueryParamsDto } from './dto/driver-params.dto'
-import { UpdateDriverDto } from './dto/update-driver.dto'
+import { CreateDriverDto } from './dtos/create-driver.dto'
+import { DriverQueryParamsDto } from './dtos/driver-params.dto'
+import { UpdateDriverDto } from './dtos/update-driver.dto'
 import { DriverEntity } from './entities/driver.entity'
 
 @Injectable()

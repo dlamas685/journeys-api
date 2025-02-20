@@ -5,7 +5,7 @@ import {
 	LogicalFilterDto,
 	QueryParamsDto,
 	SortFieldDto,
-} from 'src/common/dto'
+} from 'src/common/dtos'
 import { FleetEntity } from '../entities/fleet.entity'
 
 type ValidFieldsType = keyof FleetEntity

@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common'
 import { plainToClass } from 'class-transformer'
-import { FilterFieldDto } from '../dto'
+import { FilterFieldDto } from '../dtos'
 import { FilterRules, FilterTypes } from '../enums'
 
 export const transformToFilterFieldArray = value =>

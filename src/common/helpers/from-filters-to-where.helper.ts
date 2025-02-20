@@ -1,4 +1,4 @@
-import { FilterFieldDto } from '../dto'
+import { FilterFieldDto } from '../dtos'
 import { FilterRules, FilterTypes } from '../enums'
 
 export const fromFiltersToWhere = <T extends object>(

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserEntity } from '../users/entities'
-import { ChangePasswordDto } from './dto/change-password.dto'
+import { ChangePasswordDto } from './dtos/change-password.dto'
 
 @Injectable()
 export class OptionsService {

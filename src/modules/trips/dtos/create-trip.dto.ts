@@ -12,7 +12,7 @@ import {
 	ValidateNested,
 } from 'class-validator'
 import { CriteriaDto } from 'src/modules/optimization/routes/dtos'
-import { CreatePostFromTripDto } from 'src/modules/posts/dto'
+import { CreatePostFromTripDto } from 'src/modules/posts/dtos'
 
 export class CreateTripDto {
 	@IsBoolean()

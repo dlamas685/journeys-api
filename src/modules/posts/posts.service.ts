@@ -5,16 +5,16 @@ import { plainToInstance } from 'class-transformer'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+} from 'src/common/entities'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
 import { PrismaService } from '../prisma/prisma.service'
-import { ChangePostStatusDto, PostQueryParamsDto } from './dto'
-import { CreatePostDto } from './dto/create-post.dto'
-import { UpdatePostDto } from './dto/update-post.dto'
+import { ChangePostStatusDto, PostQueryParamsDto } from './dtos'
+import { CreatePostDto } from './dtos/create-post.dto'
+import { UpdatePostDto } from './dtos/update-post.dto'
 import { PostEntity } from './entities/post.entity'
 
 @Injectable()

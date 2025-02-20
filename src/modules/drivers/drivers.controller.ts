@@ -21,9 +21,9 @@ import {
 import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { DriversService } from './drivers.service'
-import { CreateDriverDto } from './dto/create-driver.dto'
-import { DriverQueryParamsDto } from './dto/driver-params.dto'
-import { UpdateDriverDto } from './dto/update-driver.dto'
+import { CreateDriverDto } from './dtos/create-driver.dto'
+import { DriverQueryParamsDto } from './dtos/driver-params.dto'
+import { UpdateDriverDto } from './dtos/update-driver.dto'
 import { DriverEntity } from './entities/driver.entity'
 
 @Controller('drivers')

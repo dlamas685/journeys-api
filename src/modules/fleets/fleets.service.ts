@@ -4,25 +4,25 @@ import { plainToInstance } from 'class-transformer'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
-} from 'src/common/entities/paginated-response.entity'
+} from 'src/common/entities'
 import { FilterRules, FilterTypes } from 'src/common/enums'
 import {
 	fromFiltersToWhere,
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
-import { DriverQueryParamsDto } from '../drivers/dto'
+import { DriverQueryParamsDto } from '../drivers/dtos'
 import { PrismaService } from '../prisma/prisma.service'
-import { VehicleQueryParamsDto } from '../vehicles/dto'
+import { VehicleQueryParamsDto } from '../vehicles/dtos'
 import { VehicleEntity } from '../vehicles/entities/vehicle.entity'
 import { VehiclesService } from '../vehicles/vehicles.service'
 import {
 	FleetQueryParamsDto,
 	RelateDriversToFleetDto,
 	RelateVehiclesToFleetDto,
-} from './dto'
-import { CreateFleetDto } from './dto/create-fleet.dto'
-import { UpdateFleetDto } from './dto/update-fleet.dto'
+} from './dtos'
+import { CreateFleetDto } from './dtos/create-fleet.dto'
+import { UpdateFleetDto } from './dtos/update-fleet.dto'
 import { FleetEntity } from './entities/fleet.entity'
 
 @Injectable()

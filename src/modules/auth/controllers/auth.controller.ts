@@ -12,7 +12,7 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
-import { CreateUserDto } from 'src/modules/users/dto'
+import { CreateUserDto } from 'src/modules/users/dtos'
 import { UserEntity } from 'src/modules/users/entities'
 import {
 	LoginDto,

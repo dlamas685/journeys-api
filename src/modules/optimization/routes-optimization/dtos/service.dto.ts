@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { IsNumber, IsPositive, IsUUID, ValidateNested } from 'class-validator'
-import { CreateActivityDto } from 'src/modules/activity-templates/dto'
+import { CreateActivityDto } from 'src/modules/activity-templates/dtos'
 import { WaypointDto } from './waypoint.dto'
 
 export class ServiceDto extends CreateActivityDto {
