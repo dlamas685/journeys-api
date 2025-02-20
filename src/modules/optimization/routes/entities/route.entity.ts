@@ -1,14 +1,11 @@
-import { protos } from '@googlemaps/routing'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { formatTime } from 'src/common/helpers'
 import { v4 as uuid } from 'uuid'
-import { AdvancedWaypointDto } from '../dto'
-import { RouteLabel, Speed } from '../enums'
-import { LegEntity, LegEntityBuilder } from './leg.entity'
+import { RouteLabel } from '../enums'
+import { LegEntity } from './leg.entity'
 import { LocalizedValuesEntity } from './localized-values.entity'
-import { MoneyEntity } from './money.entity'
-import { PassageEntity, PassageEntityBuilder } from './passage.entity'
-import { StopEntity, StopEntityBuilder } from './stop.entity'
+import { PassageEntity } from './passage.entity'
+import { StopEntity } from './stop.entity'
 import { TravelAdvisoryEntity } from './travel-advisory.entity'
 
 export class RouteEntity {
@@ -71,12 +68,9 @@ export class RouteEntityBuilder {
 		return this
 	}
 
-	setDuration(
-		duration: protos.google.protobuf.IDuration,
-		staticDuration: protos.google.protobuf.IDuration
-	): RouteEntityBuilder {
-		this.route.duration = Number(duration.seconds)
-		this.route.staticDuration = Number(staticDuration.seconds)
+	setDuration(duration: number, staticDuration: number): RouteEntityBuilder {
+		this.route.duration = duration
+		this.route.staticDuration = staticDuration
 		return this
 	}
 
@@ -85,83 +79,35 @@ export class RouteEntityBuilder {
 		return this
 	}
 
-	setLabels(
-		routeLabels: protos.google.maps.routing.v2.RouteLabel[]
-	): RouteEntityBuilder {
+	setLabels(routeLabels: RouteLabel[]): RouteEntityBuilder {
 		this.route.routeLabels = routeLabels
 		return this
 	}
 
-	setTravelAdvisory(
-		travelAdvisory: protos.google.maps.routing.v2.IRouteTravelAdvisory
-	): RouteEntityBuilder {
-		if (travelAdvisory.tollInfo) {
-			const estimatedPrice = travelAdvisory.tollInfo.estimatedPrice.map(
-				price =>
-					new MoneyEntity({
-						currencyCode: price.currencyCode,
-						units: price.units.toString(),
-						nanos: price.nanos,
-					})
-			)
-
-			this.route.travelAdvisory.tollInfo.estimatedPrice = estimatedPrice
-		}
-
-		this.route.travelAdvisory.routeRestrictionsPartiallyIgnored =
-			travelAdvisory.routeRestrictionsPartiallyIgnored
-
-		this.route.travelAdvisory.speedReadingIntervals =
-			travelAdvisory.speedReadingIntervals.map(interval => {
-				return {
-					startPolylinePointIndex: interval.startPolylinePointIndex,
-					endPolylinePointIndex: interval.endPolylinePointIndex,
-					speed: interval.speed as Speed,
-				}
-			})
-
+	setTravelAdvisory(travelAdvisory: TravelAdvisoryEntity): RouteEntityBuilder {
+		this.route.travelAdvisory = travelAdvisory
 		return this
 	}
 
 	setLocalizedValues(
-		localizedValues: protos.google.maps.routing.v2.Route.IRouteLocalizedValues
+		localizedValues: LocalizedValuesEntity
 	): RouteEntityBuilder {
-		this.route.localizedValues.distance = localizedValues.distance.text
-		this.route.localizedValues.duration = localizedValues.duration.text
-		this.route.localizedValues.staticDuration =
-			localizedValues.staticDuration.text
+		this.route.localizedValues = localizedValues
 		return this
 	}
 
-	setLegs(legs: protos.google.maps.routing.v2.IRouteLeg[]): RouteEntityBuilder {
-		this.route.legs = legs.map(leg => {
-			return new LegEntityBuilder()
-				.setDistance(leg.distanceMeters)
-				.setDuration(leg.duration, leg.staticDuration)
-				.setPolyline(leg.polyline.encodedPolyline)
-				.setStartLocation(leg.startLocation)
-				.setEndLocation(leg.endLocation)
-				.setLocalizedValues(leg.localizedValues)
-				.setTravelAdvisory(leg.travelAdvisory)
-				.setSteps(leg.steps)
-				.build()
-		})
-
+	setLegs(legs: LegEntity[]): RouteEntityBuilder {
+		this.route.legs = legs
 		return this
 	}
 
-	setStops(interestPoints: AdvancedWaypointDto[]): RouteEntityBuilder {
-		this.route.stops = interestPoints
-			.filter(intermediate => intermediate.vehicleStopover)
-			.map(intermediate => {
-				return new StopEntityBuilder()
-					.setAddress(intermediate.address)
-					.setLocation(intermediate.location)
-					.setPlaceId(intermediate.placeId)
-					.setActivities(intermediate.activities)
-					.setDuration(intermediate.activities)
-					.build()
-			})
+	setLeg(leg: LegEntity) {
+		this.route.legs.push(leg)
+		return this
+	}
+
+	setStops(stops: StopEntity[]): RouteEntityBuilder {
+		this.route.stops = stops
 
 		const stopsDuration = this.route.stops.reduce(
 			(acc, stop) => acc + stop.duration,
@@ -179,17 +125,27 @@ export class RouteEntityBuilder {
 		return this
 	}
 
-	setPassages(intermediates: AdvancedWaypointDto[]): RouteEntityBuilder {
-		this.route.passages = intermediates
-			.filter(intermediate => !intermediate.vehicleStopover)
-			.map(intermediate => {
-				return new PassageEntityBuilder()
-					.setAddress(intermediate.address)
-					.setLocation(intermediate.location)
-					.setPlaceId(intermediate.placeId)
-					.build()
-			})
+	setStop(stop: StopEntity): RouteEntityBuilder {
+		this.route.stops.push(stop)
 
+		this.route.duration += stop.duration
+
+		this.route.staticDuration += stop.duration
+
+		this.route.localizedValues.duration = formatTime(this.route.duration)
+
+		this.route.localizedValues.staticDuration = formatTime(this.route.duration)
+
+		return this
+	}
+
+	setPassages(passages: PassageEntity[]): RouteEntityBuilder {
+		this.route.passages = passages
+		return this
+	}
+
+	setPassage(passage: PassageEntity): RouteEntityBuilder {
+		this.route.passages.push(passage)
 		return this
 	}
 

@@ -1,11 +1,8 @@
-import { protos } from '@googlemaps/routing'
 import { ApiProperty } from '@nestjs/swagger'
-import { Speed } from '../enums'
 import { LocationEntity } from './location.entity'
-import { MoneyEntity } from './money.entity'
 import { RouteLegLocalizedValuesEntity } from './route-leg-localized-values.entity'
 import { RouteLegTravelAdvisoryEntity } from './route-leg-travel-advisory.entity'
-import { StepEntity, StepEntityBuilder } from './step.entity'
+import { StepEntity } from './step.entity'
 
 export class LegEntity {
 	@ApiProperty({ type: [StepEntity] })
@@ -56,12 +53,9 @@ export class LegEntityBuilder {
 		return this
 	}
 
-	setDuration(
-		duration: protos.google.protobuf.IDuration,
-		staticDuration: protos.google.protobuf.IDuration
-	): LegEntityBuilder {
-		this.leg.duration = Number(duration.seconds)
-		this.leg.staticDuration = Number(staticDuration.seconds)
+	setDuration(duration: number, staticDuration: number): LegEntityBuilder {
+		this.leg.duration = duration
+		this.leg.staticDuration = staticDuration
 		return this
 	}
 
@@ -70,77 +64,39 @@ export class LegEntityBuilder {
 		return this
 	}
 
-	setStartLocation(
-		location: protos.google.maps.routing.v2.ILocation
-	): LegEntityBuilder {
-		this.leg.startLocation.latitude = location.latLng.latitude
-		this.leg.startLocation.longitude = location.latLng.longitude
+	setStartLocation(location: LocationEntity): LegEntityBuilder {
+		this.leg.startLocation.latitude = location.latitude
+		this.leg.startLocation.longitude = location.longitude
 		return this
 	}
 
-	setEndLocation(
-		location: protos.google.maps.routing.v2.ILocation
-	): LegEntityBuilder {
-		this.leg.endLocation.latitude = location.latLng.latitude
-		this.leg.endLocation.longitude = location.latLng.longitude
+	setEndLocation(location: LocationEntity): LegEntityBuilder {
+		this.leg.endLocation.latitude = location.latitude
+		this.leg.endLocation.longitude = location.longitude
 		return this
 	}
 
 	setLocalizedValues(
-		localizedValues: protos.google.maps.routing.v2.RouteLegStep.IRouteLegStepLocalizedValues
+		localizedValues: RouteLegLocalizedValuesEntity
 	): LegEntityBuilder {
-		this.leg.localizedValues.distance = localizedValues.distance.text
-		this.leg.localizedValues.staticDuration =
-			localizedValues.staticDuration.text
+		this.leg.localizedValues = localizedValues
 		return this
 	}
 
 	setTravelAdvisory(
-		travelAdvisory: protos.google.maps.routing.v2.IRouteTravelAdvisory
+		travelAdvisory: RouteLegTravelAdvisoryEntity
 	): LegEntityBuilder {
-		if (!travelAdvisory) return this
-
-		if (travelAdvisory.tollInfo) {
-			const estimatedPrice = travelAdvisory.tollInfo.estimatedPrice.map(
-				price =>
-					new MoneyEntity({
-						currencyCode: price.currencyCode,
-						units: price.units.toString(),
-						nanos: price.nanos,
-					})
-			)
-
-			this.leg.travelAdvisory.tollInfo.estimatedPrice = estimatedPrice
-		}
-
-		this.leg.travelAdvisory.speedReadingIntervals =
-			travelAdvisory.speedReadingIntervals
-				? travelAdvisory.speedReadingIntervals.map(interval => ({
-						startPolylinePointIndex: interval.startPolylinePointIndex,
-						endPolylinePointIndex: interval.endPolylinePointIndex,
-						speed: interval.speed as Speed,
-					}))
-				: []
-
+		this.leg.travelAdvisory = travelAdvisory
 		return this
 	}
 
-	setSteps(
-		steps: protos.google.maps.routing.v2.IRouteLegStep[]
-	): LegEntityBuilder {
-		this.leg.steps = steps.map(step => {
-			const newStep = new StepEntityBuilder()
-				.setPolyline(step.polyline.encodedPolyline)
-				.setStartLocation(step.startLocation)
-				.setEndLocation(step.endLocation)
-				.setNavigationInstruction(step.navigationInstruction)
-				.setLocalizedValues(step.localizedValues)
-				.setTravelAdvisory(step.travelAdvisory)
-				.build()
+	setSteps(steps: StepEntity[]): LegEntityBuilder {
+		this.leg.steps = steps
+		return this
+	}
 
-			return newStep
-		})
-
+	setStep = (step: StepEntity): LegEntityBuilder => {
+		this.leg.steps.push(step)
 		return this
 	}
 

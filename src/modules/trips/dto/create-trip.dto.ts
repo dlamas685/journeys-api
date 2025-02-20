@@ -11,7 +11,7 @@ import {
 	IsPositive,
 	ValidateNested,
 } from 'class-validator'
-import { CriteriaDto } from 'src/modules/optimization/routes/dto'
+import { CriteriaDto } from 'src/modules/optimization/routes/dtos'
 import { CreatePostFromTripDto } from 'src/modules/posts/dto'
 
 export class CreateTripDto {

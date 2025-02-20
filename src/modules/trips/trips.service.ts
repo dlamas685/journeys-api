@@ -12,7 +12,7 @@ import {
 } from 'src/common/helpers'
 import { PlacesService } from '../google-maps/services/places.service'
 import { OptimizationService } from '../optimization/optimization.service'
-import { CriteriaDto } from '../optimization/routes/dto'
+import { CriteriaDto } from '../optimization/routes/dtos'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateTripDto, UpdateTripDto } from './dto'
 import { TripQueryParamsDto } from './dto/trip-params.dto'

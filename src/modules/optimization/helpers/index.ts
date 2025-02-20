@@ -1,4 +1,5 @@
 export * from './from-duration.helper'
 export * from './from-timestamp.helper'
+export * from './is-nearby.helper'
 export * from './to-duration.helper'
 export * from './to-timestamp.helper'

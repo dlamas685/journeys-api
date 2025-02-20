@@ -1,6 +1,4 @@
-import { protos } from '@googlemaps/routing'
 import { ApiProperty } from '@nestjs/swagger'
-import { Maneuver, Speed } from '../enums'
 import { LocationEntity } from './location.entity'
 import { NavigationInstructionEntity } from './navigation-instruction.entity'
 import { RouteLegStepLocalizedValues } from './route-leg-step-localized-values.entity'
@@ -52,10 +50,8 @@ export class StepEntityBuilder {
 		return this
 	}
 
-	setDuration(
-		staticDuration: protos.google.protobuf.IDuration
-	): StepEntityBuilder {
-		this.step.staticDuration = Number(staticDuration.seconds)
+	setDuration(staticDuration: number): StepEntityBuilder {
+		this.step.staticDuration = staticDuration
 		return this
 	}
 
@@ -64,53 +60,37 @@ export class StepEntityBuilder {
 		return this
 	}
 
-	setStartLocation(
-		location: protos.google.maps.routing.v2.ILocation
-	): StepEntityBuilder {
-		this.step.startLocation.latitude = location.latLng.latitude
-		this.step.startLocation.longitude = location.latLng.longitude
+	setStartLocation(location: LocationEntity): StepEntityBuilder {
+		this.step.startLocation.latitude = location.latitude
+		this.step.startLocation.longitude = location.longitude
 		return this
 	}
 
-	setEndLocation(
-		location: protos.google.maps.routing.v2.ILocation
-	): StepEntityBuilder {
-		this.step.endLocation.latitude = location.latLng.latitude
-		this.step.endLocation.longitude = location.latLng.longitude
+	setEndLocation(location: LocationEntity): StepEntityBuilder {
+		this.step.endLocation.latitude = location.latitude
+		this.step.endLocation.longitude = location.longitude
 		return this
 	}
 
 	setNavigationInstruction(
-		navigationInstruction: protos.google.maps.routing.v2.INavigationInstruction
+		navigationInstruction: NavigationInstructionEntity
 	): StepEntityBuilder {
 		this.step.navigationInstruction.instructions =
-			navigationInstruction?.instructions
-
-		this.step.navigationInstruction.maneuver =
-			navigationInstruction?.maneuver as Maneuver
+			navigationInstruction.instructions
 		return this
 	}
 
 	setLocalizedValues(
-		localizedValues: protos.google.maps.routing.v2.RouteLegStep.IRouteLegStepLocalizedValues
+		localizedValues: RouteLegStepLocalizedValues
 	): StepEntityBuilder {
-		this.step.localizedValues.distance = localizedValues.distance.text
-		this.step.localizedValues.staticDuration =
-			localizedValues.staticDuration.text
+		this.step.localizedValues = localizedValues
 		return this
 	}
 
 	setTravelAdvisory(
-		travelAdvisory: protos.google.maps.routing.v2.IRouteLegStepTravelAdvisory
+		travelAdvisory: RouteLegStepTravelAdvisory
 	): StepEntityBuilder {
-		this.step.travelAdvisory.speedReadingIntervals = travelAdvisory
-			? travelAdvisory.speedReadingIntervals.map(interval => ({
-					startPolylinePointIndex: interval.startPolylinePointIndex,
-					endPolylinePointIndex: interval.endPolylinePointIndex,
-					speed: interval.speed as Speed,
-				}))
-			: []
-
+		this.step.travelAdvisory = travelAdvisory
 		return this
 	}
 

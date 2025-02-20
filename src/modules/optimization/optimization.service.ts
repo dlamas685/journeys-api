@@ -1,16 +1,27 @@
+import { TZDate } from '@date-fns/tz'
 import { Injectable, NotFoundException } from '@nestjs/common'
+
+import { TIME_ZONES } from 'src/common/constants'
 import { DriversService } from '../drivers/drivers.service'
 import { FleetsService } from '../fleets/fleets.service'
 import { RouteOptimizationService } from '../google-maps/services/route-optimization.service'
 import { RoutesService } from '../google-maps/services/routes.service'
 import { VehiclesService } from '../vehicles/vehicles.service'
 import { FleetManagementBuilder, TravelPlanningBuilder } from './classes'
+import { isNearby } from './helpers'
 import { COST_PROFILES } from './routes-optimization/constants/cost-profiles.constant'
 import { SettingDto } from './routes-optimization/dto'
 import { RoadmapOptimizationBuilderEntity } from './routes-optimization/entities'
 import { CostProfile } from './routes-optimization/enums/cost-profile.enum'
-import { BasicCriteriaDto, CriteriaDto } from './routes/dto'
-import { RouteEntityBuilder } from './routes/entities'
+import { BasicCriteriaDto, CriteriaDto } from './routes/dtos'
+import {
+	LegEntityBuilder,
+	PassageEntityBuilder,
+	RouteEntityBuilder,
+	StepEntityBuilder,
+	StopEntityBuilder,
+} from './routes/entities'
+import { Maneuver, Speed } from './routes/enums'
 
 @Injectable()
 export class OptimizationService {
@@ -45,9 +56,16 @@ export class OptimizationService {
 		const optimization = response.routes.map(route =>
 			new RouteEntityBuilder()
 				.setDistance(route.distanceMeters)
-				.setDuration(route.duration, route.staticDuration)
+				.setDuration(
+					Number(route.duration.seconds),
+					Number(route.staticDuration.seconds)
+				)
 				.setPolyline(route.polyline.encodedPolyline)
-				.setLocalizedValues(route.localizedValues)
+				.setLocalizedValues({
+					distance: route.localizedValues.distance.text,
+					duration: route.localizedValues.duration.text,
+					staticDuration: route.localizedValues.staticDuration.text,
+				})
 				.setPassages(basicCriteria.interestPoints)
 				.build()
 		)
@@ -124,20 +142,163 @@ export class OptimizationService {
 		const optimization = response.routes.map(route => {
 			const routeBuilder = new RouteEntityBuilder()
 				.setDistance(route.distanceMeters)
-				.setDuration(route.duration, route.staticDuration)
+				.setDuration(
+					Number(route.duration.seconds),
+					Number(route.staticDuration.seconds)
+				)
 				.setPolyline(route.polyline.encodedPolyline)
 				.setLabels(route.routeLabels)
-				.setTravelAdvisory(route.travelAdvisory)
-				.setLocalizedValues(route.localizedValues)
-				.setLegs(route.legs)
+				.setLocalizedValues({
+					distance: route.localizedValues.distance.text,
+					duration: route.localizedValues.duration.text,
+					staticDuration: route.localizedValues.staticDuration.text,
+				})
+
+			if (route.travelAdvisory) {
+				routeBuilder.setTravelAdvisory({
+					routeRestrictionsPartiallyIgnored:
+						route.travelAdvisory.routeRestrictionsPartiallyIgnored,
+					speedReadingIntervals:
+						route.travelAdvisory.speedReadingIntervals?.map(interval => ({
+							startPolylinePointIndex: interval.startPolylinePointIndex,
+							endPolylinePointIndex: interval.endPolylinePointIndex,
+							speed: interval.speed as Speed,
+						})) ?? [],
+					tollInfo: {
+						estimatedPrice:
+							route.travelAdvisory.tollInfo?.estimatedPrice?.map(price => ({
+								currencyCode: price.currencyCode,
+								units: price.units.toString(),
+								nanos: price.nanos,
+							})) ?? [],
+					},
+				})
+			}
+
+			const legs = route.legs.map(leg => {
+				const legBuilder = new LegEntityBuilder()
+					.setDistance(leg.distanceMeters)
+					.setDuration(
+						Number(leg.duration.seconds),
+						Number(leg.staticDuration.seconds)
+					)
+					.setEndLocation({
+						latitude: leg.endLocation.latLng.latitude,
+						longitude: leg.endLocation.latLng.longitude,
+					})
+					.setStartLocation({
+						latitude: leg.startLocation.latLng.latitude,
+						longitude: leg.startLocation.latLng.longitude,
+					})
+					.setPolyline(leg.polyline.encodedPolyline)
+					.setLocalizedValues({
+						distance: leg.localizedValues.distance.text,
+						duration: leg.localizedValues.duration.text,
+						staticDuration: leg.localizedValues.staticDuration.text,
+					})
+
+				const steps = leg.steps.map(step => {
+					const stepBuilder = new StepEntityBuilder()
+						.setDistance(step.distanceMeters)
+						.setDuration(Number(step.staticDuration.seconds))
+						.setEndLocation({
+							latitude: step.endLocation.latLng.latitude,
+							longitude: step.endLocation.latLng.longitude,
+						})
+						.setStartLocation({
+							latitude: step.startLocation.latLng.latitude,
+							longitude: step.startLocation.latLng.longitude,
+						})
+						.setPolyline(step.polyline.encodedPolyline)
+						.setLocalizedValues({
+							distance: step.localizedValues.distance.text,
+							staticDuration: step.localizedValues.staticDuration.text,
+						})
+						.setNavigationInstruction({
+							instructions: step.navigationInstruction?.instructions,
+							maneuver: step.navigationInstruction?.maneuver as Maneuver,
+						})
+
+					if (step.travelAdvisory) {
+						stepBuilder.setTravelAdvisory({
+							speedReadingIntervals:
+								step.travelAdvisory.speedReadingIntervals?.map(interval => ({
+									startPolylinePointIndex: interval.startPolylinePointIndex,
+									endPolylinePointIndex: interval.endPolylinePointIndex,
+									speed: interval.speed as Speed,
+								})) ?? [],
+						})
+					}
+
+					return stepBuilder.build()
+				})
+
+				return legBuilder.setSteps(steps).build()
+			})
+
+			routeBuilder.setLegs(legs)
 
 			if (
 				criteriaDto.advancedCriteria &&
 				criteriaDto.advancedCriteria.interestPoints &&
 				criteriaDto.advancedCriteria.interestPoints.length > 0
 			) {
-				routeBuilder.setStops(criteriaDto.advancedCriteria.interestPoints)
-				routeBuilder.setPassages(criteriaDto.advancedCriteria.interestPoints)
+				const departureTime = new Date(criteriaDto.basicCriteria.departureTime)
+
+				let startDateTimeWithTraffic = new TZDate(departureTime, TIME_ZONES.AR)
+
+				let startDateTimeWithoutTraffic = new TZDate(
+					departureTime,
+					TIME_ZONES.AR
+				)
+
+				console.log(startDateTimeWithTraffic)
+
+				criteriaDto.advancedCriteria.interestPoints
+					.filter(interestPoint => interestPoint.vehicleStopover)
+					.forEach(interestPoint => {
+						const { duration, staticDuration } = legs.find(leg =>
+							isNearby(leg.endLocation, interestPoint.location, 2)
+						)
+
+						const stopBuilder = new StopEntityBuilder()
+							.setActivities(interestPoint.activities)
+							.setPlaceId(interestPoint.placeId)
+							.setAddress(interestPoint.address)
+							.setLocation(interestPoint.location)
+							.setDateTime(
+								startDateTimeWithTraffic,
+								startDateTimeWithoutTraffic,
+								duration,
+								staticDuration
+							)
+
+						const stop = stopBuilder.build()
+
+						startDateTimeWithTraffic = new TZDate(
+							stop.estimatedDepartureDateTimeWithTraffic,
+							TIME_ZONES.AR
+						)
+
+						startDateTimeWithoutTraffic = new TZDate(
+							stop.estimatedDepartureDateTimeWithoutTraffic,
+							TIME_ZONES.AR
+						)
+
+						routeBuilder.setStop(stop)
+					})
+
+				const passages = criteriaDto.advancedCriteria.interestPoints
+					.filter(interestPoint => !interestPoint.vehicleStopover)
+					.map(interestPoint =>
+						new PassageEntityBuilder()
+							.setAddress(interestPoint.address)
+							.setLocation(interestPoint.location)
+							.setPlaceId(interestPoint.placeId)
+							.build()
+					)
+
+				routeBuilder.setPassages(passages)
 			}
 
 			return routeBuilder.build()

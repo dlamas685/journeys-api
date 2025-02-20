@@ -22,7 +22,7 @@ import { SettingDto } from './routes-optimization/dto'
 import { RoadmapOptimizationEntity } from './routes-optimization/entities'
 import { CostProfileEntity } from './routes-optimization/entities/cost-profile.entity'
 import { CostProfile } from './routes-optimization/enums/cost-profile.enum'
-import { BasicCriteriaDto, CriteriaDto } from './routes/dto'
+import { BasicCriteriaDto, CriteriaDto } from './routes/dtos'
 import { RouteEntity } from './routes/entities'
 
 @UseGuards(JwtAuthGuard)

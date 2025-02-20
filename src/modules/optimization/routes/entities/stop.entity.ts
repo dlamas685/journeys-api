@@ -1,7 +1,10 @@
+import { TZDate } from '@date-fns/tz'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { addSeconds } from 'date-fns/addSeconds'
+import { TIME_ZONES } from 'src/common/constants'
 import { ActivityEntity } from 'src/modules/activity-templates/entities'
 import { v4 as uuid } from 'uuid'
-import { AdvancedWaypointActivityDto, LocationDto } from '../dto'
+import { AdvancedWaypointActivityDto, LocationDto } from '../dtos'
 import { LocationEntity } from './location.entity'
 
 export class StopEntity {
@@ -19,6 +22,18 @@ export class StopEntity {
 
 	@ApiProperty()
 	duration: number
+
+	@ApiProperty()
+	estimatedArrivalDateTimeWithTraffic: string
+
+	@ApiProperty()
+	estimatedDepartureDateTimeWithTraffic: string
+
+	@ApiProperty()
+	estimatedArrivalDateTimeWithoutTraffic: string
+
+	@ApiProperty()
+	estimatedDepartureDateTimeWithoutTraffic: string
 
 	constructor() {
 		this.location = new LocationEntity()
@@ -56,14 +71,43 @@ export class StopEntityBuilder {
 			duration: activity.duration,
 			description: activity.description,
 		}))
-		return this
-	}
 
-	setDuration(activities: AdvancedWaypointActivityDto[]): StopEntityBuilder {
 		this.stop.duration = activities.reduce(
 			(acc, activity) => acc + activity.duration,
 			0
 		)
+		return this
+	}
+
+	setDateTime(
+		startDateTimeWithTraffic: TZDate,
+		startDateTimeWithoutTraffic: TZDate,
+		duration: number,
+		staticDuration: number
+	): StopEntityBuilder {
+		this.stop.estimatedArrivalDateTimeWithTraffic = addSeconds(
+			startDateTimeWithTraffic,
+			duration
+		).toISOString()
+
+		this.stop.estimatedDepartureDateTimeWithTraffic = addSeconds(
+			new TZDate(this.stop.estimatedArrivalDateTimeWithTraffic, TIME_ZONES.AR),
+			this.stop.duration
+		).toISOString()
+
+		this.stop.estimatedArrivalDateTimeWithoutTraffic = addSeconds(
+			startDateTimeWithoutTraffic,
+			staticDuration
+		).toISOString()
+
+		this.stop.estimatedDepartureDateTimeWithoutTraffic = addSeconds(
+			new TZDate(
+				this.stop.estimatedArrivalDateTimeWithoutTraffic,
+				TIME_ZONES.AR
+			),
+			this.stop.duration
+		).toISOString()
+
 		return this
 	}
 
