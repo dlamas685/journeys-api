@@ -9,6 +9,9 @@ import { AdvancedWaypointActivityDto, LocationDto } from '../dtos'
 
 export class StopEntity {
 	@ApiProperty()
+	name: string
+
+	@ApiProperty()
 	address: string
 
 	@ApiProperty({ type: LocationEntity })
@@ -46,6 +49,11 @@ export class StopEntityBuilder {
 
 	constructor() {
 		this.stop = new StopEntity()
+	}
+
+	setName(name: string): StopEntityBuilder {
+		this.stop.name = name
+		return this
 	}
 
 	setAddress(address: string): StopEntityBuilder {

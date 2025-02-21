@@ -55,17 +55,6 @@ export class OptimizationController {
 		return this.optimization.computeAdvancedOptimization(criteriaDto)
 	}
 
-	@Post('/refinement')
-	@HttpCode(HttpStatus.OK)
-	@ApiOperation({
-		summary: 'Refinamiento de optimización',
-		description: 'Permite refinar una optimización previa.',
-	})
-	@ApiOkResponse({ type: RouteEntity })
-	refineOptimization(@Body() criteriaDto: CriteriaDto) {
-		return this.optimization.refineOptimization(criteriaDto)
-	}
-
 	@Post('/tours')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({

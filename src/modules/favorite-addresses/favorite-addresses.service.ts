@@ -90,7 +90,7 @@ export class FavoriteAddressesService {
 				return new FavoriteAddressEntity({
 					...record,
 					address: placeDetails.formattedAddress,
-					name: placeDetails.name,
+					name: placeDetails.displayName.text,
 					location: plainToInstance(LocationEntity, placeDetails.location),
 				})
 			})

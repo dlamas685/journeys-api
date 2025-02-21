@@ -58,6 +58,7 @@ export class PlacesService {
 			)
 
 			await this.cacheManager.set(detailCacheKey, result)
+
 			return result
 		} catch (error) {
 			this.logger.error(

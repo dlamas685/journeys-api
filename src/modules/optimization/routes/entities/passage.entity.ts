@@ -12,6 +12,9 @@ export class PassageEntity {
 	@ApiProperty()
 	placeId: string
 
+	@ApiProperty()
+	name: string
+
 	constructor() {
 		this.location = new LocationEntity()
 	}
@@ -24,14 +27,18 @@ export class PassageEntityBuilder {
 		this.passage = new PassageEntity()
 	}
 
+	setName(name: string): PassageEntityBuilder {
+		this.passage.name = name
+		return this
+	}
+
 	setAddress(address: string): PassageEntityBuilder {
 		this.passage.address = address
 		return this
 	}
 
 	setLocation(location: LocationDto): PassageEntityBuilder {
-		this.passage.location.latitude = location.latitude
-		this.passage.location.longitude = location.longitude
+		this.passage.location = location
 		return this
 	}
 

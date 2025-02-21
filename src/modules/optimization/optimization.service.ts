@@ -9,7 +9,7 @@ import { RouteOptimizationService } from '../google-maps/services/route-optimiza
 import { RoutesService } from '../google-maps/services/routes.service'
 import { VehiclesService } from '../vehicles/vehicles.service'
 import { FleetManagementBuilder, TravelPlanningBuilder } from './classes'
-import { isNearby, isPlaceOpenAtTime } from './helpers'
+import { isNearby } from './helpers'
 import { COST_PROFILES } from './routes-optimization/constants/cost-profiles.constant'
 import { SettingDto } from './routes-optimization/dtos'
 import { RoadmapOptimizationBuilderEntity } from './routes-optimization/entities'
@@ -20,7 +20,6 @@ import {
 	PassageEntityBuilder,
 	RouteEntityBuilder,
 	StepEntityBuilder,
-	StopEntity,
 	StopEntityBuilder,
 } from './routes/entities'
 import { Maneuver, Speed } from './routes/enums'
@@ -69,7 +68,16 @@ export class OptimizationService {
 					duration: route.localizedValues.duration.text,
 					staticDuration: route.localizedValues.staticDuration.text,
 				})
-				.setPassages(basicCriteria.interestPoints)
+				.setPassages(
+					basicCriteria.interestPoints.map(interestPoint =>
+						new PassageEntityBuilder()
+							.setName(interestPoint.name)
+							.setAddress(interestPoint.address)
+							.setLocation(interestPoint.location)
+							.setPlaceId(interestPoint.placeId)
+							.build()
+					)
+				)
 				.build()
 		)
 
@@ -255,8 +263,6 @@ export class OptimizationService {
 					TIME_ZONES.AR
 				)
 
-				console.log(startDateTimeWithTraffic)
-
 				criteriaDto.advancedCriteria.interestPoints
 					.filter(interestPoint => interestPoint.vehicleStopover)
 					.forEach(interestPoint => {
@@ -265,6 +271,7 @@ export class OptimizationService {
 						)
 
 						const stopBuilder = new StopEntityBuilder()
+							.setName(interestPoint.name)
 							.setActivities(interestPoint.activities)
 							.setPlaceId(interestPoint.placeId)
 							.setAddress(interestPoint.address)
@@ -308,58 +315,6 @@ export class OptimizationService {
 		})
 
 		return optimization
-	}
-
-	async refineOptimization(criteriaDto: CriteriaDto) {
-		const routes = criteriaDto.advancedCriteria
-			? await this.computeAdvancedOptimization(criteriaDto)
-			: await this.computeBasicOptimization(criteriaDto.basicCriteria)
-
-		if (routes.length > 1) {
-			return ''
-		}
-
-		const route = routes.at(0)
-		const closedStops: Array<{ stop: StopEntity; alternatives: any[] }> = []
-
-		await Promise.all(
-			route.stops.map(async stop => {
-				const place = await this.places.getPlaceDetails(stop.placeId, [
-					'regularOpeningHours',
-				])
-
-				const arrivalDate = new Date(stop.estimatedArrivalDateTimeWithTraffic)
-				const dayOfWeek = arrivalDate.getUTCDay()
-				const arrivalHour = arrivalDate.getUTCHours()
-				const arrivalMinutes = arrivalDate.getUTCMinutes()
-
-				const openingPeriods =
-					place.regularOpeningHours?.periods.filter(
-						period => period.open.day === dayOfWeek
-					) || []
-
-				const isOpen = openingPeriods.some(period => {
-					return isPlaceOpenAtTime(period, arrivalHour, arrivalMinutes)
-				})
-
-				if (!isOpen) {
-					console.log(
-						`Stop at ${place.id}: Closed on arrival. Finding alternatives...`
-					)
-
-					const alternatives = await this.places.nearbySearch(
-						stop.location,
-						place.types
-					)
-
-					closedStops.push({ stop, alternatives })
-				} else {
-					console.log(`Stop at ${stop.placeId}: Open on arrival.`)
-				}
-			})
-		)
-
-		return { routes, closedStops }
 	}
 
 	async optimizeTours(userId: string, settingDto: SettingDto) {
@@ -447,28 +402,3 @@ export class OptimizationService {
 		return COST_PROFILES[profile]
 	}
 }
-
-/*
- 
-	Mi respuesta puede tener un array de rutas o una sola ruta.
-	Mi respuesta debe incluir la distancia total que demora la ruta y la duración total de la ruta.
-	Mi respuesta puede incluir distancia y duración para cada tramo de la ruta.
-	Mi respuesta debe incluir una polilínea codificada de la ruta completa.
-	Mi respuesta puede incluir una polilínea codificada para cada tramo de la ruta.
-
-	Una ruta generara un tramo si tiene al menos un punto intermedio que sea una parada.
-
-	Los puntos intermedios de paso no generan tramo.
-
-	La duración en un punto intermedio es la suma de las duraciones de las actividades que lo componen. (waypointDuration)
-
-	La duración de un tramo es lo que se tarda en ir de un punto de referencia a otro. (legDuration)
-
-	La duración total de la ruta es la suma de las duraciones de los tramos + la duración de las actividades de los puntos intermedios que son paradas. (totalDuration)
-
-	La distancia de un tramo es la distancia de un punto a otro. (legDistance)
-
-	La distancia total de la ruta es la suma de las distancias de los tramos. (totalDistance)
-
-
- */

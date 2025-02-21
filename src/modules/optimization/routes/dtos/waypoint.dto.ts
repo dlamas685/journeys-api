@@ -22,6 +22,10 @@ export class WaypointDto {
 	@ApiProperty()
 	location: LocationDto
 
+	@IsNotEmpty()
+	@ApiProperty()
+	name: string
+
 	@IsOptional()
 	@IsBoolean()
 	@ApiPropertyOptional()
