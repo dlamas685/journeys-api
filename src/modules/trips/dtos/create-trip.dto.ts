@@ -12,7 +12,6 @@ import {
 	ValidateNested,
 } from 'class-validator'
 import { CriteriaDto } from 'src/modules/optimization/routes/dtos'
-import { CreatePostFromTripDto } from 'src/modules/posts/dtos'
 
 export class CreateTripDto {
 	@IsBoolean()
@@ -57,10 +56,4 @@ export class CreateTripDto {
 	@Type(() => CriteriaDto)
 	@ApiProperty({ type: CriteriaDto })
 	criteria: JsonObject
-
-	@IsOptional()
-	@ValidateNested()
-	@Type(() => CreatePostFromTripDto)
-	@ApiPropertyOptional({ type: CreatePostFromTripDto })
-	post?: CreatePostFromTripDto
 }

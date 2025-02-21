@@ -20,7 +20,6 @@ import { EmailsModule } from './modules/mails/emails.module'
 import { NexusModule } from './modules/nexus/nexus.module'
 import { OptimizationModule } from './modules/optimization/optimization.module'
 import { OptionsModule } from './modules/options/options.module'
-import { PostsModule } from './modules/posts/posts.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { RoadmapsModule } from './modules/roadmaps/roadmaps.module'
 import { TripsModule } from './modules/trips/trips.module'
@@ -64,7 +63,6 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module'
 		DriversModule,
 		OptimizationModule,
 		TripsModule,
-		PostsModule,
 		RoadmapsModule,
 		NexusModule,
 		AssistantModule,
