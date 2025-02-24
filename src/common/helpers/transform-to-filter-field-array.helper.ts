@@ -1,10 +1,10 @@
 import { BadRequestException } from '@nestjs/common'
-import { plainToClass } from 'class-transformer'
-import { FilterFieldDto } from '../dtos'
 import { FilterRules, FilterTypes } from '../enums'
 
-export const transformToFilterFieldArray = value =>
-	value.map(filter => {
+export const transformToFilterFieldArray = (value: any) => {
+	const arrayValue = typeof value === 'string' ? [value] : value
+
+	return arrayValue.map(filter => {
 		const parts = filter.match(/([^:]+):([^:]+):([^:]+):(.+)/)?.slice(1)
 
 		if (!parts || parts.length < 4) {
@@ -30,12 +30,13 @@ export const transformToFilterFieldArray = value =>
 				? parsedValue.split('/')
 				: parsedValue
 
-		return plainToClass(FilterFieldDto, {
+		return {
 			field,
 			rule: newRule,
 			value: newValue,
 			isNot,
 			isInsensitive: type === FilterTypes.STRING ? isInsensitive : undefined,
 			type,
-		})
+		}
 	})
+}

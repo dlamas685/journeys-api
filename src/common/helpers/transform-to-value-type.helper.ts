@@ -3,7 +3,7 @@ import { FilterTypes } from '../enums'
 export const transformToValueType = (value, obj) => {
 	const type = obj?.type
 
-	if (!value || value === 'null') return null
+	if (value === undefined || value === null) return null
 
 	if (type === FilterTypes.NUMBER) return Number(value)
 

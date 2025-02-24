@@ -27,3 +27,5 @@ export const VALID_STRING_RULES = [
 ]
 
 export const VALID_UUID_RULES = [FilterRules.EQUALS]
+
+export const VALID_BOOLEAN_RULES = [FilterRules.EQUALS]

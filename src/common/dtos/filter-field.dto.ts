@@ -1,11 +1,5 @@
 import { Transform } from 'class-transformer'
-import {
-	IsBoolean,
-	IsEnum,
-	IsNotEmpty,
-	IsOptional,
-	ValidateIf,
-} from 'class-validator'
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional } from 'class-validator'
 import { RuleMatchesValueType } from '../decorators'
 import { FilterRules, FilterTypes } from '../enums'
 import { transformToValueType } from '../helpers'
@@ -23,15 +17,13 @@ export class FilterFieldDto {
 	isInsensitive?: boolean
 
 	@IsNotEmpty()
-	@ValidateIf(o => o.value)
 	@RuleMatchesValueType()
 	rule: FilterRules
 
-	@IsOptional()
 	@IsEnum(FilterTypes)
-	type?: FilterTypes
+	type: FilterTypes
 
-	@IsOptional()
+	@IsNotEmpty()
 	@Transform(({ value, obj }) => transformToValueType(value, obj))
-	value?: any
+	value: any
 }

@@ -10,7 +10,6 @@ import {
 import {
 	transformToFilterFieldArray,
 	transformToLogicalFilterArray,
-	transformToQueryArray,
 	transformToSortFieldArray,
 } from '../helpers'
 import { FilterFieldDto } from './filter-field.dto'
@@ -33,7 +32,6 @@ export class QueryParamsDto {
 	@IsOptional()
 	@IsArray()
 	@ArrayNotEmpty()
-	@Transform(({ value }) => transformToQueryArray(value))
 	@Transform(({ value }) => transformToFilterFieldArray(value), {
 		toClassOnly: true,
 	})
@@ -49,7 +47,6 @@ export class QueryParamsDto {
 	@IsOptional()
 	@IsArray()
 	@ArrayNotEmpty()
-	@Transform(({ value }) => transformToQueryArray(value))
 	@Transform(({ value }) => transformToSortFieldArray(value), {
 		toClassOnly: true,
 	})
@@ -65,7 +62,6 @@ export class QueryParamsDto {
 	@IsOptional()
 	@IsArray()
 	@ArrayNotEmpty()
-	@Transform(({ value }) => transformToQueryArray(value))
 	@Transform(({ value }) => transformToLogicalFilterArray(value), {
 		toClassOnly: true,
 	})

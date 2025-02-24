@@ -16,7 +16,7 @@ import { CriteriaDto } from 'src/modules/optimization/routes/dtos'
 export class CreateTripDto {
 	@IsBoolean()
 	@IsOptional()
-	isArchived?: boolean
+	isArchived?: boolean = false
 
 	@IsNotEmpty()
 	@ApiProperty()

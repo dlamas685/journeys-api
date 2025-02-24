@@ -13,6 +13,7 @@ import {
 } from 'class-validator'
 import {
 	VALID_ARRAY_RULES,
+	VALID_BOOLEAN_RULES,
 	VALID_DATE_RULES,
 	VALID_NUMBER_RULES,
 	VALID_STRING_RULES,
@@ -43,7 +44,7 @@ export class RuleMatchesValueTypeConstraint
 			return true
 		}
 
-		if (isBoolean(value) && rule === FilterRules.EQUALS) {
+		if (isBoolean(value) && VALID_BOOLEAN_RULES.includes(FilterRules.EQUALS)) {
 			return true
 		}
 
