@@ -6,6 +6,7 @@ import {
 	InternalServerErrorException,
 	Logger,
 } from '@nestjs/common'
+import { REDIS_PREFIXES } from 'src/common/constants'
 
 @Injectable()
 export class PlacesService {
@@ -17,7 +18,7 @@ export class PlacesService {
 	}
 
 	async getPlaceDetails(placeId: string, otherFields: string[] = []) {
-		const detailCacheKey = `place-details-${placeId}`
+		const detailCacheKey = `${REDIS_PREFIXES.PLACES_DETAIL}${placeId}`
 
 		const cachedPlaceDetails =
 			await this.cacheManager.get<protos.google.maps.places.v1.IPlace>(
@@ -77,7 +78,7 @@ export class PlacesService {
 			'street_number',
 		]
 	) {
-		const searchCacheKey = `address-search-${input}`
+		const searchCacheKey = `${REDIS_PREFIXES.ADDRESSES_SEARCH}${input}`
 
 		const cachedPlaces = await this.cacheManager.get<string[]>(searchCacheKey)
 
@@ -122,7 +123,7 @@ export class PlacesService {
 	}
 
 	async searchPlaces(textQuery: string) {
-		const searchCacheKey = `places-search-${textQuery}`
+		const searchCacheKey = `${REDIS_PREFIXES.PLACES_SEARCH}${textQuery}`
 
 		const cachedPlaces = await this.cacheManager.get<string[]>(searchCacheKey)
 

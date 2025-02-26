@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { InjectQueue } from '@nestjs/bullmq'
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
+import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
+import { Queue } from 'bullmq'
 import { plainToInstance } from 'class-transformer'
+import { REDIS_PREFIXES } from 'src/common/constants'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
@@ -13,6 +17,7 @@ import {
 import { PlacesService } from '../google-maps/services/places.service'
 import { OptimizationService } from '../optimization/optimization.service'
 import { CriteriaDto } from '../optimization/routes/dtos'
+import { RouteEntity } from '../optimization/routes/entities'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateTripDto, UpdateTripDto } from './dtos'
 import { TripQueryParamsDto } from './dtos/trip-params.dto'
@@ -23,7 +28,9 @@ export class TripsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly optimization: OptimizationService,
-		private readonly places: PlacesService
+		private readonly places: PlacesService,
+		@InjectQueue('trips') private queue: Queue,
+		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache
 	) {}
 
 	async create(
@@ -39,6 +46,21 @@ export class TripsService {
 				criteria,
 			},
 		})
+
+		const scheduledTime = createdTrip.departureTime.getTime() - 600000
+
+		await this.queue.add(
+			'optimize-trip',
+			{ tripId: createdTrip.id, userId },
+			{
+				delay: Math.max(0, scheduledTime - Date.now()),
+				attempts: 3,
+				backoff: {
+					type: 'exponential',
+					delay: 5000,
+				},
+			}
+		)
 
 		return new TripEntity(createdTrip)
 	}
@@ -111,8 +133,26 @@ export class TripsService {
 			},
 		})
 
+		const currentDate = new Date()
+
 		if (!found) {
 			throw new NotFoundException('Viaje no encontrado')
+		}
+
+		if (currentDate > found.departureTime) {
+			const resultsCacheKey = `${REDIS_PREFIXES.TRIPS_RESULTS}${id}`
+
+			const results =
+				await this.cacheManager.get<RouteEntity[]>(resultsCacheKey)
+
+			if (!results) {
+				throw new NotFoundException('Resultados no encontrados')
+			}
+
+			return new TripEntity({
+				...found,
+				results,
+			})
 		}
 
 		const [origin, destination] = await Promise.all([

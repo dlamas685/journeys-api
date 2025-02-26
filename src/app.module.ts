@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bullmq'
 import { CacheModule, CacheStore } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
@@ -41,10 +42,23 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module'
 					ttl: Number(config.get('CACHE_TTL')),
 				})
 
-				return {
-					store: store as unknown as CacheStore,
-				}
+				return [
+					{
+						store: store as unknown as CacheStore,
+					},
+				]
 			},
+		}),
+
+		BullModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: async (config: ConfigService) => ({
+				connection: {
+					url: config.get('REDIS_URL'),
+				},
+				prefix: 'bull:',
+			}),
 		}),
 		ScheduleModule.forRoot(),
 		PrismaModule,
