@@ -49,7 +49,6 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module'
 				]
 			},
 		}),
-
 		BullModule.forRootAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],

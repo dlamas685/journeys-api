@@ -133,6 +133,7 @@ export class TripsService {
 			},
 		})
 
+		//TODO: HAY QUE VER QUE ESTE EN LA MISMA ZONA HORARIA
 		const currentDate = new Date()
 
 		if (!found) {
