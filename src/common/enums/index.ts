@@ -1,4 +1,5 @@
 export * from './filter-rules.enum'
 export * from './filter-types.enum'
 export * from './logical-operators.enum'
+export * from './queues.enum'
 export * from './sort-directions.enum'

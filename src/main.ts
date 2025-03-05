@@ -9,6 +9,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as cookieParser from 'cookie-parser'
 import { AppModule } from './app.module'
 import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter'
+import { RedisExceptionFilter } from './common/filters/redis-exception.filter'
 import { corsConfig } from './config'
 
 async function bootstrap() {
@@ -33,7 +34,10 @@ async function bootstrap() {
 	app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
 
 	const { httpAdapter } = app.get(HttpAdapterHost)
-	app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter))
+	app.useGlobalFilters(
+		new PrismaClientExceptionFilter(httpAdapter),
+		new RedisExceptionFilter()
+	)
 
 	const config = new DocumentBuilder()
 		.setTitle('JOURNEYS API')

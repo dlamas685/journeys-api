@@ -57,7 +57,6 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 				connection: {
 					url: config.get('REDIS_URL'),
 				},
-				prefix: 'bull:',
 			}),
 		}),
 		ScheduleModule.forRoot(),

@@ -1,9 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { RoadmapStatus } from '@prisma/client'
 import { JsonValue } from '@prisma/client/runtime/library'
 import { Type } from 'class-transformer'
 import {
-	IsBoolean,
 	IsDateString,
+	IsEnum,
 	IsInt,
 	IsNotEmpty,
 	IsNumber,
@@ -15,6 +16,10 @@ import {
 import { SettingDto } from 'src/modules/optimization/routes-optimization/dtos'
 
 export class CreateRoadmapDto {
+	@IsOptional()
+	@ApiPropertyOptional()
+	code?: string
+
 	@IsUUID()
 	@ApiProperty()
 	fleetId: string
@@ -27,9 +32,9 @@ export class CreateRoadmapDto {
 	@ApiProperty()
 	vehicleId: string
 
-	@IsBoolean()
+	@IsEnum(RoadmapStatus)
 	@IsOptional()
-	isArchived?: boolean
+	status?: RoadmapStatus
 
 	@IsNotEmpty()
 	@ApiProperty()

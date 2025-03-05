@@ -1,5 +1,6 @@
 import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
+import { QUEUE_NAMES } from 'src/common/constants'
 import { GoogleMapsModule } from '../google-maps/google-maps.module'
 import { NotificationsModule } from '../notifications/notifications.module'
 import { OptimizationModule } from '../optimization/optimization.module'
@@ -12,7 +13,7 @@ import { TripsService } from './trips.service'
 		OptimizationModule,
 		GoogleMapsModule,
 		BullModule.registerQueue({
-			name: 'trips',
+			name: QUEUE_NAMES.TRIPS,
 		}),
 		NotificationsModule,
 	],

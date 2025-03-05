@@ -18,6 +18,13 @@ enum UserType {
   COMPANY
 }
 
+enum RoadmapStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  DISMISSED
+}
+
 model Account {
   id                String  @id @default(uuid()) @db.Uuid
   userId            String  @map("user_id") @db.Uuid
@@ -214,22 +221,22 @@ model Trip {
 }
 
 model Roadmap {
-  id            String    @id @default(uuid()) @db.Uuid
-  userId        String    @map("user_id") @db.Uuid
-  fleetId       String    @map("fleet_id") @db.Uuid
-  vehicleId     String    @map("vehicle_id") @db.Uuid
-  driverId      String    @map("driver_id") @db.Uuid
-  isArchived    Boolean   @default(false) @map("is_archived")
-  code          String    @default(dbgenerated("upper(substr(md5(random()::text), 1, 10))"))
+  id            String        @id @default(uuid()) @db.Uuid
+  userId        String        @map("user_id") @db.Uuid
+  fleetId       String        @map("fleet_id") @db.Uuid
+  vehicleId     String        @map("vehicle_id") @db.Uuid
+  driverId      String        @map("driver_id") @db.Uuid
+  status        RoadmapStatus @default(UPCOMING) @map("status")
+  code          String        @default(dbgenerated("upper(substr(md5(random()::text), 1, 10))"))
   origin        String
   destination   String
-  departureTime DateTime  @map("departure_time") @db.Timestamptz(6)
-  arrivalTime   DateTime  @map("arrival_time") @db.Timestamptz(6)
-  totalDistance Float     @map("total_distance")
-  totalDuration Int       @map("total_duration")
+  departureTime DateTime      @map("departure_time") @db.Timestamptz(6)
+  arrivalTime   DateTime      @map("arrival_time") @db.Timestamptz(6)
+  totalDistance Float         @map("total_distance")
+  totalDuration Int           @map("total_duration")
   setting       Json
-  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?     @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   user    User    @relation(fields: [userId], references: [id])
   fleet   Fleet   @relation(fields: [fleetId], references: [id])

@@ -4,7 +4,11 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { Queue } from 'bullmq'
 import { plainToInstance } from 'class-transformer'
-import { REDIS_PREFIXES } from 'src/common/constants'
+import {
+	QUEUE_NAMES,
+	QUEUE_TASK_NAME,
+	REDIS_PREFIXES,
+} from 'src/common/constants'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
@@ -29,7 +33,7 @@ export class TripsService {
 		private readonly prisma: PrismaService,
 		private readonly optimization: OptimizationService,
 		private readonly places: PlacesService,
-		@InjectQueue('trips') private queue: Queue,
+		@InjectQueue(QUEUE_NAMES.TRIPS) private queue: Queue,
 		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache
 	) {}
 
@@ -37,32 +41,30 @@ export class TripsService {
 		userId: string,
 		createTripDto: CreateTripDto
 	): Promise<TripEntity> {
-		const { criteria, ...data } = createTripDto
+		return this.prisma.$transaction(async prisma => {
+			const { criteria, ...data } = createTripDto
 
-		const createdTrip = await this.prisma.trip.create({
-			data: {
-				userId,
-				...data,
-				criteria,
-			},
-		})
+			const createdTrip = await prisma.trip.create({
+				data: {
+					userId,
+					...data,
+					criteria,
+				},
+			})
 
-		const scheduledTime = createdTrip.departureTime.getTime() - 600000
+			const scheduledTime = createdTrip.departureTime.getTime() - 600000
 
-		await this.queue.add(
-			'optimize-trip',
-			{ tripId: createdTrip.id, userId },
-			{
+			await this.queue.add(QUEUE_TASK_NAME.TRIPS.OPTIMIZE, createdTrip, {
 				delay: Math.max(0, scheduledTime - Date.now()),
-				attempts: 3,
+				attempts: 5,
 				backoff: {
 					type: 'exponential',
 					delay: 5000,
 				},
-			}
-		)
+			})
 
-		return new TripEntity(createdTrip)
+			return new TripEntity(createdTrip)
+		})
 	}
 
 	async findAll(
@@ -133,12 +135,11 @@ export class TripsService {
 			},
 		})
 
-		//TODO: HAY QUE VER QUE ESTE EN LA MISMA ZONA HORARIA
-		const currentDate = new Date()
-
 		if (!found) {
 			throw new NotFoundException('Viaje no encontrado')
 		}
+
+		const currentDate = new Date()
 
 		if (currentDate > found.departureTime) {
 			const resultsCacheKey = `${REDIS_PREFIXES.TRIPS_RESULTS}${id}`

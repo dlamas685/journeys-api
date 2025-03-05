@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateRoadmapDto, UpdateRoadmapDto } from './dtos'
+import { ChangeStatusDto, CreateRoadmapDto, UpdateRoadmapDto } from './dtos'
 import { RoadmapQueryParamsDto } from './dtos/roadmap-params.dto'
 import { RoadmapEntity } from './entities/roadmap.entity'
 import { RoadmapsService } from './roadmaps.service'
@@ -91,5 +91,23 @@ export class RoadmapsController {
 	})
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.roadmapsService.remove(userId, id)
+	}
+
+	@Post('status')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Cambio de estado de hoja de ruta',
+		description: 'Permite cambiar el estado de una hoja de ruta',
+	})
+	@ApiOkResponse({ type: RoadmapEntity })
+	changeStatus(
+		@UserId() userId: string,
+		@Body() changeStatusDto: ChangeStatusDto
+	) {
+		return this.roadmapsService.changeStatus(
+			userId,
+			changeStatusDto.id,
+			changeStatusDto.status
+		)
 	}
 }
