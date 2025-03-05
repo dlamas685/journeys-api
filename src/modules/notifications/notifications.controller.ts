@@ -55,15 +55,6 @@ export class NotificationsController {
 		return this.notificationsService.findAll(recipientId, queryParamsDto)
 	}
 
-	// @Patch(':id')
-	// update(
-	// 	@Param('id') id: string,
-	// 	@Body() updateNotificationDto: UpdateNotificationDto
-	// ) {
-	// 	return this.notificationsService.update(+id, updateNotificationDto)
-	// }
-	// markAsRead
-
 	@Post('markAsRead')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
@@ -75,8 +66,6 @@ export class NotificationsController {
 	) {
 		return this.notificationsService.markAsRead(recipientId, markAsReadDto)
 	}
-
-	// body: {markAll : true/false, ids: string[]}
 
 	@Delete(':id')
 	remove(

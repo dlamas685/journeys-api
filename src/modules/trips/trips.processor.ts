@@ -24,8 +24,8 @@ export class TripsConsumer extends WorkerHost {
 
 	constructor(
 		private readonly trips: TripsService,
-		@InjectQueue(QUEUE_NAMES.TRIPS) private queue: Queue,
 		private readonly notifications: NotificationsService,
+		@InjectQueue(QUEUE_NAMES.TRIPS) private queue: Queue,
 		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache
 	) {
 		super()
@@ -55,6 +55,12 @@ export class TripsConsumer extends WorkerHost {
 		switch (job.name) {
 			case QUEUE_TASK_NAME.TRIPS.OPTIMIZE:
 				this.logger.error(`Failed to optimize trip ${job.data.id}`)
+
+				this.notifications.sendOptimization(
+					job.data.userId,
+					`¡La optimización del viaje ${job.data.code} ha fallado! Por favor, intente creándolo nuevamente.`
+				)
+
 				break
 			case QUEUE_TASK_NAME.TRIPS.TO_ARCHIVE:
 				this.logger.error(`Failed to archive trip ${job.data.id}`)
@@ -113,6 +119,11 @@ export class TripsConsumer extends WorkerHost {
 	}
 
 	private async afterOptimize(data: Trip) {
+		this.notifications.sendOptimization(
+			data.userId,
+			`¡Tu viaje ${data.code} ha sido optimizado! Revisa los resultados.`
+		)
+
 		const results = await this.cacheManager.get<RouteEntity[]>(
 			`${REDIS_PREFIXES.TRIPS_RESULTS}${data.id}`
 		)
@@ -133,7 +144,5 @@ export class TripsConsumer extends WorkerHost {
 				delay: 5000,
 			},
 		})
-
-		await this.notifications.sendTripNextStart(job.data.userId)
 	}
 }

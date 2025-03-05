@@ -253,7 +253,7 @@ enum NotificationType {
   FLEETS
   VEHICLES
   DRIVERS
-  OPTIMIZATIONS
+  OPTIMIZATION
 }
 
 model Notification {

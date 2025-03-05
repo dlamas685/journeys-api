@@ -99,11 +99,33 @@ export class NotificationsService {
 		return `Eliminación completa!`
 	}
 
-	sendTripNextStart(recipientId: string, message?: string) {
+	sendTrip(recipientId: string, message?: string) {
 		const notification: CreateNotificationDto = {
 			recipientId,
 			type: NotificationType.TRIPS,
-			subject: 'Tu Viaje Pronto Empieza',
+			subject: 'Viajes',
+			message,
+		}
+
+		return this.create(notification)
+	}
+
+	sendRoadmap(recipientId: string, message?: string) {
+		const notification: CreateNotificationDto = {
+			recipientId,
+			type: NotificationType.ROADMAPS,
+			subject: 'Hojas de Ruta',
+			message,
+		}
+
+		return this.create(notification)
+	}
+
+	sendOptimization(recipientId: string, message?: string) {
+		const notification: CreateNotificationDto = {
+			recipientId,
+			type: NotificationType.OPTIMIZATION,
+			subject: 'Optimización',
 			message,
 		}
 
