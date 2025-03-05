@@ -30,10 +30,10 @@ export class CreateNotificationDto {
 	@IsOptional()
 	@IsString()
 	@ApiProperty()
-	message: string
+	message?: string
 
 	@IsDateString()
 	@IsOptional()
 	@ApiPropertyOptional()
-	readAt: Date
+	readAt?: Date
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Prisma } from '@prisma/client'
+import { NotificationType, Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 import {
 	PaginatedResponseEntity,
@@ -97,5 +97,16 @@ export class NotificationsService {
 		})
 
 		return `Eliminación completa!`
+	}
+
+	sendTripNextStart(recipientId: string, message?: string) {
+		const notification: CreateNotificationDto = {
+			recipientId,
+			type: NotificationType.TRIPS,
+			subject: 'Tu Viaje Pronto Empieza',
+			message,
+		}
+
+		return this.create(notification)
 	}
 }
