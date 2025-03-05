@@ -52,7 +52,7 @@ model User {
   drivers           Driver[]
   trips             Trip[]
   roadmaps          Roadmap[]
-  Notification      Notification[]
+  notifications     Notification[]
 
   @@map("users")
 }
@@ -242,6 +242,10 @@ model Roadmap {
 enum NotificationType {
   SYSTEM
   TRIPS
+  ROADMAPS
+  FLEETS
+  VEHICLES
+  DRIVERS
   OPTIMIZATIONS
 }
 
@@ -255,7 +259,7 @@ model Notification {
   createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime?        @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user User @relation(fields: [recipientId], references: [id])
+  recipient User @relation(fields: [recipientId], references: [id])
 
   @@map("notifications")
 }
