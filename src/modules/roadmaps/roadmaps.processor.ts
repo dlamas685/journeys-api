@@ -4,16 +4,14 @@ import {
 	Processor,
 	WorkerHost,
 } from '@nestjs/bullmq'
-import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
-import { Inject, Logger } from '@nestjs/common'
+import { Logger } from '@nestjs/common'
 import { Roadmap } from '@prisma/client'
+import { JsonObject } from '@prisma/client/runtime/library'
 import { Job, Queue } from 'bullmq'
-import {
-	QUEUE_NAMES,
-	QUEUE_TASK_NAME,
-	REDIS_PREFIXES,
-} from 'src/common/constants'
+import { plainToInstance } from 'class-transformer'
+import { QUEUE_NAMES, QUEUE_TASK_NAME } from 'src/common/constants'
 import { NotificationsService } from '../notifications/notifications.service'
+import { RoadmapOptimizationEntity } from '../optimization/routes-optimization/entities'
 import { RoadmapsService } from './roadmaps.service'
 
 @Processor(QUEUE_NAMES.ROADMAPS)
@@ -23,7 +21,6 @@ export class RoadmapsConsumer extends WorkerHost {
 	constructor(
 		private readonly roadmap: RoadmapsService,
 		private readonly notifications: NotificationsService,
-		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
 		@InjectQueue(QUEUE_NAMES.ROADMAPS) private queue: Queue
 	) {
 		super()
@@ -96,24 +93,18 @@ export class RoadmapsConsumer extends WorkerHost {
 	private async optimize(data: Roadmap) {
 		const foundRoadmap = await this.roadmap.findOne(data.userId, data.id)
 
-		const results = foundRoadmap.results
-
-		const ttl = Math.floor(
-			Math.max(0, new Date(results.endDateTime).getTime() - Date.now()) / 1000
+		const results = plainToInstance(
+			RoadmapOptimizationEntity,
+			foundRoadmap.results
 		)
 
-		if (ttl <= 0) {
-			this.logger.log(`Roadmap ${data.id} is already expired. Skipping cache.`)
-			return
-		}
-
-		this.cacheManager.set(
-			`${REDIS_PREFIXES.ROADMAPS_RESULTS}${data.id}`,
-			results,
-			ttl
+		this.roadmap.setResults(
+			data.userId,
+			data.id,
+			results as unknown as JsonObject
 		)
 
-		this.logger.log(`Roadmap ${data.id} results cached for ${ttl}ms`)
+		this.logger.log(`Optimization for roadmap ${data.id} completed`)
 	}
 
 	private async start(data: Roadmap) {
@@ -134,7 +125,7 @@ export class RoadmapsConsumer extends WorkerHost {
 			QUEUE_TASK_NAME.ROADMAPS.START,
 			{ roadmapId: data.id, userId: data.userId },
 			{
-				delay: Math.max(0, data.departureTime.getTime() - Date.now()),
+				delay: Math.max(0, data.startDateTime.getTime() - Date.now()),
 				attempts: 5,
 				backoff: { type: 'exponential', delay: 5000 },
 			}
@@ -151,7 +142,7 @@ export class RoadmapsConsumer extends WorkerHost {
 			QUEUE_TASK_NAME.ROADMAPS.FINALIZE,
 			{ roadmapId: data.id, userId: data.userId },
 			{
-				delay: Math.max(0, data.arrivalTime.getTime() - Date.now()),
+				delay: Math.max(0, data.endDateTime.getTime() - Date.now()),
 				attempts: 5,
 				backoff: { type: 'exponential', delay: 5000 },
 			}

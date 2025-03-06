@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { Prisma, Roadmap, RoadmapStatus } from '@prisma/client'
+import { Roadmap, RoadmapStatus } from '@prisma/client'
+import { JsonObject } from '@prisma/client/runtime/library'
+import { SettingDto } from 'src/modules/optimization/routes-optimization/dtos'
 import { RoadmapOptimizationEntity } from 'src/modules/optimization/routes-optimization/entities'
 
 export class RoadmapEntity implements Roadmap {
@@ -22,31 +24,19 @@ export class RoadmapEntity implements Roadmap {
 	code: string
 
 	@ApiProperty()
-	origin: string
+	startDateTime: Date
 
 	@ApiProperty()
-	destination: string
-
-	@ApiProperty()
-	departureTime: Date
-
-	@ApiProperty()
-	arrivalTime: Date
-
-	@ApiProperty()
-	totalDistance: number | null
-
-	@ApiProperty()
-	totalDuration: number | null
+	endDateTime: Date
 
 	@ApiProperty({ enum: RoadmapStatus })
 	status: RoadmapStatus
 
-	@ApiProperty()
-	setting: Prisma.JsonValue | null
+	@ApiProperty({ type: SettingDto })
+	setting: JsonObject
 
 	@ApiPropertyOptional({ type: RoadmapOptimizationEntity })
-	results: RoadmapOptimizationEntity
+	results: JsonObject | null
 
 	@ApiProperty()
 	createdAt: Date

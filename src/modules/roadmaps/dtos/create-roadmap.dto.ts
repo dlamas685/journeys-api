@@ -1,15 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { RoadmapStatus } from '@prisma/client'
-import { JsonValue } from '@prisma/client/runtime/library'
+import { JsonObject } from '@prisma/client/runtime/library'
 import { Type } from 'class-transformer'
 import {
 	IsDateString,
 	IsEnum,
-	IsInt,
 	IsNotEmpty,
-	IsNumber,
 	IsOptional,
-	IsPositive,
 	IsUUID,
 	ValidateNested,
 } from 'class-validator'
@@ -32,39 +29,21 @@ export class CreateRoadmapDto {
 	@ApiProperty()
 	vehicleId: string
 
+	@IsDateString()
+	@ApiProperty({ type: Date })
+	startDateTime: Date
+
+	@IsDateString()
+	@ApiProperty({ type: Date })
+	endDateTime: Date
+
 	@IsEnum(RoadmapStatus)
 	@IsOptional()
 	status?: RoadmapStatus
 
 	@IsNotEmpty()
-	@ApiProperty()
-	origin: string
-
-	@IsNotEmpty()
-	@ApiProperty()
-	destination: string
-
-	@IsDateString()
-	@ApiProperty({ type: Date })
-	departureTime: Date
-
-	@IsDateString()
-	@ApiProperty({ type: Date })
-	arrivalTime: Date
-
-	@IsNumber({ maxDecimalPlaces: 2 })
-	@IsPositive()
-	@ApiProperty()
-	totalDistance: number
-
-	@IsInt()
-	@IsPositive()
-	@ApiProperty()
-	totalDuration: number
-
-	@IsNotEmpty()
 	@ValidateNested({ each: true })
 	@Type(() => SettingDto)
 	@ApiProperty({ type: SettingDto })
-	setting: JsonValue
+	setting: JsonObject
 }

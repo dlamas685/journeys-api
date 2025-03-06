@@ -1,14 +1,10 @@
 import { InjectQueue } from '@nestjs/bullmq'
-import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
-import { Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
+import { JsonArray, JsonObject } from '@prisma/client/runtime/library'
 import { Queue } from 'bullmq'
 import { plainToInstance } from 'class-transformer'
-import {
-	QUEUE_NAMES,
-	QUEUE_TASK_NAME,
-	REDIS_PREFIXES,
-} from 'src/common/constants'
+import { QUEUE_NAMES, QUEUE_TASK_NAME } from 'src/common/constants'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
@@ -18,10 +14,8 @@ import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
-import { PlacesService } from '../google-maps/services/places.service'
 import { OptimizationService } from '../optimization/optimization.service'
 import { CriteriaDto } from '../optimization/routes/dtos'
-import { RouteEntity } from '../optimization/routes/entities'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateTripDto, UpdateTripDto } from './dtos'
 import { TripQueryParamsDto } from './dtos/trip-params.dto'
@@ -32,9 +26,7 @@ export class TripsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly optimization: OptimizationService,
-		private readonly places: PlacesService,
-		@InjectQueue(QUEUE_NAMES.TRIPS) private queue: Queue,
-		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache
+		@InjectQueue(QUEUE_NAMES.TRIPS) private queue: Queue
 	) {}
 
 	async create(
@@ -52,7 +44,11 @@ export class TripsService {
 				},
 			})
 
-			const scheduledTime = createdTrip.departureTime.getTime() - 600000
+			const parsedCriteria = plainToInstance(CriteriaDto, criteria)
+
+			const departureTime = new Date(parsedCriteria.basicCriteria.departureTime)
+
+			const scheduledTime = departureTime.getTime() - 600000
 
 			await this.queue.add(QUEUE_TASK_NAME.TRIPS.OPTIMIZE, createdTrip, {
 				delay: Math.max(0, scheduledTime - Date.now()),
@@ -63,7 +59,11 @@ export class TripsService {
 				},
 			})
 
-			return new TripEntity(createdTrip)
+			return new TripEntity({
+				...createdTrip,
+				criteria: createTripDto.criteria as JsonObject,
+				results: null,
+			})
 		})
 	}
 
@@ -100,21 +100,6 @@ export class TripsService {
 			this.prisma.trip.count({ where: query.where }),
 		])
 
-		const trips = await Promise.all(
-			records.map(async record => {
-				const [origin, destination] = await Promise.all([
-					this.places.getPlaceDetails(record.origin),
-					this.places.getPlaceDetails(record.destination),
-				])
-
-				return new TripEntity({
-					...record,
-					origin: origin.formattedAddress,
-					destination: destination.formattedAddress,
-				})
-			})
-		)
-
 		const metadata = plainToInstance(PaginationMetadataEntity, {
 			total: totalPages,
 			page: queryParamsDto.page,
@@ -122,57 +107,43 @@ export class TripsService {
 		})
 
 		return plainToInstance(PaginatedResponseEntity, {
-			data: trips,
+			data: records,
 			meta: metadata,
 		})
 	}
 
 	async findOne(userId: string, id: string) {
-		const found = await this.prisma.trip.findFirst({
+		const foundTrip = await this.prisma.trip.findFirst({
 			where: {
 				id,
 				userId,
 			},
 		})
 
-		if (!found) {
+		if (!foundTrip) {
 			throw new NotFoundException('Viaje no encontrado')
 		}
 
-		const currentDate = new Date()
+		if (!foundTrip.results) {
+			const criteria = plainToInstance(CriteriaDto, foundTrip.criteria)
 
-		if (currentDate > found.departureTime) {
-			const resultsCacheKey = `${REDIS_PREFIXES.TRIPS_RESULTS}${id}`
-
-			const results =
-				await this.cacheManager.get<RouteEntity[]>(resultsCacheKey)
-
-			if (!results) {
-				throw new NotFoundException('Resultados no encontrados')
-			}
+			const results = criteria.advancedCriteria
+				? await this.optimization.computeAdvancedOptimization(criteria)
+				: await this.optimization.computeBasicOptimization(
+						criteria.basicCriteria
+					)
 
 			return new TripEntity({
-				...found,
-				results,
+				...foundTrip,
+				results: results as unknown as JsonArray,
+				criteria: foundTrip.criteria as JsonObject,
 			})
 		}
 
-		const [origin, destination] = await Promise.all([
-			this.places.getPlaceDetails(found.origin),
-			this.places.getPlaceDetails(found.destination),
-		])
-
-		const criteria = plainToInstance(CriteriaDto, found.criteria)
-
-		const results = criteria.advancedCriteria
-			? await this.optimization.computeAdvancedOptimization(criteria)
-			: await this.optimization.computeBasicOptimization(criteria.basicCriteria)
-
 		return new TripEntity({
-			...found,
-			origin: origin.formattedAddress,
-			destination: destination.formattedAddress,
-			results,
+			...foundTrip,
+			results: foundTrip.results as JsonArray,
+			criteria: foundTrip.criteria as JsonObject,
 		})
 	}
 
@@ -191,7 +162,11 @@ export class TripsService {
 			},
 		})
 
-		return new TripEntity(updatedTrip)
+		return new TripEntity({
+			...updatedTrip,
+			criteria: updatedTrip.criteria as JsonObject,
+			results: updatedTrip.results as JsonArray,
+		})
 	}
 
 	async remove(userId: string, id: string) {
@@ -203,5 +178,23 @@ export class TripsService {
 		})
 
 		return `Eliminación completa!`
+	}
+
+	async setResults(userId: string, id: string, results: JsonArray) {
+		const updatedTrip = await this.prisma.trip.update({
+			where: {
+				userId,
+				id,
+			},
+			data: {
+				results,
+			},
+		})
+
+		return new TripEntity({
+			...updatedTrip,
+			criteria: updatedTrip.criteria as JsonObject,
+			results: updatedTrip.results as JsonArray,
+		})
 	}
 }

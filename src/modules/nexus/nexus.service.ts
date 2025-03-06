@@ -17,13 +17,13 @@ export class NexusService {
 				userId,
 				OR: [
 					{
-						departureTime: {
+						startDateTime: {
 							gte: dateRange.fromDate,
 							lte: dateRange.toDate,
 						},
 					},
 					{
-						arrivalTime: {
+						endDateTime: {
 							gte: dateRange.fromDate,
 							lte: dateRange.toDate,
 						},

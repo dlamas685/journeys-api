@@ -205,13 +205,9 @@ model Trip {
   userId        String    @map("user_id") @db.Uuid
   isArchived    Boolean   @default(false) @map("is_archived")
   code          String    @default(dbgenerated("upper(substr(md5(random()::text), 1, 10))"))
-  origin        String
-  destination   String
   departureTime DateTime  @map("departure_time") @db.Timestamptz(6)
-  arrivalTime   DateTime? @map("arrival_time") @db.Timestamptz(6)
-  totalDistance Float?    @map("total_distance")
-  totalDuration Int?      @map("total_duration")
   criteria      Json
+  results       Json?
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
 
@@ -228,13 +224,10 @@ model Roadmap {
   driverId      String        @map("driver_id") @db.Uuid
   status        RoadmapStatus @default(UPCOMING) @map("status")
   code          String        @default(dbgenerated("upper(substr(md5(random()::text), 1, 10))"))
-  origin        String
-  destination   String
-  departureTime DateTime      @map("departure_time") @db.Timestamptz(6)
-  arrivalTime   DateTime      @map("arrival_time") @db.Timestamptz(6)
-  totalDistance Float         @map("total_distance")
-  totalDuration Int           @map("total_duration")
+  startDateTime DateTime      @map("start_date_time") @db.Timestamptz(6)
+  endDateTime   DateTime      @map("end_date_time") @db.Timestamptz(6)
   setting       Json
+  results       Json?
   createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?     @updatedAt @map("updated_at") @db.Timestamptz(6)
 

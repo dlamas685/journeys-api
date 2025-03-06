@@ -1,19 +1,14 @@
 import { InjectQueue } from '@nestjs/bullmq'
-import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
 import {
 	BadRequestException,
-	Inject,
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common'
 import { Prisma, RoadmapStatus } from '@prisma/client'
+import { JsonObject } from '@prisma/client/runtime/library'
 import { Queue } from 'bullmq'
 import { plainToInstance } from 'class-transformer'
-import {
-	QUEUE_NAMES,
-	QUEUE_TASK_NAME,
-	REDIS_PREFIXES,
-} from 'src/common/constants'
+import { QUEUE_NAMES, QUEUE_TASK_NAME } from 'src/common/constants'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
@@ -23,10 +18,8 @@ import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
-import { PlacesService } from '../google-maps/services/places.service'
 import { OptimizationService } from '../optimization/optimization.service'
 import { SettingDto } from '../optimization/routes-optimization/dtos'
-import { RoadmapOptimizationEntity } from '../optimization/routes-optimization/entities'
 import { PrismaService } from '../prisma/prisma.service'
 import { VALID_TRANSITIONS } from './constants/valid-transitions.constants'
 import { CreateRoadmapDto } from './dtos/create-roadmap.dto'
@@ -39,9 +32,7 @@ export class RoadmapsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly optimization: OptimizationService,
-		private readonly places: PlacesService,
-		@InjectQueue(QUEUE_NAMES.ROADMAPS) private queue: Queue,
-		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache
+		@InjectQueue(QUEUE_NAMES.ROADMAPS) private queue: Queue
 	) {}
 
 	async create(
@@ -56,7 +47,11 @@ export class RoadmapsService {
 				},
 			})
 
-			const scheduledTime = createdRoadmap.departureTime.getTime() - 600000
+			const setting = plainToInstance(SettingDto, createdRoadmap.setting)
+
+			const startDateTime = new Date(setting.firstStage.startDateTime)
+
+			const scheduledTime = startDateTime.getTime() - 600000
 
 			await this.queue.add(QUEUE_TASK_NAME.ROADMAPS.OPTIMIZE, createdRoadmap, {
 				delay: Math.max(0, scheduledTime - Date.now()),
@@ -64,7 +59,11 @@ export class RoadmapsService {
 				backoff: { type: 'exponential', delay: 5000 },
 			})
 
-			return new RoadmapEntity(createdRoadmap)
+			return new RoadmapEntity({
+				...createdRoadmap,
+				setting: createRoadmapDto.setting as JsonObject,
+				results: null,
+			})
 		})
 	}
 
@@ -101,7 +100,14 @@ export class RoadmapsService {
 			this.prisma.roadmap.count({ where: query.where }),
 		])
 
-		const roadmaps = records.map(record => new RoadmapEntity(record))
+		const roadmaps = records.map(
+			record =>
+				new RoadmapEntity({
+					...record,
+					setting: record.setting as JsonObject,
+					results: record.results as JsonObject,
+				})
+		)
 
 		const metadata = plainToInstance(PaginationMetadataEntity, {
 			total: totalPages,
@@ -116,49 +122,33 @@ export class RoadmapsService {
 	}
 
 	async findOne(userId: string, id: string): Promise<RoadmapEntity> {
-		const found = await this.prisma.roadmap.findFirst({
+		const foundRoadmap = await this.prisma.roadmap.findFirst({
 			where: {
 				id,
 				userId,
 			},
 		})
 
-		if (!found) {
+		if (!foundRoadmap) {
 			throw new NotFoundException('Viaje no encontrado')
 		}
 
-		const currentDate = new Date()
+		if (!foundRoadmap.results) {
+			const setting = plainToInstance(SettingDto, foundRoadmap.setting)
 
-		if (currentDate > found.departureTime) {
-			const resultsCacheKey = `${REDIS_PREFIXES.ROADMAPS_RESULTS}${id}`
-
-			const results =
-				await this.cacheManager.get<RoadmapOptimizationEntity>(resultsCacheKey)
-
-			if (!results) {
-				throw new NotFoundException('Resultados no encontrados')
-			}
+			const results = await this.optimization.optimizeTours(userId, setting)
 
 			return new RoadmapEntity({
-				...found,
-				results,
+				...foundRoadmap,
+				setting: foundRoadmap.setting as JsonObject,
+				results: results as unknown as JsonObject,
 			})
 		}
 
-		const [origin, destination] = await Promise.all([
-			this.places.getPlaceDetails(found.origin),
-			this.places.getPlaceDetails(found.destination),
-		])
-
-		const setting = plainToInstance(SettingDto, found.setting)
-
-		const results = await this.optimization.optimizeTours(userId, setting)
-
 		return new RoadmapEntity({
-			...found,
-			origin: origin.formattedAddress,
-			destination: destination.formattedAddress,
-			results,
+			...foundRoadmap,
+			setting: foundRoadmap.setting as JsonObject,
+			results: foundRoadmap.results as JsonObject,
 		})
 	}
 
@@ -177,7 +167,11 @@ export class RoadmapsService {
 			},
 		})
 
-		return new RoadmapEntity(updatedRoadmap)
+		return new RoadmapEntity({
+			...updatedRoadmap,
+			setting: updatedRoadmap.setting as JsonObject,
+			results: updatedRoadmap.results as JsonObject,
+		})
 	}
 
 	async remove(userId: string, id: string): Promise<string> {
@@ -196,18 +190,18 @@ export class RoadmapsService {
 		id: string,
 		newStatus: RoadmapStatus
 	): Promise<RoadmapEntity> {
-		const found = await this.prisma.roadmap.findFirst({
+		const foundRoadmap = await this.prisma.roadmap.findFirst({
 			where: {
 				id,
 				userId,
 			},
 		})
 
-		if (!found) {
+		if (!foundRoadmap) {
 			throw new NotFoundException('Viaje no encontrado')
 		}
 
-		if (!VALID_TRANSITIONS[found.status].includes(newStatus)) {
+		if (!VALID_TRANSITIONS[foundRoadmap.status].includes(newStatus)) {
 			throw new BadRequestException('Transición de estado no válida')
 		}
 
@@ -221,6 +215,32 @@ export class RoadmapsService {
 			},
 		})
 
-		return new RoadmapEntity(updatedRoadmap)
+		return new RoadmapEntity({
+			...updatedRoadmap,
+			setting: updatedRoadmap.setting as JsonObject,
+			results: updatedRoadmap.results as JsonObject,
+		})
+	}
+
+	async setResults(
+		userId: string,
+		id: string,
+		results: JsonObject
+	): Promise<RoadmapEntity> {
+		const updatedRoadmap = await this.prisma.roadmap.update({
+			where: {
+				userId,
+				id,
+			},
+			data: {
+				results,
+			},
+		})
+
+		return new RoadmapEntity({
+			...updatedRoadmap,
+			setting: updatedRoadmap.setting as JsonObject,
+			results: updatedRoadmap.results as JsonObject,
+		})
 	}
 }

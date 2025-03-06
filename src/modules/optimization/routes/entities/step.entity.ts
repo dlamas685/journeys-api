@@ -75,8 +75,7 @@ export class StepEntityBuilder {
 	setNavigationInstruction(
 		navigationInstruction: NavigationInstructionEntity
 	): StepEntityBuilder {
-		this.step.navigationInstruction.instructions =
-			navigationInstruction.instructions
+		this.step.navigationInstruction = navigationInstruction
 		return this
 	}
 

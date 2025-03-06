@@ -4,16 +4,13 @@ import {
 	Processor,
 	WorkerHost,
 } from '@nestjs/bullmq'
-import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager'
-import { Inject, Logger } from '@nestjs/common'
+import { Logger } from '@nestjs/common'
 import { Trip } from '@prisma/client'
+import { JsonArray } from '@prisma/client/runtime/library'
 import { Job, Queue } from 'bullmq'
+import { plainToInstance } from 'class-transformer'
 import { addSeconds } from 'date-fns'
-import {
-	QUEUE_NAMES,
-	QUEUE_TASK_NAME,
-	REDIS_PREFIXES,
-} from 'src/common/constants'
+import { QUEUE_NAMES, QUEUE_TASK_NAME } from 'src/common/constants'
 import { NotificationsService } from '../notifications/notifications.service'
 import { RouteEntity } from '../optimization/routes/entities'
 import { TripsService } from './trips.service'
@@ -25,8 +22,7 @@ export class TripsConsumer extends WorkerHost {
 	constructor(
 		private readonly trips: TripsService,
 		private readonly notifications: NotificationsService,
-		@InjectQueue(QUEUE_NAMES.TRIPS) private queue: Queue,
-		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache
+		@InjectQueue(QUEUE_NAMES.TRIPS) private queue: Queue
 	) {
 		super()
 	}
@@ -88,28 +84,11 @@ export class TripsConsumer extends WorkerHost {
 	private async optimize(data: Trip) {
 		const foundTrip = await this.trips.findOne(data.userId, data.id)
 
-		const results = foundTrip.results
+		const results = plainToInstance(RouteEntity, foundTrip.results)
 
-		let maxDuration = 0
+		this.trips.setResults(data.userId, data.id, results as unknown as JsonArray)
 
-		for (const result of results) {
-			maxDuration = Math.max(maxDuration, result.duration)
-		}
-
-		const ttl = Math.max(0, maxDuration - Math.floor(Date.now() / 1000))
-
-		if (ttl <= 0) {
-			this.logger.log(`Trip ${data.id} is already expired. Skipping cache.`)
-			return
-		}
-
-		await this.cacheManager.set(
-			`${REDIS_PREFIXES.TRIPS_RESULTS}${data.id}`,
-			results,
-			ttl
-		)
-
-		this.logger.log(`Setting cache for trip ${data.id} with ttl ${ttl}`)
+		this.logger.log(`Trip ${data.id} has been optimized`)
 	}
 
 	private async toArchive(data: Trip) {
@@ -124,9 +103,7 @@ export class TripsConsumer extends WorkerHost {
 			`¡Tu viaje ${data.code} ha sido optimizado! Revisa los resultados.`
 		)
 
-		const results = await this.cacheManager.get<RouteEntity[]>(
-			`${REDIS_PREFIXES.TRIPS_RESULTS}${data.id}`
-		)
+		const results = plainToInstance(RouteEntity, data.results as JsonArray)
 
 		let maxDuration = 0
 

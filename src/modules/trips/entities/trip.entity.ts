@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { Prisma, Trip } from '@prisma/client'
-import { RouteEntity } from 'src/modules/optimization/routes/entities'
+import { Trip } from '@prisma/client'
+import { JsonArray, JsonObject } from '@prisma/client/runtime/library'
 
 export class TripEntity implements Trip {
 	@ApiProperty()
@@ -16,28 +16,13 @@ export class TripEntity implements Trip {
 	code: string
 
 	@ApiProperty()
-	origin: string
-
-	@ApiProperty()
-	destination: string
-
-	@ApiProperty()
 	departureTime: Date
 
 	@ApiProperty()
-	arrivalTime: Date
+	criteria: JsonObject
 
-	@ApiProperty()
-	totalDistance: number
-
-	@ApiProperty()
-	totalDuration: number
-
-	@ApiProperty()
-	criteria: Prisma.JsonValue
-
-	@ApiPropertyOptional({ type: RouteEntity, isArray: true })
-	results: RouteEntity[]
+	@ApiPropertyOptional()
+	results: JsonArray | null
 
 	@ApiProperty()
 	createdAt: Date
