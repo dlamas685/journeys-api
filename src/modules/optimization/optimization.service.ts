@@ -209,8 +209,6 @@ export class OptimizationService {
 					})
 
 				const steps = leg.steps.map(step => {
-					console.log(step.navigationInstruction?.maneuver)
-
 					const stepBuilder = new StepEntityBuilder()
 						.setDistance(step.distanceMeters)
 						.setDuration(Number(step.staticDuration.seconds))
@@ -242,8 +240,6 @@ export class OptimizationService {
 								})) ?? [],
 						})
 					}
-
-					console.log(stepBuilder.build())
 
 					return stepBuilder.build()
 				})
