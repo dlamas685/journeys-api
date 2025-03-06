@@ -11,13 +11,18 @@ import {
 	fromSortsToOrderby,
 } from 'src/common/helpers'
 import { PrismaService } from '../prisma/prisma.service'
+import { WEBSOCKET_EVENTS } from './constants/websocket-events.constants'
 import { MarkAsReadDto, NotificationQueryParamsDto } from './dtos'
 import { CreateNotificationDto } from './dtos/create-notification.dto'
 import { NotificationEntity } from './entities/notification.entity'
+import { NotificationsGateway } from './notifications.gateway'
 
 @Injectable()
 export class NotificationsService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly websocket: NotificationsGateway
+	) {}
 
 	async create(
 		createNotificationDto: CreateNotificationDto
@@ -27,6 +32,10 @@ export class NotificationsService {
 				...createNotificationDto,
 			},
 		})
+
+		this.websocket.server
+			.to(createdNotification.recipientId)
+			.emit(WEBSOCKET_EVENTS.NEW_NOTIFICATION, createdNotification)
 
 		return plainToInstance(NotificationEntity, createdNotification)
 	}
