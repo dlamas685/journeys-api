@@ -10,7 +10,15 @@ import { RoadmapEntity } from '../entities/roadmap.entity'
 
 type ValidFieldsType = keyof RoadmapEntity
 
-const VALID_FIELDS: ValidFieldsType[] = ['code', 'status', 'createdAt']
+const VALID_FIELDS: ValidFieldsType[] = [
+	'code',
+	'startDateTime',
+	'status',
+	'createdAt',
+	'fleetId',
+	'vehicleId',
+	'driverId',
+]
 
 export class RoadmapFilterFieldDto extends FilterFieldDto {
 	@IsIn([...VALID_FIELDS])

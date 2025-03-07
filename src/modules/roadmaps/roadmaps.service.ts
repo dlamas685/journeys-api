@@ -88,6 +88,11 @@ export class RoadmapsService {
 			orderBy: {
 				...parsedSorts,
 			},
+			include: {
+				driver: true,
+				fleet: true,
+				vehicle: true,
+			},
 			skip:
 				queryParamsDto.page && queryParamsDto.limit
 					? (queryParamsDto.page - 1) * queryParamsDto.limit

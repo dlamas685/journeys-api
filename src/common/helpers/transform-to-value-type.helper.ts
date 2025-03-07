@@ -11,16 +11,24 @@ export const transformToValueType = (value, obj) => {
 
 	if (type === FilterTypes.DATE) return new Date(value)
 
+	if (
+		type === FilterTypes.UUID ||
+		type === FilterTypes.STRING ||
+		type === FilterTypes.ENUM
+	)
+		return value.toString()
+
 	if (type === FilterTypes.ARRAY_OF_DATES)
 		return value.map((v: string) => new Date(v))
 
 	if (type === FilterTypes.ARRAY_OF_NUMBERS)
 		return value.map((v: string) => Number(v))
 
-	if (type === FilterTypes.ARRAY_OF_STRINGS)
+	if (
+		type === FilterTypes.ARRAY_OF_STRINGS ||
+		type === FilterTypes.ARRAY_OF_ENUM
+	)
 		return value.map((v: string) => v.toString())
-
-	if (type === FilterTypes.STRING) return value.toString()
 
 	return value
 }
