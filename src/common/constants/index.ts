@@ -1,4 +1,5 @@
 export * from './filter-rules.constants'
+export * from './flow-producers.constants'
 export * from './patterns.constants'
 export * from './queues.constants'
 export * from './redis-prefixes.constants'

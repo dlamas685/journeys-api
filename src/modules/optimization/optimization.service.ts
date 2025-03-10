@@ -333,8 +333,10 @@ export class OptimizationService {
 			settingDto.firstStage.vehicleId
 		)
 
+		const name = `Flota: ${fleet.name} - Vehículo: ${vehicle.licensePlate} - Conductor: ${driver.name}`
+
 		const request = new FleetManagementBuilder(
-			`Flota: ${fleet.name} - Vehículo: ${vehicle.licensePlate} - Conductor: ${driver.name}`
+			name.length > 50 ? name.substring(0, 50) : name
 		)
 			.setStartDateTime(settingDto.firstStage.startDateTime)
 			.setEndDateTime(settingDto.firstStage.endDateTime)
@@ -381,7 +383,7 @@ export class OptimizationService {
 		}
 
 		const optimization = new RoadmapOptimizationBuilderEntity()
-			.setLabel(route.vehicleLabel)
+			.setLabel(name)
 			.setStartTime(route.vehicleStartTime)
 			.setEndTime(route.vehicleEndTime)
 			.setPolyline(route.routePolyline)

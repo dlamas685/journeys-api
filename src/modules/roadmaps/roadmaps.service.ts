@@ -1,4 +1,4 @@
-import { InjectQueue } from '@nestjs/bullmq'
+import { InjectFlowProducer } from '@nestjs/bullmq'
 import {
 	BadRequestException,
 	Injectable,
@@ -6,9 +6,13 @@ import {
 } from '@nestjs/common'
 import { Prisma, RoadmapStatus } from '@prisma/client'
 import { JsonObject } from '@prisma/client/runtime/library'
-import { Queue } from 'bullmq'
+import { FlowProducer } from 'bullmq'
 import { plainToInstance } from 'class-transformer'
-import { QUEUE_NAMES, QUEUE_TASK_NAME } from 'src/common/constants'
+import {
+	FLOW_PRODUCER_NAMES,
+	FLOW_PRODUCERS_TASK_NAME,
+	QUEUE_NAMES,
+} from 'src/common/constants'
 import {
 	PaginatedResponseEntity,
 	PaginationMetadataEntity,
@@ -32,7 +36,8 @@ export class RoadmapsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly optimization: OptimizationService,
-		@InjectQueue(QUEUE_NAMES.ROADMAPS) private queue: Queue
+		@InjectFlowProducer(FLOW_PRODUCER_NAMES.ROADMAPS)
+		private flowProducer: FlowProducer
 	) {}
 
 	async create(
@@ -47,16 +52,54 @@ export class RoadmapsService {
 				},
 			})
 
-			const setting = plainToInstance(SettingDto, createdRoadmap.setting)
+			const startDateTime = createdRoadmap.startDateTime
 
-			const startDateTime = new Date(setting.firstStage.startDateTime)
+			const endDateTime = createdRoadmap.endDateTime
 
 			const scheduledTime = startDateTime.getTime() - 600000
 
-			await this.queue.add(QUEUE_TASK_NAME.ROADMAPS.OPTIMIZE, createdRoadmap, {
-				delay: Math.max(0, scheduledTime - Date.now()),
-				attempts: 5,
-				backoff: { type: 'exponential', delay: 5000 },
+			const timestamp = Date.now()
+
+			await this.flowProducer.add({
+				queueName: QUEUE_NAMES.ROADMAPS,
+				name: FLOW_PRODUCERS_TASK_NAME.ROADMAPS.FINALIZE,
+				data: createdRoadmap,
+				opts: {
+					jobId: createdRoadmap.id,
+					delay: Math.max(0, endDateTime.getTime() - timestamp),
+					attempts: 5,
+					backoff: { type: 'exponential', delay: 5000 },
+					removeOnFail: 5,
+					removeOnComplete: 50,
+				},
+				children: [
+					{
+						queueName: QUEUE_NAMES.ROADMAPS,
+						name: FLOW_PRODUCERS_TASK_NAME.ROADMAPS.START,
+						data: createdRoadmap,
+						opts: {
+							delay: Math.max(0, startDateTime.getTime() - timestamp),
+							attempts: 5,
+							backoff: { type: 'exponential', delay: 5000 },
+							removeOnFail: 5,
+							removeOnComplete: 50,
+						},
+						children: [
+							{
+								queueName: QUEUE_NAMES.ROADMAPS,
+								name: FLOW_PRODUCERS_TASK_NAME.ROADMAPS.OPTIMIZE,
+								data: createdRoadmap,
+								opts: {
+									delay: Math.max(0, scheduledTime - timestamp),
+									attempts: 5,
+									backoff: { type: 'exponential', delay: 5000 },
+									removeOnFail: 5,
+									removeOnComplete: 50,
+								},
+							},
+						],
+					},
+				],
 			})
 
 			return new RoadmapEntity({
@@ -180,14 +223,27 @@ export class RoadmapsService {
 	}
 
 	async remove(userId: string, id: string): Promise<string> {
-		await this.prisma.roadmap.delete({
-			where: {
-				userId,
-				id,
-			},
-		})
+		return this.prisma.$transaction(async prisma => {
+			await prisma.roadmap.delete({
+				where: {
+					userId,
+					id,
+				},
+			})
 
-		return `Eliminación completa!`
+			const flow = await this.flowProducer.getFlow({
+				id,
+				queueName: QUEUE_NAMES.ROADMAPS,
+			})
+
+			if (flow) {
+				await flow.job.remove({
+					removeChildren: true,
+				})
+			}
+
+			return `Eliminación completa!`
+		})
 	}
 
 	async changeStatus(

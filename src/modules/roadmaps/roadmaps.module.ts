@@ -1,10 +1,11 @@
 import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
-import { QUEUE_NAMES } from 'src/common/constants'
+import { FLOW_PRODUCER_NAMES } from 'src/common/constants'
 import { GoogleMapsModule } from '../google-maps/google-maps.module'
 import { NotificationsModule } from '../notifications/notifications.module'
 import { OptimizationModule } from '../optimization/optimization.module'
 import { RoadmapsController } from './roadmaps.controller'
+import { RoadmapsConsumer } from './roadmaps.processor'
 import { RoadmapsService } from './roadmaps.service'
 
 @Module({
@@ -12,11 +13,11 @@ import { RoadmapsService } from './roadmaps.service'
 		OptimizationModule,
 		GoogleMapsModule,
 		NotificationsModule,
-		BullModule.registerQueue({
-			name: QUEUE_NAMES.ROADMAPS,
+		BullModule.registerFlowProducer({
+			name: FLOW_PRODUCER_NAMES.ROADMAPS,
 		}),
 	],
 	controllers: [RoadmapsController],
-	providers: [RoadmapsService],
+	providers: [RoadmapsService, RoadmapsConsumer],
 })
 export class RoadmapsModule {}

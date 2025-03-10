@@ -1,95 +1,73 @@
-import {
-	InjectQueue,
-	OnWorkerEvent,
-	Processor,
-	WorkerHost,
-} from '@nestjs/bullmq'
+import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq'
 import { Logger } from '@nestjs/common'
 import { Roadmap } from '@prisma/client'
 import { JsonObject } from '@prisma/client/runtime/library'
-import { Job, Queue } from 'bullmq'
+import { Job } from 'bullmq'
 import { plainToInstance } from 'class-transformer'
-import { QUEUE_NAMES, QUEUE_TASK_NAME } from 'src/common/constants'
+import { FLOW_PRODUCERS_TASK_NAME, QUEUE_NAMES } from 'src/common/constants'
 import { NotificationsService } from '../notifications/notifications.service'
 import { RoadmapOptimizationEntity } from '../optimization/routes-optimization/entities'
 import { RoadmapsService } from './roadmaps.service'
 
 @Processor(QUEUE_NAMES.ROADMAPS)
 export class RoadmapsConsumer extends WorkerHost {
-	private logger: Logger = new Logger(RoadmapsConsumer.name)
+	private logger = new Logger(RoadmapsConsumer.name)
 
 	constructor(
 		private readonly roadmap: RoadmapsService,
-		private readonly notifications: NotificationsService,
-		@InjectQueue(QUEUE_NAMES.ROADMAPS) private queue: Queue
+		private readonly notifications: NotificationsService
 	) {
 		super()
+		this.logger.log('Roadmaps consumer started')
 	}
 
+	/** Mapeo de tareas y métodos */
+	private readonly jobHandlers: Record<
+		string,
+		(data: Roadmap) => Promise<void>
+	> = {
+		[FLOW_PRODUCERS_TASK_NAME.ROADMAPS.OPTIMIZE]: this.optimize.bind(this),
+		[FLOW_PRODUCERS_TASK_NAME.ROADMAPS.START]: this.start.bind(this),
+		[FLOW_PRODUCERS_TASK_NAME.ROADMAPS.FINALIZE]: this.finalize.bind(this),
+	}
+
+	private readonly notificationHandlers: Record<
+		string,
+		(data: Roadmap) => void
+	> = {
+		[FLOW_PRODUCERS_TASK_NAME.ROADMAPS.OPTIMIZE]: this.afterOptimize.bind(this),
+		[FLOW_PRODUCERS_TASK_NAME.ROADMAPS.START]: this.afterStart.bind(this),
+		[FLOW_PRODUCERS_TASK_NAME.ROADMAPS.FINALIZE]: this.afterFinalize.bind(this),
+	}
+
+	/**  Evento cuando un trabajo finaliza */
 	@OnWorkerEvent('completed')
 	async onCompleted(job: Job<Roadmap>) {
-		this.logger.log(`Job ${job.id} completed`)
-		switch (job.name) {
-			case QUEUE_TASK_NAME.ROADMAPS.OPTIMIZE:
-				await this.afterOptimize(job.data)
-				break
-			case QUEUE_TASK_NAME.ROADMAPS.START:
-				await this.afterStart(job.data)
-				break
-			case QUEUE_TASK_NAME.ROADMAPS.FINALIZE:
-				await this.afterFinalize(job.data)
-				break
-			default:
-				this.logger.error(`Unknown job type ${job.name}`)
-		}
+		this.logger.log(`Job ${job.id} completed: ${job.name}`)
+
+		this.notificationHandlers[job.name]?.(job.data)
 	}
 
+	/**  Evento cuando un trabajo falla */
 	@OnWorkerEvent('failed')
 	async onFailed(job: Job<Roadmap>) {
-		this.logger.error(`Job ${job.id} failed`)
+		this.logger.error(`Job ${job.id} failed: ${job.name}`)
 
-		switch (job.name) {
-			case QUEUE_TASK_NAME.ROADMAPS.OPTIMIZE:
-				this.logger.error(`Optimization job ${job.id} failed`)
-
-				this.notifications.sendOptimization(
-					job.data.userId,
-					`¡La optimización de la hoja de ruta ${job.data.code} ha fallado! Por favor, intente creándola nuevamente.`
-				)
-
-				break
-
-			case QUEUE_TASK_NAME.ROADMAPS.START:
-				this.logger.error(`Start job ${job.id} failed`)
-				break
-
-			case QUEUE_TASK_NAME.ROADMAPS.FINALIZE:
-				this.logger.error(`Finalize job ${job.id} failed`)
-				break
-			default:
-				this.logger.error(`Unknown job type ${job.name}`)
+		if (job.name === FLOW_PRODUCERS_TASK_NAME.ROADMAPS.OPTIMIZE) {
+			this.notifications.sendOptimization(
+				job.data.userId,
+				`¡La optimización de la hoja de ruta ${job.data.code} ha fallado!`
+			)
 		}
 	}
 
 	async process(job: Job<Roadmap>) {
-		this.logger.log(`Processing job ${job.id}`)
-		switch (job.name) {
-			case QUEUE_TASK_NAME.ROADMAPS.OPTIMIZE:
-				await this.optimize(job.data)
-				break
+		this.logger.log(`Processing job ${job.id}: ${job.name}`)
 
-			case QUEUE_TASK_NAME.ROADMAPS.START:
-				await this.start(job.data)
-				break
-
-			case QUEUE_TASK_NAME.ROADMAPS.FINALIZE:
-				await this.finalize(job.data)
-				break
-			default:
-				this.logger.error(`Unknown job type ${job.name}`)
-		}
+		await this.jobHandlers[job.name]?.(job.data)
 	}
 
+	/** Métodos de ejecución de trabajos */
 	private async optimize(data: Roadmap) {
 		const foundRoadmap = await this.roadmap.findOne(data.userId, data.id)
 
@@ -98,7 +76,7 @@ export class RoadmapsConsumer extends WorkerHost {
 			foundRoadmap.results
 		)
 
-		this.roadmap.setResults(
+		await this.roadmap.setResults(
 			data.userId,
 			data.id,
 			results as unknown as JsonObject
@@ -115,41 +93,22 @@ export class RoadmapsConsumer extends WorkerHost {
 		await this.roadmap.changeStatus(data.userId, data.id, 'COMPLETED')
 	}
 
-	private async afterOptimize(data: Roadmap) {
+	/** Métodos de notificación */
+	private afterOptimize(data: Roadmap) {
 		this.notifications.sendOptimization(
 			data.userId,
-			`¡La hoja de ruta ${data.code} ha sido optimizada! Revisa los resultados.`
-		)
-
-		await this.queue.add(
-			QUEUE_TASK_NAME.ROADMAPS.START,
-			{ roadmapId: data.id, userId: data.userId },
-			{
-				delay: Math.max(0, data.startDateTime.getTime() - Date.now()),
-				attempts: 5,
-				backoff: { type: 'exponential', delay: 5000 },
-			}
+			`¡La hoja de ruta ${data.code} ha sido optimizada!`
 		)
 	}
 
-	private async afterStart(data: Roadmap) {
+	private afterStart(data: Roadmap) {
 		this.notifications.sendRoadmap(
 			data.userId,
 			`¡La hoja de ruta ${data.code} ha iniciado!`
 		)
-
-		await this.queue.add(
-			QUEUE_TASK_NAME.ROADMAPS.FINALIZE,
-			{ roadmapId: data.id, userId: data.userId },
-			{
-				delay: Math.max(0, data.endDateTime.getTime() - Date.now()),
-				attempts: 5,
-				backoff: { type: 'exponential', delay: 5000 },
-			}
-		)
 	}
 
-	private async afterFinalize(data: Roadmap) {
+	private afterFinalize(data: Roadmap) {
 		this.notifications.sendRoadmap(
 			data.userId,
 			`¡La hoja de ruta ${data.code} ha finalizado!`

@@ -8,7 +8,7 @@ import {
 } from '../../../common/dtos'
 import { RoadmapEntity } from '../entities/roadmap.entity'
 
-type ValidFieldsType = keyof RoadmapEntity
+type ValidFieldsType = keyof RoadmapEntity | string
 
 const VALID_FIELDS: ValidFieldsType[] = [
 	'code',
@@ -18,6 +18,9 @@ const VALID_FIELDS: ValidFieldsType[] = [
 	'fleetId',
 	'vehicleId',
 	'driverId',
+	'fleet.name',
+	'vehicle.licensePlate',
+	'driver.name',
 ]
 
 export class RoadmapFilterFieldDto extends FilterFieldDto {
