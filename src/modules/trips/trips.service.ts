@@ -17,7 +17,7 @@ import {
 import { OptimizationService } from '../optimization/optimization.service'
 import { CriteriaDto } from '../optimization/routes/dtos'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateTripDto, UpdateTripDto } from './dtos'
+import { CreateTripDto, ReplicateTripDto, UpdateTripDto } from './dtos'
 import { TripQueryParamsDto } from './dtos/trip-params.dto'
 import { TripEntity } from './entities/trip.entity'
 
@@ -209,6 +209,69 @@ export class TripsService {
 			...updatedTrip,
 			criteria: updatedTrip.criteria as JsonObject,
 			results: updatedTrip.results as JsonArray,
+		})
+	}
+
+	async replicate(userId: string, replicateTripDto: ReplicateTripDto) {
+		const trip = await this.prisma.trip.findFirst({
+			where: {
+				id: replicateTripDto.id,
+				userId,
+			},
+		})
+
+		if (!trip) {
+			throw new NotFoundException('Viaje no encontrado')
+		}
+
+		const criteria = trip.criteria
+
+		let parsedCriteria = plainToInstance(CriteriaDto, criteria)
+
+		if (replicateTripDto.departureTime) {
+			parsedCriteria = {
+				...parsedCriteria,
+				basicCriteria: {
+					...parsedCriteria.basicCriteria,
+					departureTime: replicateTripDto.departureTime,
+				},
+			}
+
+			const createTripDto: CreateTripDto = {
+				code: replicateTripDto.code,
+				departureTime: new Date(replicateTripDto.departureTime),
+				criteria: parsedCriteria as unknown as JsonObject,
+			}
+
+			return await this.create(userId, createTripDto)
+		}
+
+		return await this.prisma.$transaction(async prisma => {
+			const departureTime = new Date()
+
+			parsedCriteria = {
+				...parsedCriteria,
+				basicCriteria: {
+					...parsedCriteria.basicCriteria,
+					departureTime: departureTime.toISOString(),
+				},
+			}
+
+			const results = parsedCriteria.advancedCriteria
+				? await this.optimization.computeAdvancedOptimization(parsedCriteria)
+				: await this.optimization.computeBasicOptimization(
+						parsedCriteria.basicCriteria
+					)
+
+			return await prisma.trip.create({
+				data: {
+					userId,
+					code: replicateTripDto.code,
+					departureTime,
+					criteria: parsedCriteria as unknown as JsonObject,
+					results: results as unknown as JsonArray,
+				},
+			})
 		})
 	}
 }

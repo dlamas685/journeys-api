@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger'
 import { ApiOkResponsePaginated, UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CreateTripDto, UpdateTripDto } from './dtos'
+import { CreateTripDto, ReplicateTripDto, UpdateTripDto } from './dtos'
 import { TripQueryParamsDto } from './dtos/trip-params.dto'
 import { TripEntity } from './entities/trip.entity'
 import { TripsService } from './trips.service'
@@ -91,5 +91,19 @@ export class TripsController {
 	})
 	remove(@UserId() userId: string, @Param('id', ParseUUIDPipe) id: string) {
 		return this.tripsService.remove(userId, id)
+	}
+
+	@Post('replicate')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Replicación de Viaje',
+		description: 'Permite replicar un viaje.',
+	})
+	@ApiOkResponse({ type: TripEntity })
+	replicate(
+		@UserId() userId: string,
+		@Body() replicateTripDto: ReplicateTripDto
+	) {
+		return this.tripsService.replicate(userId, replicateTripDto)
 	}
 }
