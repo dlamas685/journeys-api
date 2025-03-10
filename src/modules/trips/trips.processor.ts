@@ -25,6 +25,8 @@ export class TripsConsumer extends WorkerHost {
 		@InjectQueue(QUEUE_NAMES.TRIPS) private queue: Queue
 	) {
 		super()
+
+		this.logger.log('Trips consumer started')
 	}
 
 	@OnWorkerEvent('completed')
@@ -114,12 +116,15 @@ export class TripsConsumer extends WorkerHost {
 		const scheduleTime = addSeconds(data.departureTime, maxDuration + 1800)
 
 		await this.queue.add(QUEUE_TASK_NAME.TRIPS.TO_ARCHIVE, data, {
+			jobId: `${QUEUE_TASK_NAME.TRIPS.TO_ARCHIVE}-${data.id}`,
 			delay: Math.max(0, scheduleTime.getTime() - Date.now()),
 			attempts: 5,
 			backoff: {
 				type: 'exponential',
 				delay: 5000,
 			},
+			removeOnFail: 5,
+			removeOnComplete: 50,
 		})
 	}
 }

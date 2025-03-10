@@ -44,19 +44,20 @@ export class TripsService {
 				},
 			})
 
-			const parsedCriteria = plainToInstance(CriteriaDto, criteria)
-
-			const departureTime = new Date(parsedCriteria.basicCriteria.departureTime)
+			const departureTime = createdTrip.departureTime
 
 			const scheduledTime = departureTime.getTime() - 600000
 
 			await this.queue.add(QUEUE_TASK_NAME.TRIPS.OPTIMIZE, createdTrip, {
+				jobId: `${QUEUE_TASK_NAME.TRIPS.OPTIMIZE}-${createdTrip.id}`,
 				delay: Math.max(0, scheduledTime - Date.now()),
 				attempts: 5,
 				backoff: {
 					type: 'exponential',
 					delay: 5000,
 				},
+				removeOnFail: 5,
+				removeOnComplete: 50,
 			})
 
 			return new TripEntity({
@@ -170,14 +171,27 @@ export class TripsService {
 	}
 
 	async remove(userId: string, id: string) {
-		await this.prisma.trip.delete({
-			where: {
-				userId,
-				id,
-			},
-		})
+		return this.prisma.$transaction(async prisma => {
+			await prisma.trip.delete({
+				where: {
+					userId,
+					id,
+				},
+			})
 
-		return `Eliminación completa!`
+			const jobIds = [
+				`${QUEUE_TASK_NAME.TRIPS.OPTIMIZE}-${id}`,
+				`${QUEUE_TASK_NAME.TRIPS.TO_ARCHIVE}-${id}`,
+			]
+
+			const jobs = (
+				await Promise.all(jobIds.map(jobId => this.queue.getJob(jobId)))
+			).filter(Boolean)
+
+			await Promise.all(jobs.map(job => job.remove()))
+
+			return `Eliminación completa!`
+		})
 	}
 
 	async setResults(userId: string, id: string, results: JsonArray) {
