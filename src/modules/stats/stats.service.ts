@@ -2,18 +2,17 @@ import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 import { PrismaService } from '../prisma/prisma.service'
-import { CompanyStats, CompanyStatsByMonth } from './dto/company-stats.dto'
+import {
+	CompanyStatsByMonthEntity,
+	CompanyStatsEntity,
+} from './entities/company-stats.entity'
 
 @Injectable()
 export class StatsService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	create(createDashboardDto: CompanyStats) {
-		return 'This action adds a new dashboard'
-	}
-
 	async companyStats(userId: string) {
-		const result = await this.prisma.$queryRaw<CompanyStats>(Prisma.sql`
+		const result = await this.prisma.$queryRaw<CompanyStatsEntity>(Prisma.sql`
 		WITH company_stats AS (
 			SELECT  
 				r.user_id,
@@ -28,12 +27,12 @@ export class StatsService {
 		SELECT * FROM company_stats
 		WHERE user_id = ${userId}::uuid;`)
 
-		return plainToInstance(CompanyStats, result)
+		return plainToInstance(CompanyStatsEntity, result)
 	}
 
 	async companyStatsByMonth(userId: string, year?: number, month?: number) {
 		const result = await this.prisma.$queryRaw<
-			CompanyStatsByMonth[]
+			CompanyStatsByMonthEntity[]
 		>(Prisma.sql`
 			WITH company_stats_by_month AS (
 				SELECT
@@ -55,6 +54,6 @@ export class StatsService {
 			${year ? Prisma.sql`AND year = ${year}` : Prisma.empty}
 			${month ? Prisma.sql`AND month = ${month}` : Prisma.empty}`)
 
-		return plainToInstance(CompanyStatsByMonth, result)
+		return plainToInstance(CompanyStatsByMonthEntity, result)
 	}
 }
