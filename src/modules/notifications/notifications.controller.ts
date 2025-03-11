@@ -55,7 +55,7 @@ export class NotificationsController {
 		return this.notificationsService.findAll(recipientId, queryParamsDto)
 	}
 
-	@Post('markAsRead')
+	@Post('read')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: 'Marca una o varias notificaciones como leída',

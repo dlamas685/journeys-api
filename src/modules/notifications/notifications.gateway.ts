@@ -6,7 +6,13 @@ import {
 } from '@nestjs/websockets'
 import { Server, Socket } from 'socket.io'
 
-@WebSocketGateway({ namespace: 'notifications' })
+@WebSocketGateway({
+	namespace: 'notifications',
+	cors: {
+		origin: process.env.FRONTEND_URL,
+		credentials: true,
+	},
+})
 export class NotificationsGateway
 	implements OnGatewayConnection, OnGatewayDisconnect
 {

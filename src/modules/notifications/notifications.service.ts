@@ -35,7 +35,7 @@ export class NotificationsService {
 
 		this.websocket.server
 			.to(createdNotification.recipientId)
-			.emit(WEBSOCKET_EVENTS.NEW_NOTIFICATION, createdNotification)
+			.emit(WEBSOCKET_EVENTS.NOTIFICATION_CREATED, createdNotification)
 
 		return plainToInstance(NotificationEntity, createdNotification)
 	}
@@ -88,7 +88,7 @@ export class NotificationsService {
 	}
 
 	async markAsRead(recipientId: string, markAsReadDto: MarkAsReadDto) {
-		return await this.prisma.notification.updateMany({
+		const result = await this.prisma.notification.updateMany({
 			where: {
 				recipientId,
 				readAt: null,
@@ -98,12 +98,34 @@ export class NotificationsService {
 				readAt: new Date().toISOString(),
 			},
 		})
+
+		const records = await this.prisma.notification.findMany({
+			where: { recipientId },
+		})
+
+		const notifications = plainToInstance(NotificationEntity, records)
+
+		this.websocket.server
+			.to(recipientId)
+			.emit(WEBSOCKET_EVENTS.NOTIFICATION_READ, notifications)
+
+		return { updatedCount: result.count }
 	}
 
 	async remove(recipientId: string, id: string) {
 		await this.prisma.notification.delete({
 			where: { id, recipientId },
 		})
+
+		const records = await this.prisma.notification.findMany({
+			where: { recipientId },
+		})
+
+		const notifications = plainToInstance(NotificationEntity, records)
+
+		this.websocket.server
+			.to(recipientId)
+			.emit(WEBSOCKET_EVENTS.NOTIFICATION_DELETED, notifications)
 
 		return `Eliminación completa!`
 	}
