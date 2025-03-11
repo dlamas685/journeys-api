@@ -14,7 +14,7 @@ import { NexusService } from './nexus.service'
 
 @Controller()
 @UseGuards(JwtAuthGuard)
-@ApiTags('nexus')
+@ApiTags('Nexus')
 @ApiBearerAuth('JWT-auth')
 export class NexusController {
 	constructor(private readonly nexusService: NexusService) {}
