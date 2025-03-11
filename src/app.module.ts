@@ -9,6 +9,7 @@ import { ActivityTemplatesModule } from './modules/activity-templates/activity-t
 import { AssistantModule } from './modules/assistant/assistant.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module'
+import { StatsModule } from './modules/dashboard/stats.module'
 import { DriversModule } from './modules/drivers/drivers.module'
 import { FavoriteAddressesModule } from './modules/favorite-addresses/favorite-addresses.module'
 import { FavoritePlacesModule } from './modules/favorite-places/favorite-places.module'
@@ -75,6 +76,7 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module'
 		NexusModule,
 		AssistantModule,
 		NotificationsModule,
+		StatsModule,
 	],
 	controllers: [],
 	providers: [],
