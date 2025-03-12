@@ -101,6 +101,7 @@ export class NotificationsService {
 
 		const records = await this.prisma.notification.findMany({
 			where: { recipientId },
+			orderBy: { createdAt: 'desc' },
 		})
 
 		const notifications = plainToInstance(NotificationEntity, records)
@@ -119,6 +120,7 @@ export class NotificationsService {
 
 		const records = await this.prisma.notification.findMany({
 			where: { recipientId },
+			orderBy: { createdAt: 'desc' },
 		})
 
 		const notifications = plainToInstance(NotificationEntity, records)
