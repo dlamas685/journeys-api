@@ -15,6 +15,7 @@ import {
 import { UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { CompanyStatsEntity } from './entities/company-stats.entity'
+import { StatsByMonthEntity, StatsEntity } from './entities/user-stats.entity'
 import { StatsService } from './stats.service'
 
 @Controller('stats')
@@ -23,6 +24,32 @@ import { StatsService } from './stats.service'
 @ApiBearerAuth('JWT-auth')
 export class StatsController {
 	constructor(private readonly statsService: StatsService) {}
+
+	@Get()
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Estadísticas del usuario',
+		description: 'Permite recuperar las estadísticas del usuario.',
+	})
+	@ApiOkResponse({ type: StatsEntity })
+	stats(@UserId() userId: string) {
+		return this.statsService.stats(userId)
+	}
+
+	@Get('by-month')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Estadísticas del usuario por mes',
+		description: 'Permite recuperar las estadísticas del por mes.',
+	})
+	@ApiOkResponse({ type: [StatsByMonthEntity] })
+	statsByMonth(
+		@UserId() userId: string,
+		@Query('year') year?: number,
+		@Query('month') month?: number
+	) {
+		return this.statsService.statsByMonth(userId, year, month)
+	}
 
 	@Get('company')
 	@HttpCode(HttpStatus.OK)

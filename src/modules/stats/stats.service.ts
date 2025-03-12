@@ -6,10 +6,53 @@ import {
 	CompanyStatsByMonthEntity,
 	CompanyStatsEntity,
 } from './entities/company-stats.entity'
+import { StatsByMonthEntity, StatsEntity } from './entities/user-stats.entity'
 
 @Injectable()
 export class StatsService {
 	constructor(private readonly prisma: PrismaService) {}
+
+	async stats(userId: string) {
+		const result = await this.prisma.$queryRaw<StatsEntity>(Prisma.sql`
+		WITH trip_stats AS (
+			SELECT  
+				t.user_id,
+				COUNT(*)::int total,
+				COUNT(CASE WHEN t.is_archived IS TRUE THEN 1 END)::int AS "totalArchived",
+				COUNT(CASE WHEN t.is_archived IS NOT TRUE THEN 1 END)::int AS "totalNoArchived"
+			FROM trips t
+			GROUP BY t.user_id
+		)
+		SELECT * FROM trip_stats
+		WHERE user_id = ${userId}::uuid;`)
+
+		return plainToInstance(StatsEntity, result)
+	}
+
+	async statsByMonth(userId: string, year?: number, month?: number) {
+		const result = await this.prisma.$queryRaw<StatsByMonthEntity[]>(Prisma.sql`
+			WITH stats_by_month AS (
+				SELECT
+					t.user_id, 
+					date_part('year', t.departure_time) AS year, 
+					date_part('month', t.departure_time) AS month,
+					COUNT(case when t.is_archived IS TRUE THEN 1 END)::int AS "countArchived"
+				FROM
+					trips t
+				GROUP BY
+					t.user_id,
+					year,
+					month
+				ORDER BY
+					year desc, month desc
+			)
+			SELECT * FROM stats_by_month
+			WHERE  user_id = ${userId}::uuid
+			${year ? Prisma.sql`AND year = ${year}` : Prisma.empty}
+			${month ? Prisma.sql`AND month = ${month}` : Prisma.empty}`)
+
+		return plainToInstance(StatsByMonthEntity, result)
+	}
 
 	async companyStats(userId: string) {
 		const result = await this.prisma.$queryRaw<CompanyStatsEntity>(Prisma.sql`
