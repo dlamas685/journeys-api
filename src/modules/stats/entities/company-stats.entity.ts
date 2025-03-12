@@ -27,3 +27,8 @@ export class CompanyStatsByMonthEntity {
 	@ApiProperty()
 	countCompleted: number
 }
+
+export class TopDriversEntity {
+	name: string
+	countCompleted: number
+}

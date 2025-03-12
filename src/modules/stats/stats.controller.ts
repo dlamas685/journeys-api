@@ -76,4 +76,16 @@ export class StatsController {
 	) {
 		return this.statsService.companyStatsByMonth(userId, year, month)
 	}
+
+	@Get('top-drivers')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Estadísticas de la empresa para obtener los mejores conductores',
+		description:
+			'Permite recuperar los conductores que más hoja de ruta completaron.',
+	})
+	@ApiOkResponse({ type: CompanyStatsEntity })
+	companyTopDrivers(@UserId() userId: string) {
+		return this.statsService.companyTopDrivers(userId)
+	}
 }

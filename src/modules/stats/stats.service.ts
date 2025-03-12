@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service'
 import {
 	CompanyStatsByMonthEntity,
 	CompanyStatsEntity,
+	TopDriversEntity,
 } from './entities/company-stats.entity'
 import { StatsByMonthEntity, StatsEntity } from './entities/user-stats.entity'
 
@@ -98,5 +99,26 @@ export class StatsService {
 			${month ? Prisma.sql`AND month = ${month}` : Prisma.empty}`)
 
 		return plainToInstance(CompanyStatsByMonthEntity, result)
+	}
+
+	async companyTopDrivers(userId: string) {
+		const result = this.prisma.$queryRaw<
+			TopDriversEntity[]
+		>(Prisma.sql`WITH top_drivers AS (
+			SELECT
+				r.user_id,
+				r.driver_id,
+				COUNT(CASE WHEN r.status = 'COMPLETED' THEN 1 END)::int AS count_completed
+			FROM roadmaps r
+			GROUP BY
+				r.user_id,
+				r.driver_id
+			)
+			SELECT d."name", td.count_completed AS "countCompleted" 
+			FROM top_drivers td INNER JOIN drivers d ON d.id = td.driver_id
+			WHERE td.user_id = ${userId}::uuid 
+			ORDER BY td.count_completed DESC LIMIT 5;`)
+
+		return plainToInstance(TopDriversEntity, result)
 	}
 }
