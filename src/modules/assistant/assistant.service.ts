@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { plainToInstance } from 'class-transformer'
 import OpenAI from 'openai'
 import { PlacesService } from '../google-maps/services/places.service'
+import { AdvancedWaypointDto, CriteriaDto } from '../optimization/routes/dtos'
 import { TripsService } from '../trips/trips.service'
 import { UsersService } from '../users/users.service'
 import { CreateRealTimeSessionDto } from './dtos/create-real-time-session.dto'
@@ -14,10 +16,10 @@ export class AssistantService {
 	private assistantId: string
 
 	constructor(
-		private config: ConfigService,
-		private trips: TripsService,
-		private users: UsersService,
-		private places: PlacesService
+		private readonly config: ConfigService,
+		private readonly trips: TripsService,
+		private readonly users: UsersService,
+		private readonly places: PlacesService
 	) {
 		this.openai = new OpenAI({
 			apiKey: this.config.get('OPENAI_API_KEY'),
@@ -33,9 +35,17 @@ export class AssistantService {
 
 		const user = await this.users.findOne(userId)
 
-		const instructions = generateInstructions(user, trip, {})
+		const criteria = plainToInstance(CriteriaDto, trip.criteria)
 
-		console.log(instructions)
+		const alternatives =
+			criteria.advancedCriteria.interestPoints &&
+			criteria.advancedCriteria.interestPoints.length > 0
+				? await this.findAlternativesPOI(
+						criteria.advancedCriteria.interestPoints
+					)
+				: []
+
+		const instructions = generateInstructions(user, trip, alternatives)
 
 		const session = await this.openai.beta.realtime.sessions.create({
 			model: 'gpt-4o-mini-realtime-preview',
@@ -55,5 +65,27 @@ export class AssistantService {
 			clientSecret: session.client_secret.value,
 			instructions: session.instructions,
 		})
+	}
+
+	async findAlternativesPOI(interestPoints: AdvancedWaypointDto[]) {
+		const alternativesPOI = await Promise.all(
+			interestPoints.map(interestPoint => {
+				return this.places
+					.getPlaceDetails(interestPoint.placeId)
+					.then(async placeDetails => {
+						const places = await this.places.nearbySearch(
+							placeDetails.location,
+							placeDetails.types
+						)
+
+						return {
+							interestPoint,
+							places,
+						}
+					})
+			})
+		)
+
+		return alternativesPOI
 	}
 }

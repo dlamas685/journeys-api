@@ -4,6 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { TIME_ZONES } from 'src/common/constants'
 import { DriversService } from '../drivers/drivers.service'
 import { FleetsService } from '../fleets/fleets.service'
+import { PlacesService } from '../google-maps/services/places.service'
 import { RouteOptimizationService } from '../google-maps/services/route-optimization.service'
 import { RoutesService } from '../google-maps/services/routes.service'
 import { VehiclesService } from '../vehicles/vehicles.service'
@@ -30,7 +31,8 @@ export class OptimizationService {
 		private readonly routesOptimization: RouteOptimizationService,
 		private readonly fleets: FleetsService,
 		private readonly drivers: DriversService,
-		private readonly vehicles: VehiclesService
+		private readonly vehicles: VehiclesService,
+		private readonly places: PlacesService
 	) {}
 
 	async computeBasicOptimization(basicCriteria: BasicCriteriaDto) {
