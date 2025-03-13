@@ -40,7 +40,8 @@ export class StatsService {
 					t.user_id, 
 					date_part('year', t.departure_time) AS year, 
 					date_part('month', t.departure_time) AS month,
-					COUNT(case when t.is_archived IS TRUE THEN 1 END)::int AS "countArchived"
+					COUNT(CASE WHEN t.is_archived IS TRUE THEN 1 END)::int AS "countArchived",
+					COUNT(CASE WHEN t.is_archived IS FALSE THEN 1 END)::int AS "countNotArchived"
 				FROM
 					trips t
 				GROUP BY
@@ -48,10 +49,10 @@ export class StatsService {
 					year,
 					month
 				ORDER BY
-					year desc, month desc
+					year DESC, month DESC
 			)
 			SELECT * FROM stats_by_month
-			WHERE  user_id = ${userId}::uuid
+			WHERE user_id = ${userId}::uuid
 			${year ? Prisma.sql`AND year = ${year}` : Prisma.empty}
 			${month ? Prisma.sql`AND month = ${month}` : Prisma.empty}`)
 

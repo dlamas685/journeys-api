@@ -13,4 +13,8 @@ export class StatsByMonthEntity {
 	@ApiProperty()
 	@Expose()
 	countArchived: number
+
+	@ApiProperty()
+	@Expose()
+	countNotArchived: number
 }
