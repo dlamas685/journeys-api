@@ -14,8 +14,14 @@ import {
 } from '@nestjs/swagger'
 import { UserId } from 'src/common/decorators'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import { CompanyStatsEntity } from './entities/company-stats.entity'
-import { StatsByMonthEntity, StatsEntity } from './entities/user-stats.entity'
+
+import {
+	CompanyStatsByMonthEntity,
+	CompanyStatsEntity,
+	StatsByMonthEntity,
+	StatsEntity,
+	TopDriversEntity,
+} from './entities'
 import { StatsService } from './stats.service'
 
 @Controller('stats')
@@ -32,8 +38,8 @@ export class StatsController {
 		description: 'Permite recuperar las estadísticas del usuario.',
 	})
 	@ApiOkResponse({ type: StatsEntity })
-	stats(@UserId() userId: string) {
-		return this.statsService.stats(userId)
+	getStats(@UserId() userId: string) {
+		return this.statsService.getStats(userId)
 	}
 
 	@Get('by-month')
@@ -42,13 +48,13 @@ export class StatsController {
 		summary: 'Estadísticas del usuario por mes',
 		description: 'Permite recuperar las estadísticas del por mes.',
 	})
-	@ApiOkResponse({ type: [StatsByMonthEntity] })
-	statsByMonth(
+	@ApiOkResponse({ type: StatsByMonthEntity, isArray: true })
+	getStatsByMonth(
 		@UserId() userId: string,
 		@Query('year') year?: number,
 		@Query('month') month?: number
 	) {
-		return this.statsService.statsByMonth(userId, year, month)
+		return this.statsService.getStatsByMonth(userId, year, month)
 	}
 
 	@Get('company')
@@ -58,34 +64,34 @@ export class StatsController {
 		description: 'Permite recuperar las estadísticas de la empresa.',
 	})
 	@ApiOkResponse({ type: CompanyStatsEntity })
-	companyStats(@UserId() userId: string) {
-		return this.statsService.companyStats(userId)
+	getCompanyStats(@UserId() userId: string) {
+		return this.statsService.getCompanyStats(userId)
 	}
 
-	@Get('company-by-month')
+	@Get('company/by-month')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: 'Estadísticas de la empresa por mes',
 		description: 'Permite recuperar las estadísticas de la empresa por mes.',
 	})
-	@ApiOkResponse({ type: CompanyStatsEntity })
-	companyStatsByMonth(
+	@ApiOkResponse({ type: CompanyStatsByMonthEntity, isArray: true })
+	getCompanyStatsByMonth(
 		@UserId() userId: string,
 		@Query('year') year?: number,
 		@Query('month') month?: number
 	) {
-		return this.statsService.companyStatsByMonth(userId, year, month)
+		return this.statsService.getCompanyStatsByMonth(userId, year, month)
 	}
 
-	@Get('top-drivers')
+	@Get('company/top-drivers')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: 'Estadísticas de la empresa para obtener los mejores conductores',
 		description:
 			'Permite recuperar los conductores que más hoja de ruta completaron.',
 	})
-	@ApiOkResponse({ type: CompanyStatsEntity })
-	companyTopDrivers(@UserId() userId: string) {
-		return this.statsService.companyTopDrivers(userId)
+	@ApiOkResponse({ type: TopDriversEntity })
+	getCompanyTopDrivers(@UserId() userId: string) {
+		return this.statsService.getCompanyTopDrivers(userId)
 	}
 }

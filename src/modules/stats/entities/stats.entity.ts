@@ -1,24 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
 
-export class CompanyStatsEntity {
+export class StatsEntity {
 	@ApiProperty()
 	@Expose()
 	total: number
 
 	@ApiProperty()
 	@Expose()
-	totalUpcoming: number
+	totalArchived: number
 
 	@ApiProperty()
 	@Expose()
-	totalOngoing: number
-
-	@ApiProperty()
-	@Expose()
-	totalCompleted: number
-
-	@ApiProperty()
-	@Expose()
-	totalDismissed: number
+	totalNoArchived: number
 }

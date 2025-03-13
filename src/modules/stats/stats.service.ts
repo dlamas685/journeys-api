@@ -5,15 +5,16 @@ import { PrismaService } from '../prisma/prisma.service'
 import {
 	CompanyStatsByMonthEntity,
 	CompanyStatsEntity,
+	StatsByMonthEntity,
+	StatsEntity,
 	TopDriversEntity,
-} from './entities/company-stats.entity'
-import { StatsByMonthEntity, StatsEntity } from './entities/user-stats.entity'
+} from './entities'
 
 @Injectable()
 export class StatsService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async stats(userId: string) {
+	async getStats(userId: string) {
 		const result = await this.prisma.$queryRaw<StatsEntity>(Prisma.sql`
 		WITH trip_stats AS (
 			SELECT  
@@ -32,7 +33,7 @@ export class StatsService {
 		})
 	}
 
-	async statsByMonth(userId: string, year?: number, month?: number) {
+	async getStatsByMonth(userId: string, year?: number, month?: number) {
 		const result = await this.prisma.$queryRaw<StatsByMonthEntity[]>(Prisma.sql`
 			WITH stats_by_month AS (
 				SELECT
@@ -59,7 +60,7 @@ export class StatsService {
 		})
 	}
 
-	async companyStats(userId: string) {
+	async getCompanyStats(userId: string) {
 		const result = await this.prisma.$queryRaw<CompanyStatsEntity>(Prisma.sql`
 		WITH company_stats AS (
 			SELECT  
@@ -80,7 +81,7 @@ export class StatsService {
 		})
 	}
 
-	async companyStatsByMonth(userId: string, year?: number, month?: number) {
+	async getCompanyStatsByMonth(userId: string, year?: number, month?: number) {
 		const result = await this.prisma.$queryRaw<
 			CompanyStatsByMonthEntity[]
 		>(Prisma.sql`
@@ -109,7 +110,7 @@ export class StatsService {
 		})
 	}
 
-	async companyTopDrivers(userId: string) {
+	async getCompanyTopDrivers(userId: string) {
 		const result = this.prisma.$queryRaw<
 			TopDriversEntity[]
 		>(Prisma.sql`WITH top_drivers AS (
