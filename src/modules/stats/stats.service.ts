@@ -15,7 +15,7 @@ export class StatsService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async getStats(userId: string) {
-		const result = await this.prisma.$queryRaw<StatsEntity>(Prisma.sql`
+		const result = await this.prisma.$queryRaw<StatsEntity[]>(Prisma.sql`
 		WITH trip_stats AS (
 			SELECT  
 				t.user_id,
@@ -28,7 +28,7 @@ export class StatsService {
 		SELECT * FROM trip_stats
 		WHERE user_id = ${userId}::uuid;`)
 
-		return plainToInstance(StatsEntity, result, {
+		return plainToInstance(StatsEntity, result[0], {
 			excludeExtraneousValues: true,
 		})
 	}
@@ -61,7 +61,7 @@ export class StatsService {
 	}
 
 	async getCompanyStats(userId: string) {
-		const result = await this.prisma.$queryRaw<CompanyStatsEntity>(Prisma.sql`
+		const result = await this.prisma.$queryRaw<CompanyStatsEntity[]>(Prisma.sql`
 		WITH company_stats AS (
 			SELECT  
 				r.user_id,
@@ -76,7 +76,7 @@ export class StatsService {
 		SELECT * FROM company_stats
 		WHERE user_id = ${userId}::uuid;`)
 
-		return plainToInstance(CompanyStatsEntity, result, {
+		return plainToInstance(CompanyStatsEntity, result[0], {
 			excludeExtraneousValues: true,
 		})
 	}
