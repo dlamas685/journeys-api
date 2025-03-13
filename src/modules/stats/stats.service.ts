@@ -27,7 +27,9 @@ export class StatsService {
 		SELECT * FROM trip_stats
 		WHERE user_id = ${userId}::uuid;`)
 
-		return plainToInstance(StatsEntity, result)
+		return plainToInstance(StatsEntity, result, {
+			excludeExtraneousValues: true,
+		})
 	}
 
 	async statsByMonth(userId: string, year?: number, month?: number) {
@@ -52,7 +54,9 @@ export class StatsService {
 			${year ? Prisma.sql`AND year = ${year}` : Prisma.empty}
 			${month ? Prisma.sql`AND month = ${month}` : Prisma.empty}`)
 
-		return plainToInstance(StatsByMonthEntity, result)
+		return plainToInstance(StatsByMonthEntity, result, {
+			excludeExtraneousValues: true,
+		})
 	}
 
 	async companyStats(userId: string) {
@@ -71,7 +75,9 @@ export class StatsService {
 		SELECT * FROM company_stats
 		WHERE user_id = ${userId}::uuid;`)
 
-		return plainToInstance(CompanyStatsEntity, result)
+		return plainToInstance(CompanyStatsEntity, result, {
+			excludeExtraneousValues: true,
+		})
 	}
 
 	async companyStatsByMonth(userId: string, year?: number, month?: number) {
@@ -98,7 +104,9 @@ export class StatsService {
 			${year ? Prisma.sql`AND year = ${year}` : Prisma.empty}
 			${month ? Prisma.sql`AND month = ${month}` : Prisma.empty}`)
 
-		return plainToInstance(CompanyStatsByMonthEntity, result)
+		return plainToInstance(CompanyStatsByMonthEntity, result, {
+			excludeExtraneousValues: true,
+		})
 	}
 
 	async companyTopDrivers(userId: string) {
@@ -119,6 +127,8 @@ export class StatsService {
 			WHERE td.user_id = ${userId}::uuid 
 			ORDER BY td.count_completed DESC LIMIT 5;`)
 
-		return plainToInstance(TopDriversEntity, result)
+		return plainToInstance(TopDriversEntity, result, {
+			excludeExtraneousValues: true,
+		})
 	}
 }
