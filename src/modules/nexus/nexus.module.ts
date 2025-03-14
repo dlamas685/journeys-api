@@ -5,5 +5,6 @@ import { NexusService } from './nexus.service'
 @Module({
 	controllers: [NexusController],
 	providers: [NexusService],
+	exports: [NexusService],
 })
 export class NexusModule {}

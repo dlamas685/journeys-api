@@ -22,6 +22,8 @@ import {
 	fromLogicalFiltersToWhere,
 	fromSortsToOrderby,
 } from 'src/common/helpers'
+import { AvailableRoadmapAssetQueryParamsDto } from '../nexus/dtos/available-roadmap-asset-query'
+import { NexusService } from '../nexus/nexus.service'
 import { OptimizationService } from '../optimization/optimization.service'
 import { SettingDto } from '../optimization/routes-optimization/dtos'
 import { PrismaService } from '../prisma/prisma.service'
@@ -36,6 +38,7 @@ export class RoadmapsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly optimization: OptimizationService,
+		private readonly nexus: NexusService,
 		@InjectFlowProducer(FLOW_PRODUCER_NAMES.ROADMAPS)
 		private flowProducer: FlowProducer
 	) {}
@@ -44,6 +47,41 @@ export class RoadmapsService {
 		userId: string,
 		createRoadmapDto: CreateRoadmapDto
 	): Promise<RoadmapEntity> {
+		const { startDateTime, endDateTime, fleetId, driverId, vehicleId } =
+			createRoadmapDto
+
+		const dateRange: AvailableRoadmapAssetQueryParamsDto = {
+			fromDate: startDateTime,
+			toDate: endDateTime,
+		}
+
+		const assignedAssets = await this.nexus.availableRoadmapAssets(
+			userId,
+			dateRange
+		)
+
+		const fleet = assignedAssets.find(asset => asset.id === fleetId)
+
+		if (!fleet) {
+			throw new BadRequestException('Flota no disponible')
+		}
+
+		const driver = fleet.drivers.find(driver => driver.id === driverId)
+
+		const vehicle = fleet.vehicles.find(vehicle => vehicle.id === vehicleId)
+
+		if (!driver || !vehicle) {
+			const missingItems = []
+
+			if (!driver) missingItems.push('Conductor')
+
+			if (!vehicle) missingItems.push('Vehículo')
+
+			throw new BadRequestException(
+				`${missingItems.join(' y ')} no disponible${missingItems.length > 1 ? 's' : ''}`
+			)
+		}
+
 		return this.prisma.$transaction(async prisma => {
 			const createdRoadmap = await prisma.roadmap.create({
 				data: {
@@ -56,7 +94,7 @@ export class RoadmapsService {
 
 			const endDateTime = createdRoadmap.endDateTime
 
-			const scheduledTime = startDateTime.getTime() - 600000
+			const scheduledTime = startDateTime.getTime() - 3600000
 
 			const timestamp = Date.now()
 
@@ -182,21 +220,17 @@ export class RoadmapsService {
 		}
 
 		if (!foundRoadmap.results) {
-			const setting = plainToInstance(SettingDto, foundRoadmap.setting)
-
-			const results = await this.optimization.optimizeTours(userId, setting)
-
-			return new RoadmapEntity({
-				...foundRoadmap,
-				setting: foundRoadmap.setting as JsonObject,
-				results: results as unknown as JsonObject,
-			})
+			throw new NotFoundException('Resultados no disponibles')
 		}
+
+		const setting = plainToInstance(SettingDto, foundRoadmap.setting)
+
+		const results = await this.optimization.optimizeTours(userId, setting)
 
 		return new RoadmapEntity({
 			...foundRoadmap,
 			setting: foundRoadmap.setting as JsonObject,
-			results: foundRoadmap.results as JsonObject,
+			results: results as unknown as JsonObject,
 		})
 	}
 

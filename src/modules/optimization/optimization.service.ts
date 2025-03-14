@@ -370,6 +370,11 @@ export class OptimizationService {
 
 		const build = request.build()
 
+		console.log({
+			startDate: `${build.model.globalStartTime} - ${settingDto.firstStage.startDateTime}`,
+			endDate: `${build.model.globalEndTime} - ${settingDto.firstStage.endDateTime}`,
+		})
+
 		const response = await this.routesOptimization.optimizeTours(build)
 
 		const route = response.routes.at(0)
