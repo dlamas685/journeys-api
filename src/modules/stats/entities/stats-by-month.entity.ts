@@ -17,4 +17,8 @@ export class StatsByMonthEntity {
 	@ApiProperty()
 	@Expose()
 	countNotArchived: number
+
+	constructor(data: Partial<StatsByMonthEntity>) {
+		Object.assign(this, data)
+	}
 }

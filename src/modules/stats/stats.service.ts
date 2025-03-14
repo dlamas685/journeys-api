@@ -28,6 +28,14 @@ export class StatsService {
 		SELECT * FROM trip_stats
 		WHERE user_id = ${userId}::uuid;`)
 
+		if (result.length === 0) {
+			return new StatsEntity({
+				total: 0,
+				totalArchived: 0,
+				totalNoArchived: 0,
+			})
+		}
+
 		return plainToInstance(StatsEntity, result[0], {
 			excludeExtraneousValues: true,
 		})
@@ -76,6 +84,16 @@ export class StatsService {
 		)
 		SELECT * FROM company_stats
 		WHERE user_id = ${userId}::uuid;`)
+
+		if (result.length === 0) {
+			return new CompanyStatsEntity({
+				total: 0,
+				totalUpcoming: 0,
+				totalOngoing: 0,
+				totalCompleted: 0,
+				totalDismissed: 0,
+			})
+		}
 
 		return plainToInstance(CompanyStatsEntity, result[0], {
 			excludeExtraneousValues: true,

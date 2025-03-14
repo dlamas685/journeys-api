@@ -13,4 +13,8 @@ export class StatsEntity {
 	@ApiProperty()
 	@Expose()
 	totalNoArchived: number
+
+	constructor(data: Partial<StatsEntity>) {
+		Object.assign(this, data)
+	}
 }

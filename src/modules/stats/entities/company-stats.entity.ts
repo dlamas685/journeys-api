@@ -21,4 +21,8 @@ export class CompanyStatsEntity {
 	@ApiProperty()
 	@Expose()
 	totalDismissed: number
+
+	constructor(data: Partial<CompanyStatsEntity>) {
+		Object.assign(this, data)
+	}
 }
