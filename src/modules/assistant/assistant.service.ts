@@ -48,7 +48,7 @@ export class AssistantService {
 		const instructions = generateInstructions(user, trip, alternatives)
 
 		const session = await this.openai.beta.realtime.sessions.create({
-			model: 'gpt-4o-mini-realtime-preview',
+			model: 'gpt-4o-realtime-preview',
 			voice: 'shimmer',
 			modalities: ['audio', 'text'],
 			temperature: 0.8,
