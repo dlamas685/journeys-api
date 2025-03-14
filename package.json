@@ -28,11 +28,9 @@
 	},
 	"dependencies": {
 		"@date-fns/tz": "^1.2.0",
-		"@googlemaps/google-maps-services-js": "^3.4.0",
 		"@googlemaps/places": "^1.8.0",
 		"@googlemaps/routeoptimization": "^0.3.0",
 		"@googlemaps/routing": "^1.4.0",
-		"@mapbox/polyline": "^1.2.1",
 		"@nestjs-modules/mailer": "^2.0.2",
 		"@nestjs/bullmq": "^11.0.2",
 		"@nestjs/cache-manager": "^2.3.0",
