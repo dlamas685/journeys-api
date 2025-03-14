@@ -13,7 +13,6 @@ import { generateInstructions } from './helpers/generate-instructions.helper'
 @Injectable()
 export class AssistantService {
 	private openai: OpenAI
-	private assistantId: string
 
 	constructor(
 		private readonly config: ConfigService,
@@ -24,8 +23,6 @@ export class AssistantService {
 		this.openai = new OpenAI({
 			apiKey: this.config.get('OPENAI_API_KEY'),
 		})
-
-		this.assistantId = this.config.get('OPENAI_ASSISTANT_ID')
 	}
 
 	async createSession(userId: string, sessionDto: CreateRealTimeSessionDto) {
