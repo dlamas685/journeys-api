@@ -3,9 +3,7 @@ import { CacheModule, CacheStore } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { ScheduleModule } from '@nestjs/schedule'
-import { ServeStaticModule } from '@nestjs/serve-static'
 import { redisStore } from 'cache-manager-redis-store'
-import { join } from 'path'
 import { envConfig } from './config'
 import { ActivityTemplatesModule } from './modules/activity-templates/activity-templates.module'
 import { AssistantModule } from './modules/assistant/assistant.module'
@@ -32,9 +30,6 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module'
 @Module({
 	imports: [
 		ConfigModule.forRoot(envConfig),
-		ServeStaticModule.forRoot({
-			rootPath: join(__dirname, '..', 'public'),
-		}),
 		CacheModule.registerAsync({
 			isGlobal: true,
 			inject: [ConfigService],
