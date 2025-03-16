@@ -48,17 +48,21 @@ export class TripsService {
 
 			const scheduledTime = departureTime.getTime() - 600000
 
-			await this.queue.add(QUEUE_TASK_NAME.TRIPS.OPTIMIZE, createdTrip, {
-				jobId: `${QUEUE_TASK_NAME.TRIPS.OPTIMIZE}-${createdTrip.id}`,
-				delay: Math.max(0, scheduledTime - Date.now()),
-				attempts: 5,
-				backoff: {
-					type: 'exponential',
-					delay: 5000,
-				},
-				removeOnFail: 5,
-				removeOnComplete: 50,
-			})
+			await this.queue.add(
+				QUEUE_TASK_NAME.TRIPS.OPTIMIZE,
+				{ userId, id: createdTrip.id },
+				{
+					jobId: `${QUEUE_TASK_NAME.TRIPS.OPTIMIZE}-${createdTrip.id}`,
+					delay: Math.max(0, scheduledTime - Date.now()),
+					attempts: 5,
+					backoff: {
+						type: 'exponential',
+						delay: 5000,
+					},
+					removeOnFail: 5,
+					removeOnComplete: 50,
+				}
+			)
 
 			return new TripEntity({
 				...createdTrip,

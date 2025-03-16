@@ -32,6 +32,7 @@ import { CreateRoadmapDto } from './dtos/create-roadmap.dto'
 import { RoadmapQueryParamsDto } from './dtos/roadmap-params.dto'
 import { UpdateRoadmapDto } from './dtos/update-roadmap.dto'
 import { RoadmapEntity } from './entities/roadmap.entity'
+import { JobData } from './types/job-data.type'
 
 @Injectable()
 export class RoadmapsService {
@@ -98,10 +99,15 @@ export class RoadmapsService {
 
 			const timestamp = Date.now()
 
+			const data: JobData = {
+				userId,
+				id: createdRoadmap.id,
+			}
+
 			await this.flowProducer.add({
 				queueName: QUEUE_NAMES.ROADMAPS,
 				name: FLOW_PRODUCERS_TASK_NAME.ROADMAPS.FINALIZE,
-				data: createdRoadmap,
+				data,
 				opts: {
 					jobId: createdRoadmap.id,
 					delay: Math.max(0, endDateTime.getTime() - timestamp),
@@ -114,7 +120,7 @@ export class RoadmapsService {
 					{
 						queueName: QUEUE_NAMES.ROADMAPS,
 						name: FLOW_PRODUCERS_TASK_NAME.ROADMAPS.START,
-						data: createdRoadmap,
+						data,
 						opts: {
 							delay: Math.max(0, startDateTime.getTime() - timestamp),
 							attempts: 5,
@@ -126,7 +132,7 @@ export class RoadmapsService {
 							{
 								queueName: QUEUE_NAMES.ROADMAPS,
 								name: FLOW_PRODUCERS_TASK_NAME.ROADMAPS.OPTIMIZE,
-								data: createdRoadmap,
+								data,
 								opts: {
 									delay: Math.max(0, scheduledTime - timestamp),
 									attempts: 5,
