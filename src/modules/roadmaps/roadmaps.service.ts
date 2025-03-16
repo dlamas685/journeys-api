@@ -25,7 +25,6 @@ import {
 import { AvailableRoadmapAssetQueryParamsDto } from '../nexus/dtos/available-roadmap-asset-query'
 import { NexusService } from '../nexus/nexus.service'
 import { OptimizationService } from '../optimization/optimization.service'
-import { SettingDto } from '../optimization/routes-optimization/dtos'
 import { PrismaService } from '../prisma/prisma.service'
 import { VALID_TRANSITIONS } from './constants/valid-transitions.constants'
 import { CreateRoadmapDto } from './dtos/create-roadmap.dto'
@@ -226,17 +225,17 @@ export class RoadmapsService {
 		}
 
 		if (!foundRoadmap.results) {
-			throw new NotFoundException('Resultados no disponibles')
+			return new RoadmapEntity({
+				...foundRoadmap,
+				setting: foundRoadmap.setting as JsonObject,
+				results: null,
+			})
 		}
-
-		const setting = plainToInstance(SettingDto, foundRoadmap.setting)
-
-		const results = await this.optimization.optimizeTours(userId, setting)
 
 		return new RoadmapEntity({
 			...foundRoadmap,
 			setting: foundRoadmap.setting as JsonObject,
-			results: results as unknown as JsonObject,
+			results: foundRoadmap.results as unknown as JsonObject,
 		})
 	}
 
