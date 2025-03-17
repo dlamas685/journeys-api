@@ -11,6 +11,8 @@ import { plainToInstance } from 'class-transformer'
 import { addSeconds } from 'date-fns'
 import { QUEUE_NAMES, QUEUE_TASK_NAME } from 'src/common/constants'
 import { NotificationsService } from '../notifications/notifications.service'
+import { OptimizationService } from '../optimization/optimization.service'
+import { CriteriaDto } from '../optimization/routes/dtos'
 import { RouteEntity } from '../optimization/routes/entities'
 import { TripEntity } from './entities/trip.entity'
 import { TripsService } from './trips.service'
@@ -23,6 +25,7 @@ export class TripsConsumer extends WorkerHost {
 	constructor(
 		private readonly trips: TripsService,
 		private readonly notifications: NotificationsService,
+		private readonly optimization: OptimizationService,
 		@InjectQueue(QUEUE_NAMES.TRIPS) private queue: Queue
 	) {
 		super()
@@ -82,7 +85,11 @@ export class TripsConsumer extends WorkerHost {
 	}
 
 	private async optimize(data: TripEntity) {
-		const results = plainToInstance(RouteEntity, data.results)
+		const criteria = plainToInstance(CriteriaDto, data.criteria)
+
+		const results = criteria.advancedCriteria
+			? await this.optimization.computeAdvancedOptimization(criteria)
+			: await this.optimization.computeBasicOptimization(criteria.basicCriteria)
 
 		await this.trips.setResults(
 			data.userId,

@@ -6,7 +6,8 @@ import { Job } from 'bullmq'
 import { plainToInstance } from 'class-transformer'
 import { FLOW_PRODUCERS_TASK_NAME, QUEUE_NAMES } from 'src/common/constants'
 import { NotificationsService } from '../notifications/notifications.service'
-import { RoadmapOptimizationEntity } from '../optimization/routes-optimization/entities'
+import { OptimizationService } from '../optimization/optimization.service'
+import { SettingDto } from '../optimization/routes-optimization/dtos'
 import { RoadmapEntity } from './entities/roadmap.entity'
 import { RoadmapsService } from './roadmaps.service'
 import { JobData } from './types/job-data.type'
@@ -17,7 +18,8 @@ export class RoadmapsConsumer extends WorkerHost {
 
 	constructor(
 		private readonly roadmap: RoadmapsService,
-		private readonly notifications: NotificationsService
+		private readonly notifications: NotificationsService,
+		private readonly optimization: OptimizationService
 	) {
 		super()
 		this.logger.log('Roadmaps consumer started')
@@ -89,7 +91,9 @@ export class RoadmapsConsumer extends WorkerHost {
 	}
 
 	private async optimize(data: RoadmapEntity) {
-		const results = plainToInstance(RoadmapOptimizationEntity, data.results)
+		const setting = plainToInstance(SettingDto, data.setting)
+
+		const results = await this.optimization.optimizeTours(data.userId, setting)
 
 		await this.roadmap.setResults(
 			data.userId,

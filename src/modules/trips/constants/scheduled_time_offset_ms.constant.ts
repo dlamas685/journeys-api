@@ -1,0 +1,1 @@
+export const SCHEDULED_TIME_OFFSET_MS = 10 * 60 * 1000

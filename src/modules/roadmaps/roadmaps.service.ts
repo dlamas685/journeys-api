@@ -24,9 +24,8 @@ import {
 } from 'src/common/helpers'
 import { AvailableRoadmapAssetQueryParamsDto } from '../nexus/dtos/available-roadmap-asset-query'
 import { NexusService } from '../nexus/nexus.service'
-import { OptimizationService } from '../optimization/optimization.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { VALID_TRANSITIONS } from './constants/valid-transitions.constants'
+import { SCHEDULED_TIME_OFFSET_MS, VALID_TRANSITIONS } from './constants'
 import { CreateRoadmapDto } from './dtos/create-roadmap.dto'
 import { RoadmapQueryParamsDto } from './dtos/roadmap-params.dto'
 import { UpdateRoadmapDto } from './dtos/update-roadmap.dto'
@@ -37,7 +36,6 @@ import { JobData } from './types/job-data.type'
 export class RoadmapsService {
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly optimization: OptimizationService,
 		private readonly nexus: NexusService,
 		@InjectFlowProducer(FLOW_PRODUCER_NAMES.ROADMAPS)
 		private flowProducer: FlowProducer
@@ -71,15 +69,7 @@ export class RoadmapsService {
 		const vehicle = fleet.vehicles.find(vehicle => vehicle.id === vehicleId)
 
 		if (!driver || !vehicle) {
-			const missingItems = []
-
-			if (!driver) missingItems.push('Conductor')
-
-			if (!vehicle) missingItems.push('Vehículo')
-
-			throw new BadRequestException(
-				`${missingItems.join(' y ')} no disponible${missingItems.length > 1 ? 's' : ''}`
-			)
+			throw new BadRequestException('Recursos no disponibles')
 		}
 
 		return this.prisma.$transaction(async prisma => {
@@ -94,7 +84,7 @@ export class RoadmapsService {
 
 			const endDateTime = createdRoadmap.endDateTime
 
-			const scheduledTime = startDateTime.getTime() - 3600000
+			const scheduledTime = startDateTime.getTime() - SCHEDULED_TIME_OFFSET_MS
 
 			const timestamp = Date.now()
 

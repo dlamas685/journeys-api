@@ -17,6 +17,7 @@ import {
 import { OptimizationService } from '../optimization/optimization.service'
 import { CriteriaDto } from '../optimization/routes/dtos'
 import { PrismaService } from '../prisma/prisma.service'
+import { SCHEDULED_TIME_OFFSET_MS } from './constants/scheduled_time_offset_ms.constant'
 import { CreateTripDto, ReplicateTripDto, UpdateTripDto } from './dtos'
 import { TripQueryParamsDto } from './dtos/trip-params.dto'
 import { TripEntity } from './entities/trip.entity'
@@ -46,7 +47,7 @@ export class TripsService {
 
 			const departureTime = createdTrip.departureTime
 
-			const scheduledTime = departureTime.getTime() - 600000
+			const scheduledTime = departureTime.getTime() - SCHEDULED_TIME_OFFSET_MS
 
 			await this.queue.add(
 				QUEUE_TASK_NAME.TRIPS.OPTIMIZE,
@@ -129,18 +130,31 @@ export class TripsService {
 			throw new NotFoundException('Viaje no encontrado')
 		}
 
-		if (!foundTrip.results) {
-			const criteria = plainToInstance(CriteriaDto, foundTrip.criteria)
+		const currentTime = new Date().getTime()
 
-			const results = criteria.advancedCriteria
-				? await this.optimization.computeAdvancedOptimization(criteria)
-				: await this.optimization.computeBasicOptimization(
-						criteria.basicCriteria
-					)
+		const scheduledTime =
+			foundTrip.departureTime.getTime() - SCHEDULED_TIME_OFFSET_MS
+
+		if (!foundTrip.results) {
+			if (scheduledTime > currentTime) {
+				const criteria = plainToInstance(CriteriaDto, foundTrip.criteria)
+
+				const results = criteria.advancedCriteria
+					? await this.optimization.computeAdvancedOptimization(criteria)
+					: await this.optimization.computeBasicOptimization(
+							criteria.basicCriteria
+						)
+
+				return new TripEntity({
+					...foundTrip,
+					results: results as unknown as JsonArray,
+					criteria: foundTrip.criteria as JsonObject,
+				})
+			}
 
 			return new TripEntity({
 				...foundTrip,
-				results: results as unknown as JsonArray,
+				results: null,
 				criteria: foundTrip.criteria as JsonObject,
 			})
 		}
