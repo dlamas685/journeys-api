@@ -31,9 +31,9 @@ This project defines the RESTful API of a trip and route optimization system. Th
 
 1.  Clone the repository.
 2.  Install the dependencies with the following command: `npm install`
-3.  Execute prisma migrations with: `npx prisma migrate dev`
-4.  Create a **.env** file in the root of the project. The file is based on the **.env.template** file.
-5.  Execute docker compose: `docker compose up -d`.
+3.  Execute docker compose: `docker compose up -d`.
+5.  Create a **.env** file in the root of the project. The file is based on the **.env.template** file.
+4.  Execute prisma migrations with: `npx prisma migrate dev`
 6.  Run the app with the following command:
 
     - Development mode:
