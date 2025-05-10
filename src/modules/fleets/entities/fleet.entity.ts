@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Fleet } from '@prisma/client'
+import { DriverEntity } from 'src/modules/drivers/entities/driver.entity'
+import { VehicleEntity } from 'src/modules/vehicles/entities/vehicle.entity'
 
 export class FleetEntity implements Fleet {
 	@ApiProperty()
@@ -19,6 +21,12 @@ export class FleetEntity implements Fleet {
 
 	@ApiProperty()
 	maxDrivers: number | null
+
+	@ApiProperty()
+	vehicles: VehicleEntity[]
+
+	@ApiProperty()
+	drivers: DriverEntity[]
 
 	@ApiProperty()
 	createdAt: Date

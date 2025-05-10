@@ -130,35 +130,6 @@ export class TripsService {
 			throw new NotFoundException('Viaje no encontrado')
 		}
 
-		const currentTime = new Date().getTime()
-
-		const scheduledTime =
-			foundTrip.departureTime.getTime() - SCHEDULED_TIME_OFFSET_MS
-
-		if (!foundTrip.results) {
-			if (scheduledTime > currentTime) {
-				const criteria = plainToInstance(CriteriaDto, foundTrip.criteria)
-
-				const results = criteria.advancedCriteria
-					? await this.optimization.computeAdvancedOptimization(criteria)
-					: await this.optimization.computeBasicOptimization(
-							criteria.basicCriteria
-						)
-
-				return new TripEntity({
-					...foundTrip,
-					results: results as unknown as JsonArray,
-					criteria: foundTrip.criteria as JsonObject,
-				})
-			}
-
-			return new TripEntity({
-				...foundTrip,
-				results: null,
-				criteria: foundTrip.criteria as JsonObject,
-			})
-		}
-
 		return new TripEntity({
 			...foundTrip,
 			results: foundTrip.results as JsonArray,
@@ -264,32 +235,53 @@ export class TripsService {
 			return await this.create(userId, createTripDto)
 		}
 
-		return await this.prisma.$transaction(async prisma => {
-			const departureTime = new Date()
+		const departureTime = new Date()
 
-			parsedCriteria = {
-				...parsedCriteria,
-				basicCriteria: {
-					...parsedCriteria.basicCriteria,
-					departureTime: departureTime.toISOString(),
-				},
-			}
+		departureTime.setMinutes(departureTime.getMinutes() + 30)
 
-			const results = parsedCriteria.advancedCriteria
-				? await this.optimization.computeAdvancedOptimization(parsedCriteria)
-				: await this.optimization.computeBasicOptimization(
-						parsedCriteria.basicCriteria
-					)
+		parsedCriteria = {
+			...parsedCriteria,
+			basicCriteria: {
+				...parsedCriteria.basicCriteria,
+				departureTime: departureTime.toISOString(),
+			},
+		}
 
-			return await prisma.trip.create({
-				data: {
-					userId,
-					code: replicateTripDto.code,
-					departureTime,
-					criteria: parsedCriteria as unknown as JsonObject,
-					results: results as unknown as JsonArray,
-				},
-			})
-		})
+		const createTripDto: CreateTripDto = {
+			code: replicateTripDto.code,
+			departureTime,
+			criteria: parsedCriteria as unknown as JsonObject,
+		}
+
+		return await this.create(userId, createTripDto)
+
+		// return await this.prisma.$transaction(async prisma => {
+		// 	const departureTime = new Date()
+		// 	departureTime.setMinutes(departureTime.getMinutes() + 10)
+
+		// 	parsedCriteria = {
+		// 		...parsedCriteria,
+		// 		basicCriteria: {
+		// 			...parsedCriteria.basicCriteria,
+		// 			departureTime: departureTime.toISOString(),
+		// 		},
+		// 	}
+
+		// 	const results = parsedCriteria.advancedCriteria
+		// 		? await this.optimization.computeAdvancedOptimization(parsedCriteria)
+		// 		: await this.optimization.computeBasicOptimization(
+		// 				parsedCriteria.basicCriteria
+		// 			)
+
+		// 	return await prisma.trip.create({
+		// 		data: {
+		// 			userId,
+		// 			code: replicateTripDto.code,
+		// 			departureTime,
+		// 			criteria: parsedCriteria as unknown as JsonObject,
+		// 			results: results as unknown as JsonArray,
+		// 		},
+		// 	})
+		// })
 	}
 }

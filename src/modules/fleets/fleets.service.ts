@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+	BadRequestException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { plainToInstance } from 'class-transformer'
 import {
@@ -103,6 +107,10 @@ export class FleetsService {
 				id,
 				userId,
 			},
+			include: {
+				vehicles: true,
+				drivers: true,
+			},
 		})
 
 		if (!foundFleet) {
@@ -189,7 +197,14 @@ export class FleetsService {
 		id: string,
 		relateVehiclesToFleetDto: RelateVehiclesToFleetDto
 	): Promise<FleetEntity> {
-		await this.findOne(userId, id)
+		const fleet = await this.findOne(userId, id)
+
+		if (
+			relateVehiclesToFleetDto.vehicleIds.length >
+			fleet.maxVehicles - fleet.vehicles.length
+		) {
+			throw new BadRequestException('No se pueden agregar más vehículos')
+		}
 
 		const updatedFleet = await this.prisma.fleet.update({
 			where: {
@@ -237,7 +252,14 @@ export class FleetsService {
 		id: string,
 		relateDriversToFleetDto: RelateDriversToFleetDto
 	): Promise<FleetEntity> {
-		await this.findOne(userId, id)
+		const driver = await this.findOne(userId, id)
+
+		if (
+			relateDriversToFleetDto.driverIds.length >
+			driver.maxDrivers - driver.drivers.length
+		) {
+			throw new BadRequestException('No se pueden agregar más conductores')
+		}
 
 		const updatedFleet = await this.prisma.fleet.update({
 			where: {

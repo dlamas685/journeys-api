@@ -214,14 +214,6 @@ export class RoadmapsService {
 			throw new NotFoundException('Viaje no encontrado')
 		}
 
-		if (!foundRoadmap.results) {
-			return new RoadmapEntity({
-				...foundRoadmap,
-				setting: foundRoadmap.setting as JsonObject,
-				results: null,
-			})
-		}
-
 		return new RoadmapEntity({
 			...foundRoadmap,
 			setting: foundRoadmap.setting as JsonObject,
@@ -280,19 +272,41 @@ export class RoadmapsService {
 		id: string,
 		newStatus: RoadmapStatus
 	): Promise<RoadmapEntity> {
-		const foundRoadmap = await this.prisma.roadmap.findFirst({
-			where: {
-				id,
-				userId,
-			},
-		})
-
-		if (!foundRoadmap) {
-			throw new NotFoundException('Viaje no encontrado')
-		}
+		const foundRoadmap = await this.findOne(userId, id)
 
 		if (!VALID_TRANSITIONS[foundRoadmap.status].includes(newStatus)) {
 			throw new BadRequestException('Transición de estado no válida')
+		}
+
+		if (newStatus === RoadmapStatus.DISMISSED) {
+			return this.prisma.$transaction(async prisma => {
+				const updatedRoadmap = await prisma.roadmap.update({
+					where: {
+						id,
+						userId,
+					},
+					data: {
+						status: newStatus,
+					},
+				})
+
+				const flow = await this.flowProducer.getFlow({
+					id,
+					queueName: QUEUE_NAMES.ROADMAPS,
+				})
+
+				if (flow) {
+					await flow.job.remove({
+						removeChildren: true,
+					})
+				}
+
+				return new RoadmapEntity({
+					...updatedRoadmap,
+					setting: updatedRoadmap.setting as JsonObject,
+					results: updatedRoadmap.results as JsonObject,
+				})
+			})
 		}
 
 		const updatedRoadmap = await this.prisma.roadmap.update({
