@@ -254,34 +254,5 @@ export class TripsService {
 		}
 
 		return await this.create(userId, createTripDto)
-
-		// return await this.prisma.$transaction(async prisma => {
-		// 	const departureTime = new Date()
-		// 	departureTime.setMinutes(departureTime.getMinutes() + 10)
-
-		// 	parsedCriteria = {
-		// 		...parsedCriteria,
-		// 		basicCriteria: {
-		// 			...parsedCriteria.basicCriteria,
-		// 			departureTime: departureTime.toISOString(),
-		// 		},
-		// 	}
-
-		// 	const results = parsedCriteria.advancedCriteria
-		// 		? await this.optimization.computeAdvancedOptimization(parsedCriteria)
-		// 		: await this.optimization.computeBasicOptimization(
-		// 				parsedCriteria.basicCriteria
-		// 			)
-
-		// 	return await prisma.trip.create({
-		// 		data: {
-		// 			userId,
-		// 			code: replicateTripDto.code,
-		// 			departureTime,
-		// 			criteria: parsedCriteria as unknown as JsonObject,
-		// 			results: results as unknown as JsonArray,
-		// 		},
-		// 	})
-		// })
 	}
 }
