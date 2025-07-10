@@ -1,23 +1,70 @@
-version: '3'
-
 services:
-  journeys-db:
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     target: prod
+  #   container_name: journeys-app
+  #   image: dlamas685/journeys-api:1.2.3
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   depends_on:
+  #     - db
+  #     - cache
+  #   environment:
+  #     PORT: ${PORT}
+  #     GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+  #     GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+  #     GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}
+  #     JWT_SECRET: ${JWT_SECRET}
+  #     SALTS: ${SALTS}
+  #     MAIL_HOST: ${MAIL_HOST}
+  #     MAIL_PORT: ${MAIL_PORT}
+  #     MAIL_USER: ${MAIL_USER}
+  #     MAIL_PASSWORD: ${MAIL_PASSWORD}
+  #     MAIL_FROM: ${MAIL_FROM}
+  #     CLOUDINARY_NAME: ${CLOUDINARY_NAME}
+  #     CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+  #     CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+  #     REDIS_HOST: ${REDIS_HOST}
+  #     REDIS_PORT: ${REDIS_PORT}
+  #     REDIS_URL: ${REDIS_URL}
+  #     CACHE_TTL: ${CACHE_TTL}
+  #     GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+  #     GOOGLE_PROJECT_ID: ${GOOGLE_PROJECT_ID}
+  #     OPENAI_API_KEY: ${OPENAI_API_KEY}
+  #     OPENAI_ASSISTANT_ID: ${OPENAI_ASSISTANT_ID}
+  #     DATABASE_PORT: ${DATABASE_PORT}
+  #     DATABASE_USER: ${DATABASE_USER}
+  #     DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+  #     DATABASE_NAME: ${DATABASE_NAME}
+  #     DATABASE_HOST: ${DATABASE_HOST}
+  #     DATABASE_URL: ${DATABASE_URL}
+  #     FRONTEND_URL: ${FRONTEND_URL}
+    
+  db:
     container_name: journeys-db
     image: postgres:16.2
     restart: always
     volumes:
-      - ./postgres:/var/lib/postgresql/data
+      - postgres-db:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - ${DATABASE_PORT}:${DATABASE_PORT}
     environment:
-      - POSTGRES_USER=dlamas
-      - POSTGRES_PASSWORD=123456
-      - POSTGRES_DB=journeys
-  redis:
-    container_name: redis
-    image: redis:latest
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+  cache:
+    container_name: journeys-cache
+    image: redis:8.0.2
     restart: always
     volumes:
-      - ./redis-data:/data
+      - redis-data:/data
     ports:
-      - 6379:6379
+      - ${REDIS_PORT}:${REDIS_PORT}
+
+volumes:
+  postgres-db:
+    external: false
+  redis-data:
+    external: false
