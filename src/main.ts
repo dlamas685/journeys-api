@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config'
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as cookieParser from 'cookie-parser'
+import * as basicAuth from 'express-basic-auth'
 import { AppModule } from './app.module'
 import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter'
 import { corsConfig } from './config'
@@ -15,6 +16,8 @@ async function bootstrap() {
 	const logger = new Logger('Bootstrap')
 
 	const app = await NestFactory.create(AppModule)
+
+	const configService = app.get(ConfigService)
 
 	app.use(cookieParser())
 
@@ -34,6 +37,17 @@ async function bootstrap() {
 
 	const { httpAdapter } = app.get(HttpAdapterHost)
 	app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter))
+
+	app.use(
+		['/docs', '/docs-json'],
+		basicAuth({
+			challenge: true,
+			users: {
+				[configService.get('SWAGGER_USER')]:
+					configService.get('SWAGGER_PASSWORD'),
+			},
+		})
+	)
 
 	const config = new DocumentBuilder()
 		.setTitle('JOURNEYS API')
@@ -56,7 +70,7 @@ async function bootstrap() {
 	const swaggerPath = 'docs'
 	SwaggerModule.setup(swaggerPath, app, document)
 
-	const port = app.get(ConfigService).get('PORT')
+	const port = configService.get('PORT')
 
 	await app.listen(port)
 
