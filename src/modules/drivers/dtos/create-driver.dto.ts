@@ -6,7 +6,7 @@ export class CreateDriverDto {
 	@IsOptional()
 	@IsUUID()
 	@ApiPropertyOptional()
-	fleetId: string
+	fleetId?: string
 
 	@IsString()
 	@IsNotEmpty()
@@ -21,7 +21,7 @@ export class CreateDriverDto {
 	@IsOptional()
 	@IsString()
 	@ApiPropertyOptional()
-	notes: string
+	notes?: string
 
 	constructor(partial: Partial<DriverEntity>) {
 		Object.assign(this, partial)

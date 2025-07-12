@@ -14,7 +14,7 @@ export class CreateVehicleDto {
 	@IsOptional()
 	@IsUUID()
 	@ApiPropertyOptional()
-	fleetId: string | null
+	fleetId?: string
 
 	@IsString()
 	@IsNotEmpty()
@@ -27,31 +27,31 @@ export class CreateVehicleDto {
 	@IsOptional()
 	@IsString()
 	@ApiPropertyOptional({ example: 'Toyota' })
-	make: string | null
+	make?: string
 
 	@IsOptional()
 	@IsString()
 	@IsNotEmpty()
 	@ApiPropertyOptional({ example: 'Hilux' })
-	model: string | null
+	model?: string
 
 	@IsOptional()
 	@IsInt()
 	@ApiPropertyOptional({ example: 2021 })
-	year: number | null
+	year?: number
 
+	@IsOptional()
 	@IsString()
-	@IsNotEmpty()
 	@Matches(VIN_PATTERN, {
 		message: 'Invalid VIN format',
 	})
 	@ApiPropertyOptional({ example: '4Y1SL65848Z411439' })
-	vin: string | null
+	vin?: string
 
 	@IsOptional()
 	@IsString()
 	@ApiPropertyOptional()
-	notes: string | null
+	notes?: string
 
 	constructor(partial: Partial<VehicleEntity>) {
 		Object.assign(this, partial)
