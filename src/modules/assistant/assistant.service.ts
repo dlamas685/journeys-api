@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { plainToInstance } from 'class-transformer'
 import OpenAI from 'openai'
 import { PlacesService } from '../google-maps/services/places.service'
-import { AdvancedWaypointDto, CriteriaDto } from '../optimization/routes/dtos'
+import { AdvancedWaypointDto } from '../optimization/routes/dtos'
 import { TripsService } from '../trips/trips.service'
 import { UsersService } from '../users/users.service'
 import { CreateRealTimeSessionDto } from './dtos/create-real-time-session.dto'
@@ -32,17 +31,17 @@ export class AssistantService {
 
 		const user = await this.users.findOne(userId)
 
-		const criteria = plainToInstance(CriteriaDto, trip.criteria)
+		// const criteria = plainToInstance(CriteriaDto, trip.criteria)
 
-		const alternatives =
-			criteria.advancedCriteria.interestPoints &&
-			criteria.advancedCriteria.interestPoints.length > 0
-				? await this.findAlternativesPOI(
-						criteria.advancedCriteria.interestPoints
-					)
-				: []
+		// const alternatives =
+		// 	criteria.advancedCriteria.interestPoints &&
+		// 	criteria.advancedCriteria.interestPoints.length > 0
+		// 		? await this.findAlternativesPOI(
+		// 				criteria.advancedCriteria.interestPoints
+		// 			)
+		// 		: []
 
-		const instructions = generateInstructions(user, trip, alternatives)
+		const instructions = generateInstructions(user, trip)
 
 		const session = await this.openai.beta.realtime.sessions.create({
 			model: 'gpt-4o-realtime-preview',
