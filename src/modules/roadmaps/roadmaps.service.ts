@@ -98,7 +98,7 @@ export class RoadmapsService {
 				name: FLOW_PRODUCERS_TASK_NAME.ROADMAPS.FINALIZE,
 				data,
 				opts: {
-					jobId: createdRoadmap.id,
+					jobId: `${FLOW_PRODUCERS_TASK_NAME.ROADMAPS.FINALIZE}-${createdRoadmap.id}`,
 					delay: Math.max(0, endDateTime.getTime() - timestamp),
 					attempts: 5,
 					backoff: { type: 'exponential', delay: 5000 },
@@ -111,6 +111,7 @@ export class RoadmapsService {
 						name: FLOW_PRODUCERS_TASK_NAME.ROADMAPS.START,
 						data,
 						opts: {
+							jobId: `${FLOW_PRODUCERS_TASK_NAME.ROADMAPS.START}-${createdRoadmap.id}`,
 							delay: Math.max(0, startDateTime.getTime() - timestamp),
 							attempts: 5,
 							backoff: { type: 'exponential', delay: 5000 },
@@ -123,6 +124,7 @@ export class RoadmapsService {
 								name: FLOW_PRODUCERS_TASK_NAME.ROADMAPS.OPTIMIZE,
 								data,
 								opts: {
+									jobId: `${FLOW_PRODUCERS_TASK_NAME.ROADMAPS.OPTIMIZE}-${createdRoadmap.id}`,
 									delay: Math.max(0, scheduledTime - timestamp),
 									attempts: 5,
 									backoff: { type: 'exponential', delay: 5000 },

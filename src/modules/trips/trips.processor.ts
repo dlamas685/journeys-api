@@ -138,21 +138,21 @@ export class TripsConsumer extends WorkerHost {
 	}
 
 	private async afterToArchiveCompleted(data: TripEntity) {
-		this.notifications.sendTrip(
+		await this.notifications.sendTrip(
 			data.userId,
 			`¡Tu viaje ${data.code} ha sido usado!`
 		)
 	}
 
 	private async afterOptimizationFailed(data: TripEntity) {
-		this.notifications.sendOptimization(
+		await this.notifications.sendOptimization(
 			data.userId,
 			`¡La optimización del viaje ${data.code} ha fallado! Por favor, intente creándolo nuevamente.`
 		)
 	}
 
 	private async afterToArchiveFailed(data: TripEntity) {
-		this.notifications.sendTrip(
+		await this.notifications.sendTrip(
 			data.userId,
 			`¡Hemos fallado al cambiar la condición del viaje ${data.code} a usado! Inténtalo de forma manual.`
 		)

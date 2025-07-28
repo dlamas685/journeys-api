@@ -1,6 +1,5 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq'
 import { Logger } from '@nestjs/common'
-import { Roadmap } from '@prisma/client'
 import { JsonObject } from '@prisma/client/runtime/library'
 import { Job } from 'bullmq'
 import { plainToInstance } from 'class-transformer'
@@ -56,7 +55,7 @@ export class RoadmapsConsumer extends WorkerHost {
 	}
 
 	@OnWorkerEvent('completed')
-	async onCompleted(job: Job<Roadmap>) {
+	async onCompleted(job: Job<JobData>) {
 		this.logger.log(`Job ${job.id} completed: ${job.name}`)
 
 		const foundRoadmap = await this.roadmap.findOne(
@@ -68,7 +67,7 @@ export class RoadmapsConsumer extends WorkerHost {
 	}
 
 	@OnWorkerEvent('failed')
-	async onFailed(job: Job<Roadmap>) {
+	async onFailed(job: Job<JobData>) {
 		this.logger.error(`Job ${job.id} failed: ${job.name}`)
 
 		const foundRoadmap = await this.roadmap.findOne(
@@ -110,43 +109,43 @@ export class RoadmapsConsumer extends WorkerHost {
 		await this.roadmap.changeStatus(data.userId, data.id, 'COMPLETED')
 	}
 
-	private afterOptimizationCompleted(data: RoadmapEntity) {
-		this.notifications.sendOptimization(
+	private async afterOptimizationCompleted(data: RoadmapEntity) {
+		await this.notifications.sendOptimization(
 			data.userId,
 			`¡La hoja de ruta ${data.code} ha sido optimizada!`
 		)
 	}
 
-	private afterStartedCompleted(data: RoadmapEntity) {
-		this.notifications.sendRoadmap(
+	private async afterStartedCompleted(data: RoadmapEntity) {
+		await this.notifications.sendRoadmap(
 			data.userId,
 			`¡La hoja de ruta ${data.code} ha iniciado!`
 		)
 	}
 
-	private afterFinalizedCompleted(data: RoadmapEntity) {
-		this.notifications.sendRoadmap(
+	private async afterFinalizedCompleted(data: RoadmapEntity) {
+		await this.notifications.sendRoadmap(
 			data.userId,
 			`¡La hoja de ruta ${data.code} ha finalizado!`
 		)
 	}
 
 	private async afterOptimizationFailed(data: RoadmapEntity) {
-		this.notifications.sendOptimization(
+		await this.notifications.sendOptimization(
 			data.userId,
 			`¡La optimización de la hoja de ruta ${data.code} ha fallado!`
 		)
 	}
 
 	private async afterStartedFailed(data: RoadmapEntity) {
-		this.notifications.sendRoadmap(
+		await this.notifications.sendRoadmap(
 			data.userId,
 			`¡La hoja de ruta ${data.code} ha fallado al iniciar!`
 		)
 	}
 
 	private async afterFinalizedFailed(data: RoadmapEntity) {
-		this.notifications.sendRoadmap(
+		await this.notifications.sendRoadmap(
 			data.userId,
 			`¡La hoja de ruta ${data.code} ha fallado al final!`
 		)
